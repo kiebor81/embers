@@ -3,6 +3,9 @@ using System.Collections;
 
 namespace Embers.Language
 {
+    /// <summary>
+    /// DynamicArray represents a dynamic array in the Embers language.
+    /// </summary>
     public class DynamicArray : ArrayList
     {
         public override object this[int index]

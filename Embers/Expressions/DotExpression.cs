@@ -53,14 +53,35 @@ namespace Embers.Expressions
             {
                 NativeClass nclass = (NativeClass)context.GetValue("Fixnum");
                 nclass = (NativeClass)nclass.MethodClass(result, null);
+                
+                // Check if this is a StdLib method (which needs block in context)
+                // vs a manually registered method (which expects block in values)
+                bool isStdLibMethod = nclass != null && StdLibRegistry.GetMethod(nclass.Name, name) != null;
+                
+                // Check for trailing block in arguments
+                IFunction? nativeBlock = null;
+                var nativeArgList = arguments != null ? arguments.ToList() : new List<IExpression>();
+                
+                // Only extract block for StdLib methods; manual methods still get block in values
+                if (isStdLibMethod && nativeArgList.Count > 0 && nativeArgList[^1] is BlockExpression nativeBlockExpr)
+                {
+                    nativeBlock = new BlockFunction(nativeBlockExpr);
+                    nativeArgList.RemoveAt(nativeArgList.Count - 1);
+                }
+
+                // Create a new context with the block if present
+                var nativeContext = nativeBlock != null ? new Context(context, nativeBlock) : context;
+
                 Func<object, IList<object>, object> nmethod = null;
 
                 if (nclass != null)
-                    nmethod = nclass.GetInstanceMethod(name);
+                    nmethod = isStdLibMethod 
+                        ? nclass.GetInstanceMethod(name, nativeContext) 
+                        : nclass.GetInstanceMethod(name);
 
-                if (arguments != null)
-                    foreach (var argument in arguments)
-                        values.Add(argument.Evaluate(context));
+                if (nativeArgList.Count > 0)
+                    foreach (var argument in nativeArgList)
+                        values.Add(argument.Evaluate(nativeContext));
 
                 if (nmethod == null)
                 {

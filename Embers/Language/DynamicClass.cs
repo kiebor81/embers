@@ -3,6 +3,9 @@ using Embers.Functions;
 
 namespace Embers.Language
 {
+    /// <summary>
+    /// DynamicClass represents a class in the Embers language.
+    /// </summary>
     public class DynamicClass(DynamicClass @class, string name, DynamicClass superclass = null, DynamicClass parent = null) : DynamicObject(@class)
     {
         private readonly string name = name;

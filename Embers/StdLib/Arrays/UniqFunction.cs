@@ -1,9 +1,10 @@
 using Embers.Language;
 using Embers.Exceptions;
+using System.Collections;
 
 namespace Embers.StdLib.Arrays
 {
-    [StdLib("uniq")]
+    [StdLib("uniq", TargetType = "Array")]
     public class UniqFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -11,8 +12,13 @@ namespace Embers.StdLib.Arrays
             if (values == null || values.Count == 0 || values[0] == null)
                 throw new ArgumentError("uniq expects an array argument");
 
-            if (values[0] is IEnumerable<object> arr)
-                return arr.Distinct().ToList();
+            if (values[0] is IEnumerable arr)
+            {
+                var result = new DynamicArray();
+                foreach (var item in arr.Cast<object>().Distinct())
+                    result.Add(item);
+                return result;
+            }
 
             throw new TypeError("uniq expects an array");
         }

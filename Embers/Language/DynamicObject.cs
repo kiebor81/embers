@@ -2,6 +2,9 @@
 
 namespace Embers.Language
 {
+    /// <summary>
+    /// DynamicObject represents an instance of a DynamicClass in the Embers language.  
+    /// </summary>
     public class DynamicObject(DynamicClass @class)
     {
         private DynamicClass @class = @class;

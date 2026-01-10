@@ -1,9 +1,10 @@
 using Embers.Language;
 using Embers.Exceptions;
+using System.Collections;
 
 namespace Embers.StdLib.Arrays
 {
-    [StdLib("unshift")]
+    [StdLib("unshift", TargetType = "Array")]
     public class UnshiftFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -11,7 +12,7 @@ namespace Embers.StdLib.Arrays
             if (values == null || values.Count < 2 || values[0] == null)
                 throw new ArgumentError("unshift expects an array and a value");
 
-            if (values[0] is IList<object> arr)
+            if (values[0] is IList arr)
             {
                 arr.Insert(0, values[1]);
                 return arr;

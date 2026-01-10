@@ -1,9 +1,10 @@
 using Embers.Language;
 using Embers.Exceptions;
+using System.Collections;
 
 namespace Embers.StdLib.Arrays
 {
-    [StdLib("flatten")]
+    [StdLib("flatten", TargetType = "Array")]
     public class FlattenFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -11,13 +12,16 @@ namespace Embers.StdLib.Arrays
             if (values == null || values.Count == 0 || values[0] == null)
                 throw new ArgumentError("flatten expects an array argument");
 
-            if (values[0] is IEnumerable<object> arr)
+            if (values[0] is IEnumerable arr)
             {
-                var result = new List<object>();
+                var result = new DynamicArray();
                 foreach (var item in arr)
                 {
-                    if (item is IEnumerable<object> subarr)
-                        result.AddRange(subarr);
+                    if (item is IEnumerable subarr && !(item is string))
+                    {
+                        foreach (var subitem in subarr)
+                            result.Add(subitem);
+                    }
                     else
                         result.Add(item);
                 }

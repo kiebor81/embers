@@ -1,9 +1,10 @@
 using Embers.Language;
 using Embers.Exceptions;
+using System.Collections;
 
 namespace Embers.StdLib.Arrays
 {
-    [StdLib("last")]
+    [StdLib("last", TargetType = "Array")]
     public class LastFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -11,7 +12,7 @@ namespace Embers.StdLib.Arrays
             if (values == null || values.Count == 0 || values[0] == null)
                 throw new ArgumentError("last expects an array argument");
 
-            if (values[0] is IList<object> arr)
+            if (values[0] is IList arr)
             {
                 if (arr.Count == 0)
                     return null;

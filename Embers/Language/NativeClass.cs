@@ -68,6 +68,34 @@ namespace Embers.Language
             return null;
         }
 
+        public Func<object, IList<object>, object>? GetInstanceMethod(string name, Context context)
+        {
+            // Check manually registered methods first
+            if (methods.TryGetValue(name, out Func<object, IList<object>, object>? value))
+                return value;
+
+            // Try StdLibRegistry for this native type
+            var stdFunc = StdLibRegistry.GetMethod(Name, name);
+            if (stdFunc != null)
+            {
+                // Create a wrapper that adapts StdFunction to the expected signature
+                // StdFunction expects: Apply(DynamicObject self, Context context, IList<object> values)
+                // NativeClass expects: Func<object, IList<object>, object>
+                return (self, values) =>
+                {
+                    // For StdLib functions, the native value (string, int, etc.) is passed as the first argument
+                    var args = new List<object> { self };
+                    if (values != null)
+                        args.AddRange(values);
+                    
+                    // Use the provided context which may contain a block
+                    return stdFunc.Apply(context.Self, context, args);
+                };
+            }
+
+            return null;
+        }
+
         public override string ToString()
         {            
             return Name;

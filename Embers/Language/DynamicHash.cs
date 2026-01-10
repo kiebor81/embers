@@ -1,5 +1,8 @@
 ﻿namespace Embers.Language
 {
+    /// <summary>
+    /// DynamicHash represents a hash table in the Embers language.
+    /// </summary>
     public class DynamicHash : Dictionary<object, object>
     {
         public override string ToString()

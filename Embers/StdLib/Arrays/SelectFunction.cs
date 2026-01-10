@@ -1,5 +1,6 @@
 using Embers.Language;
 using Embers.Exceptions;
+using System.Collections;
 
 namespace Embers.StdLib.Arrays
 {
@@ -14,9 +15,9 @@ namespace Embers.StdLib.Arrays
             if (context.Block == null)
                 throw new ArgumentError("select expects a block");
 
-            if (values[0] is IEnumerable<object> arr)
+            if (values[0] is IEnumerable arr)
             {
-                var result = new List<object>();
+                var result = new DynamicArray();
                 foreach (var item in arr)
                 {
                     var keep = context.Block.Apply(self, context, [item]);

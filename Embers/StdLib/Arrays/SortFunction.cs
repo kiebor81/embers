@@ -1,12 +1,13 @@
 using Embers.Language;
 using Embers.Exceptions;
+using System.Collections;
 
 namespace Embers.StdLib.Arrays
 {
     /// <summary>
     /// Returns a sorted copy of the array.
     /// </summary>
-    [StdLib("sort")]
+    [StdLib("sort", TargetType = "Array")]
     public class SortFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -14,8 +15,13 @@ namespace Embers.StdLib.Arrays
             if (values == null || values.Count == 0 || values[0] == null)
                 throw new ArgumentError("sort expects an array argument");
 
-            if (values[0] is IEnumerable<object> arr)
-                return arr.OrderBy(x => x).ToList();
+            if (values[0] is IEnumerable arr)
+            {
+                var result = new DynamicArray();
+                foreach (var item in arr.Cast<object>().OrderBy(x => x))
+                    result.Add(item);
+                return result;
+            }
 
             throw new TypeError("sort expects an array");
         }
