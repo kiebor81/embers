@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace Embers.StdLib.Strings
 {
-    [StdLib("sub")]
+    [StdLib("sub", TargetType = "String")]
     public class SubFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -19,3 +19,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

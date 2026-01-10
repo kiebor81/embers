@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Numeric
 {
-    [StdLib("tan")]
+    [StdLib("tan", TargetTypes = new[] { "Fixnum", "Float" })]
     public class TanFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

@@ -5,7 +5,7 @@ namespace Embers.StdLib.Strings
     /// <summary>
     /// Returns the string in lowercase.
     /// </summary>
-    [StdLib("downcase", "down", "dcase")]
+    [StdLib("downcase", "down", "dcase", TargetType = "String")]
     public class DowncaseFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -18,3 +18,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

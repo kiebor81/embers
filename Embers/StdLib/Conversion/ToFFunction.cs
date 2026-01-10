@@ -6,7 +6,7 @@ namespace Embers.StdLib.Conversion
     /// <summary>
     /// Converts the value to a floating point number.
     /// </summary>
-    [StdLib("to_f", "to_float")]
+    [StdLib("to_f", "to_float", TargetTypes = new[] { "Fixnum", "Float", "String", "NilClass", "TrueClass", "FalseClass", "Array", "Hash", "Range", "DateTime" })]
     public class ToFFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

@@ -6,7 +6,7 @@ namespace Embers.StdLib.Strings
     /// <summary>
     /// Removes trailing newline characters from a string.
     /// </summary>
-    [StdLib("chomp")]
+    [StdLib("chomp", TargetType = "String")]
     public class ChompFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -21,3 +21,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

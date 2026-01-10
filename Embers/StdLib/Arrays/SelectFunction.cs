@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Arrays
 {
-    [StdLib("select")]
+    [StdLib("select", TargetType = "Array")]
     public class SelectFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

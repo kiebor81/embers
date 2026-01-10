@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Numeric
 {
-    [StdLib("sign")]
+    [StdLib("sign", TargetTypes = new[] { "Fixnum", "Float" })]
     public class SignFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

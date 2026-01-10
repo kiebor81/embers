@@ -4,8 +4,7 @@ using Embers.Functions;
 
 namespace Embers.StdLib.Arrays
 {
-    // TODO: implement block passing context for parent array awareness
-    [StdLib("map")]
+    [StdLib("map", TargetType = "Array")]
     public class MapFunction : StdFunction
     {
         public override object ApplyWithBlock(DynamicObject self, Context context, IList<object> values, IFunction block)

@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Strings
 {
-    [StdLib("start_with?")]
+    [StdLib("start_with?", TargetType = "String")]
     public class StartWithFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

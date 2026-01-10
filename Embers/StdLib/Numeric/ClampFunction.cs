@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Numeric
 {
-    [StdLib("clamp")]
+    [StdLib("clamp", TargetTypes = new[] { "Fixnum", "Float" })]
     public class ClampFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

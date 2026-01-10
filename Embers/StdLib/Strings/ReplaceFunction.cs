@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Strings
 {
-    [StdLib("replace")]
+    [StdLib("replace", TargetType = "String")]
     public class ReplaceFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -18,3 +18,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

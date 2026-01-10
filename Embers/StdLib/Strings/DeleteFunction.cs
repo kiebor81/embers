@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Strings
 {
-    [StdLib("delete")]
+    [StdLib("delete", TargetType = "String")]
     public class DeleteFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -18,3 +18,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

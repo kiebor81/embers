@@ -6,7 +6,7 @@ namespace Embers.StdLib.Numeric
     /// <summary>
     /// Returns the minimum value from a list of numbers.
     /// </summary>
-    [StdLib("min")]
+    [StdLib("min", TargetTypes = new[] { "Fixnum", "Float" })]
     public class MinFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

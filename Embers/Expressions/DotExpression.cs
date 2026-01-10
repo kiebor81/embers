@@ -78,7 +78,18 @@ namespace Embers.Expressions
 
             var obj = (DynamicObject)result;
 
-            foreach (var argument in arguments)
+            // Check for trailing block in arguments
+            IFunction? block = null;
+            var argList = arguments.ToList();
+            
+            if (argList.Count > 0 && argList[^1] is BlockExpression blockExpr)
+            {
+                block = new BlockFunction(blockExpr);
+                argList.RemoveAt(argList.Count - 1);
+            }
+
+            // Evaluate remaining arguments
+            foreach (var argument in argList)
                 values.Add(argument.Evaluate(context));
 
             var method = obj.GetMethod(name);
@@ -97,6 +108,19 @@ namespace Embers.Expressions
                 throw new NoMethodError(name);
             }
 
+            // Use block-aware function call if method supports blocks
+            if (block != null && method is ICallableWithBlock callableWithBlock)
+                return callableWithBlock.ApplyWithBlock(obj, context, values, block);
+
+            // Check if method has ApplyWithBlock method (for StdFunction and DefinedFunction)
+            if (block != null)
+            {
+                var applyWithBlockMethod = method.GetType().GetMethod("ApplyWithBlock");
+                if (applyWithBlockMethod != null)
+                    return applyWithBlockMethod.Invoke(method, [obj, context, values, block]);
+            }
+
+            // Fallback to standard function call
             return method.Apply(obj, context, values);
         }
 

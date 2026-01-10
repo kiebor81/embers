@@ -41,6 +41,13 @@ namespace Embers.Console
                     System.Console.Write(Output.Magenta("> "));
                     string input = System.Console.ReadLine();
 
+                    // Check for exit commands
+                    if (input == "exit" || input == "quit" || input == "bye")
+                    {
+                        System.Console.WriteLine(Output.Green("Goodbye!"));
+                        return;
+                    }
+
                     // Apply preprocessing to ensure expression is parsable
                     string prepared = PrepareInput(input);
 

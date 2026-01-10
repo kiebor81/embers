@@ -6,7 +6,7 @@ namespace Embers.StdLib.Numeric
     /// <summary>
     /// Returns the maximum value from a list of numbers.
     /// </summary>
-    [StdLib("max")]
+    [StdLib("max", TargetTypes = new[] { "Fixnum", "Float" })]
     public class MaxFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

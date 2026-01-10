@@ -6,7 +6,7 @@ namespace Embers.StdLib.Conversion
     /// <summary>
     /// Converts the value to an integer.
     /// </summary>
-    [StdLib("to_i", "to_int", "to_integer")]
+    [StdLib("to_i", "to_int", "to_integer", TargetTypes = new[] { "Fixnum", "Float", "String", "NilClass", "TrueClass", "FalseClass", "Array", "Hash", "Range", "DateTime" })]
     public class ToIFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Numeric
 {
-    [StdLib("random_seed")]
+    [StdLib("random_seed", TargetTypes = new[] { "Fixnum", "Float" })]
     public class RandomSeedFunction : StdFunction
     {
         // Shared random instance for all random functions

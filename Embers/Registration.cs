@@ -34,29 +34,11 @@ namespace Embers
 
         /// <summary>
         /// Registers all StdLib functions decorated with StdLibAttribute.
+        /// Now uses StdLibRegistry for automatic discovery and registration.
         /// </summary>
         internal static void RegisterAllStdLibFunctions(this Context context)
         {
-            var baseType = typeof(StdFunction);
-            var assembly = baseType.Assembly;
-
-            foreach (var type in assembly.GetTypes())
-            {
-                if (type.IsClass && !type.IsAbstract && baseType.IsAssignableFrom(type))
-                {
-                    var attr = type.GetCustomAttribute<StdLibAttribute>();
-                    if (attr != null)
-                    {
-                        TypeAccessPolicy.AddType(type.FullName);
-
-                        var instance = (StdFunction)Activator.CreateInstance(type);
-                        foreach (var name in attr.Names)
-                        {
-                            context.Self.Class.SetInstanceMethod(name, instance);
-                        }
-                    }
-                }
-            }
+            StdLibRegistry.RegisterGlobalFunctions(context);
         }
     }
 }

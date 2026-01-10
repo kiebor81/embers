@@ -61,6 +61,7 @@ namespace Embers
             rootcontext.SetLocalValue("Array", new ArrayClass(this));
             rootcontext.SetLocalValue("Hash", new HashClass(this));
             rootcontext.SetLocalValue("Range", new RangeClass(this));
+            rootcontext.SetLocalValue("DateTime", new DateTimeClass(this));
 
             rootcontext.Self = objectclass.CreateInstance();
             rootcontext.Self.Class.SetInstanceMethod("require", new RequireFunction(this));

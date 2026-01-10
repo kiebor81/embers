@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Strings
 {
-    [StdLib("include?")]
+    [StdLib("include?", TargetType = "String")]
     public class IncludeFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -23,3 +23,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Embers.StdLib;
+using System.Collections;
 
 namespace Embers.Language
 {
@@ -21,6 +22,7 @@ namespace Embers.Language
         private NativeClass arrayclass;
         private NativeClass hashclass;
         private NativeClass rangeclass;
+        private NativeClass datetimeclass;
 
         public NativeClass(string name, Machine machine)
             : base(null)
@@ -39,8 +41,29 @@ namespace Embers.Language
 
         public Func<object, IList<object>, object>? GetInstanceMethod(string name)
         {
+            // Check manually registered methods first
             if (methods.TryGetValue(name, out Func<object, IList<object>, object>? value))
                 return value;
+
+            // Try StdLibRegistry for this native type
+            var stdFunc = StdLibRegistry.GetMethod(Name, name);
+            if (stdFunc != null)
+            {
+                // Create a wrapper that adapts StdFunction to the expected signature
+                // StdFunction expects: Apply(DynamicObject self, Context context, IList<object> values)
+                // NativeClass expects: Func<object, IList<object>, object>
+                return (self, values) =>
+                {
+                    // For StdLib functions, the native value (string, int, etc.) is passed as the first argument
+                    var args = new List<object> { self };
+                    if (values != null)
+                        args.AddRange(values);
+                    
+                    // Get the context from the machine's root context
+                    // StdLib functions work with the native value directly in the arguments
+                    return stdFunc.Apply(machine.RootContext.Self, machine.RootContext, args);
+                };
+            }
 
             return null;
         }
@@ -78,6 +101,13 @@ namespace Embers.Language
                 stringclass ??= (NativeClass)machine.RootContext.GetLocalValue("String");
 
                 return stringclass;
+            }
+
+            if (self is DateTime)
+            {
+                datetimeclass ??= (NativeClass)machine.RootContext.GetLocalValue("DateTime");
+
+                return datetimeclass;
             }
 
             if (self is bool)

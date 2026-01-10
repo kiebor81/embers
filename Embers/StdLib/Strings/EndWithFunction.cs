@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Strings
 {
-    [StdLib("end_with?")]
+    [StdLib("end_with?", TargetType = "String")]
     public class EndWithFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -18,3 +18,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

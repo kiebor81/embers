@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Numeric
 {
-    [StdLib("degree")]
+    [StdLib("degree", TargetTypes = new[] { "Fixnum", "Float" })]
     public class DegreeFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

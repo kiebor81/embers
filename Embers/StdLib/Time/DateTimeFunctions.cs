@@ -35,7 +35,7 @@ namespace Embers.StdLib.Time
         }
     }
 
-    [StdLib("strftime")]
+    [StdLib("strftime", TargetTypes = new[] { "DateTime" })]
     public class StrftimeFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -48,7 +48,7 @@ namespace Embers.StdLib.Time
         }
     }
 
-    [StdLib("year")]
+    [StdLib("year", TargetTypes = new[] { "DateTime" })]
     public class YearFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -61,7 +61,7 @@ namespace Embers.StdLib.Time
         }
     }
 
-    [StdLib("month")]
+    [StdLib("month", TargetTypes = new[] { "DateTime" })]
     public class MonthFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -74,7 +74,7 @@ namespace Embers.StdLib.Time
         }
     }
 
-    [StdLib("day")]
+    [StdLib("day", TargetTypes = new[] { "DateTime" })]
     public class DayFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -87,7 +87,7 @@ namespace Embers.StdLib.Time
         }
     }
 
-    [StdLib("hour")]
+    [StdLib("hour", TargetTypes = new[] { "DateTime" })]
     public class HourFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -100,7 +100,7 @@ namespace Embers.StdLib.Time
         }
     }
 
-    [StdLib("sec")]
+    [StdLib("sec", TargetTypes = new[] { "DateTime" })]
     public class SecFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

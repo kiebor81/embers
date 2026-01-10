@@ -6,7 +6,7 @@ namespace Embers.StdLib.Strings
     /// <summary>
     /// Removes leading and trailing whitespace from a string.
     /// </summary>
-    [StdLib("strip")]
+    [StdLib("strip", TargetType = "String")]
     public class StripFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -21,3 +21,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

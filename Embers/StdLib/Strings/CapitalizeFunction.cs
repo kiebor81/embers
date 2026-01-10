@@ -6,7 +6,7 @@ namespace Embers.StdLib.Strings
     /// <summary>
     /// Capitalizes the first character of a string.
     /// </summary>
-    [StdLib("capitalize")]
+    [StdLib("capitalize", TargetType = "String")]
     public class CapitalizeFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -21,3 +21,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

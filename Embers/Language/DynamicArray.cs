@@ -1,4 +1,4 @@
-﻿using Embers.StdLib.Arrays;
+﻿using Embers.StdLib;
 using System.Collections;
 
 namespace Embers.Language
@@ -44,15 +44,13 @@ namespace Embers.Language
             return result;
         }
 
-        public object GetMethod(string name)
+        /// <summary>
+        /// Gets a method for this array by name.
+        /// Uses StdLibRegistry for automatic discovery of array-specific methods.
+        /// </summary>
+        public object? GetMethod(string name)
         {
-            return name switch
-            {
-                "map" => new MapFunction(),
-                // Add others as needed, e.g.:
-                // "compact" => new CompactFunction(),
-                _ => null
-            };
+            return StdLibRegistry.GetMethod("Array", name);
         }
     }
 }

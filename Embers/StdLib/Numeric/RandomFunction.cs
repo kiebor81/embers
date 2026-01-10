@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Numeric
 {
-    [StdLib("random")]
+    [StdLib("random", TargetTypes = new[] { "Fixnum", "Float" })]
     public class RandomFunction : StdFunction
     {
         private static readonly Random _random = new();

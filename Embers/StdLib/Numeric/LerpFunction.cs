@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Numeric
 {
-    [StdLib("lerp")]
+    [StdLib("lerp", TargetTypes = new[] { "Fixnum", "Float" })]
     public class LerpFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

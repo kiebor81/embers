@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Numeric
 {
-    [StdLib("sin")]
+    [StdLib("sin", TargetTypes = new[] { "Fixnum", "Float" })]
     public class SinFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

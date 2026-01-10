@@ -6,7 +6,7 @@ namespace Embers.StdLib.Numeric
     /// <summary>
     /// Returns the absolute value of a number.
     /// </summary>
-    [StdLib("abs")]
+    [StdLib("abs", TargetTypes = new[] { "Fixnum", "Float" })]
     public class AbsFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

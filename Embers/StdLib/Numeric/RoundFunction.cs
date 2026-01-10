@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Numeric
 {
-    [StdLib("round")]
+    [StdLib("round", TargetTypes = new[] { "Fixnum", "Float" })]
     public class RoundFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

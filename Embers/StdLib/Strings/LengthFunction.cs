@@ -6,7 +6,7 @@ namespace Embers.StdLib.Strings
     /// <summary>
     /// Returns the length of a string or array.
     /// </summary>
-    [StdLib("length", "len")]
+    [StdLib("length", "len", TargetType = "String")]
     public class LengthFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -24,3 +24,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

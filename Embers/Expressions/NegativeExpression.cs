@@ -16,6 +16,8 @@
         public object Evaluate(Context context)
         {
             var value = expression.Evaluate(context);
+            if (value is int i) return -i;
+            if (value is double d) return -d;
             return -(int)value;
         }
 

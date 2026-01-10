@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Strings
 {
-    [StdLib("lines")]
+    [StdLib("lines", TargetType = "String")]
     public class LinesFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -18,3 +18,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

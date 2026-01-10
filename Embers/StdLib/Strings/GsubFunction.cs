@@ -7,7 +7,7 @@ namespace Embers.StdLib.Strings
     /// <summary>
     /// Performs global substitution in a string using a regex pattern.
     /// </summary>
-    [StdLib("gsub")]
+    [StdLib("gsub", TargetType = "String")]
     public class GsubFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -22,3 +22,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

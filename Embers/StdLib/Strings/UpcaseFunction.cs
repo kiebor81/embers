@@ -5,7 +5,7 @@ namespace Embers.StdLib.Strings
     /// <summary>
     /// Returns the string in uppercase.
     /// </summary>
-    [StdLib("upcase", "up", "ucase")]
+    [StdLib("upcase", "up", "ucase", TargetType = "String")]
     public class UpcaseFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -18,3 +18,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

@@ -6,7 +6,7 @@ namespace Embers.StdLib.Strings
     /// <summary>
     /// Returns the reversed string or array.
     /// </summary>
-    [StdLib("reverse")]
+    [StdLib("reverse", TargetType = "String")]
     public class ReverseFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -24,3 +24,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

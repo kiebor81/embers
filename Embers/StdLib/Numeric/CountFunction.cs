@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Numeric
 {
-    [StdLib("count")]
+    [StdLib("count", TargetTypes = new[] { "Fixnum", "Float" })]
     public class CountFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

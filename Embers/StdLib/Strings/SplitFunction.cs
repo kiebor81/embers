@@ -6,7 +6,7 @@ namespace Embers.StdLib.Strings
     /// <summary>
     /// Splits a string into an array using the given separator.
     /// </summary>
-    [StdLib("split")]
+    [StdLib("split", TargetType = "String")]
     public class SplitFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -14,12 +14,18 @@ namespace Embers.StdLib.Strings
             if (values == null || values.Count == 0 || values[0] == null)
                 throw new ArgumentError("split expects a string argument");
 
-            var separator = values.Count > 1 ? values[1]?.ToString() ?? "" : "";
+            var s = values[0]?.ToString();
+            if (s == null)
+                throw new TypeError("split expects a string");
 
-            if (values[0] is string s)
-                return s.Split(new[] { separator }, StringSplitOptions.None).ToList();
+            // If no separator is provided (only the string itself in values[0]), split on whitespace
+            if (values.Count == 1)
+                return s.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            throw new TypeError("split expects a string");
+            // Otherwise, use the provided separator
+            var separator = values[1]?.ToString() ?? "";
+            return s.Split(new[] { separator }, StringSplitOptions.None).ToList();
         }
     }
 }
+

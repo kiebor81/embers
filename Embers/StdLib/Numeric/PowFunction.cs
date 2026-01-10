@@ -3,7 +3,7 @@ using Embers.Exceptions;
 
 namespace Embers.StdLib.Numeric
 {
-    [StdLib("pow")]
+    [StdLib("pow", TargetTypes = new[] { "Fixnum", "Float" })]
     public class PowFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)

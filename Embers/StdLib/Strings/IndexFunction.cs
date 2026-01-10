@@ -6,7 +6,7 @@ namespace Embers.StdLib.Strings
     /// <summary>
     /// Returns the index of a substring in a string or element in an array, or -1 if not found.
     /// </summary>
-    [StdLib("index")]
+    [StdLib("index", TargetType = "String")]
     public class IndexFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
@@ -35,3 +35,4 @@ namespace Embers.StdLib.Strings
         }
     }
 }
+

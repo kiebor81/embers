@@ -5,7 +5,7 @@ namespace Embers.StdLib.Conversion
     /// <summary>
     /// Converts the value to a string.
     /// </summary>
-    [StdLib("to_s", "to_string")]
+    [StdLib("to_s", "to_string", TargetTypes = new[] { "Fixnum", "Float", "String", "NilClass", "TrueClass", "FalseClass", "Array", "Hash", "Range", "DateTime" })]
     public class ToSFunction : StdFunction
     {
         public override object Apply(DynamicObject self, Context context, IList<object> values)
