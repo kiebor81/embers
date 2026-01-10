@@ -8,7 +8,7 @@ namespace Embers.Host
         /// <summary>
         /// Injects all host functions from the specified assembly.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="machine">The machine.</param>
         /// <param name="assembly">The assembly.</param>
         public static void InjectFromAssembly(this Machine machine, Assembly assembly)
         {
@@ -35,7 +35,7 @@ namespace Embers.Host
         /// <summary>
         /// Injects all host functions from the calling assembly.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="machine">The machine.</param>
         public static void InjectFromCallingAssembly(this Machine machine)
         {
             InjectFromAssembly(machine, Assembly.GetCallingAssembly());
