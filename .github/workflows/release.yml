@@ -43,6 +43,22 @@ jobs:
             -p:PackageVersion=$version `
             -o ./artifacts
 
+      - name: List artifacts
+        shell: pwsh
+        run: Get-ChildItem -Path ./artifacts -Force | Format-Table -AutoSize
+
       - name: Publish to NuGet
         shell: pwsh
-        run: dotnet nuget push ./artifacts/*.nupkg --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+        run: |
+          $packages = Get-ChildItem -Path "$PWD/artifacts" -Filter "*.nupkg" -File -ErrorAction SilentlyContinue
+      
+          if (-not $packages -or $packages.Count -eq 0) {
+            Write-Host "Contents of artifacts folder:"
+            Get-ChildItem -Path "$PWD/artifacts" -Recurse -Force -ErrorAction SilentlyContinue | Format-Table -AutoSize
+            throw "No .nupkg files found in ./artifacts"
+          }
+      
+          foreach ($p in $packages) {
+            Write-Host "Pushing $($p.FullName)"
+            dotnet nuget push "$($p.FullName)" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+          }
