@@ -40,7 +40,7 @@ The following section is primarily useful for contributors or developers extendi
 
 ```mermaid
 flowchart TD
-    A[Ruby-like Script]
+    A[Embers Script]
     B[Lexer<br/>Embers.Compiler.Lexer]
     C[Parser<br/>Embers.Compiler.Parser]
     D[Expression Tree<br/>IExpression Instances]
@@ -195,20 +195,6 @@ Supports:
 **Note**:
 Availability of .NET types depends on the configured type access policy.
 
-## Build & Test
-
-### Build
-
-```bash
-dotnet build
-```
-
-### Run Tests
-
-```bash
-dotnet test Embers.Tests
-```
-
 ---
 
 ## Security Configuration
@@ -323,7 +309,7 @@ Embers enables you to define host-side .NET methods as callable functions within
 
 ### Define a Host Function
 
-To define a Ruby-callable host function:
+To define an Embers-callable host function:
 
 1. Inherit from `HostFunction` (defined in `Embers.Host.HostFunction`)
 2. Decorate the class with `[HostFunction(...)]` and provide one or more Embers-visible names
@@ -477,13 +463,27 @@ For more details and if you would like to help build on Embers thorugh contribut
 
 ---
 
+## Build & Test
+
+### Build
+
+```bash
+dotnet build
+```
+
+### Run Tests
+
+```bash
+dotnet test Embers.Tests
+```
+
+---
+
 ## Practical Use Cases
 
 Embers is designed for embedding into diverse .NET applications. For in-depth examples, see [Examples](Examples.md)
 
-## Contributing
-
-All public methods must have test coverage. PRs must include unit tests for new functionality.
+---
 
 ## License
 
