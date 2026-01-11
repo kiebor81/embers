@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Build Release
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     
     steps:
     - uses: actions/checkout@v4
@@ -20,6 +20,9 @@ jobs:
       with:
         dotnet-version: '9.0.x'
     
+    - name: Configure git to handle line endings
+      run: git config --global core.autocrlf false
+    
     - name: Restore dependencies
       run: dotnet restore
     
@@ -27,7 +30,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     
     - name: Run tests
-      run: dotnet test --configuration Release --no-build --verbosity normal
+      run: dotnet test --configuration Release --no-build --verbosity normal --logger "console;verbosity=detailed"
     
     - name: Pack NuGet package
       run: dotnet pack Embers/Embers.csproj --configuration Release --output ./nuget
