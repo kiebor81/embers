@@ -1,5 +1,3 @@
-using Embers.Functions;
-using Embers.Language;
 using Embers.StdLib;
 
 namespace Embers.Tests.Expressions

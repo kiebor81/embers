@@ -1,0 +1,41 @@
+using Embers.Language;
+
+namespace Embers.StdLib.Ranges
+{
+    [StdLib("include?", TargetType = "Range")]
+    public class IncludeFunction : StdFunction
+    {
+        public override object Apply(DynamicObject self, Context context, IList<object> values)
+        {
+            if (values.Count != 2)
+                throw new Exceptions.ArgumentError($"wrong number of arguments (given {values.Count - 1}, expected 1)");
+
+            var range = values[0] as Language.Range;
+            if (range == null)
+                throw new Exceptions.TypeError("range must be a Range");
+
+            if (values[1] is not int testValue)
+                return false;
+
+            // Get first and last values from range
+            int first = 0;
+            int last = 0;
+            bool hasValues = false;
+
+            foreach (var value in range)
+            {
+                if (!hasValues)
+                {
+                    first = value;
+                    hasValues = true;
+                }
+                last = value;
+            }
+
+            if (!hasValues)
+                return false;
+
+            return testValue >= first && testValue <= last;
+        }
+    }
+}

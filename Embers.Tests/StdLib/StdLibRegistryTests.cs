@@ -1,6 +1,5 @@
 using Embers.Language;
 using Embers.StdLib.Arrays;
-using Embers.StdLib.Strings;
 
 namespace Embers.Tests.StdLib
 {

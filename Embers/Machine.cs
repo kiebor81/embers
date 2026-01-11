@@ -55,6 +55,7 @@ namespace Embers
             rootcontext.SetLocalValue("Fixnum", new FixnumClass(this));
             rootcontext.SetLocalValue("Float", new FloatClass(this));
             rootcontext.SetLocalValue("String", new StringClass(this));
+            rootcontext.SetLocalValue("Symbol", new SymbolClass(this));
             rootcontext.SetLocalValue("NilClass", new NilClass(this));
             rootcontext.SetLocalValue("FalseClass", new FalseClass(this));
             rootcontext.SetLocalValue("TrueClass", new TrueClass(this));
@@ -62,6 +63,7 @@ namespace Embers
             rootcontext.SetLocalValue("Hash", new HashClass(this));
             rootcontext.SetLocalValue("Range", new RangeClass(this));
             rootcontext.SetLocalValue("DateTime", new DateTimeClass(this));
+            rootcontext.SetLocalValue("JSON", new JsonClass(this));
 
             rootcontext.Self = objectclass.CreateInstance();
             rootcontext.Self.Class.SetInstanceMethod("require", new RequireFunction(this));

@@ -9,6 +9,8 @@
         private static readonly int hashcode = typeof(Symbol).GetHashCode();
         private readonly string name = name;
 
+        public string Name => name;
+
         public override string ToString()
         {
             return ":" + name;

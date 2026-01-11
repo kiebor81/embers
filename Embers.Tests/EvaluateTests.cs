@@ -2,7 +2,6 @@
 using Embers.Compiler;
 using Embers.Exceptions;
 using Embers.Expressions;
-using Embers.Functions;
 using Embers.Language;
 using Embers.StdLib;
 using Embers.Tests.Classes;

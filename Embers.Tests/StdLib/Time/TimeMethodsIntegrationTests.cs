@@ -1,6 +1,4 @@
-using Embers;
 using Embers.Language;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Embers.Tests.StdLib.Time
 {

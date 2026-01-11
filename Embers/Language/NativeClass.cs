@@ -23,6 +23,7 @@ namespace Embers.Language
         private NativeClass hashclass;
         private NativeClass rangeclass;
         private NativeClass datetimeclass;
+        private NativeClass symbolclass;
 
         public NativeClass(string name, Machine machine)
             : base(null)
@@ -129,6 +130,13 @@ namespace Embers.Language
                 stringclass ??= (NativeClass)machine.RootContext.GetLocalValue("String");
 
                 return stringclass;
+            }
+
+            if (self is Symbol)
+            {
+                symbolclass ??= (NativeClass)machine.RootContext.GetLocalValue("Symbol");
+
+                return symbolclass;
             }
 
             if (self is DateTime)

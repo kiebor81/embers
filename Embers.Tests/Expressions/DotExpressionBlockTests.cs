@@ -1,8 +1,3 @@
-using Embers.Compiler;
-using Embers.Expressions;
-using Embers.Functions;
-using Embers.Language;
-
 namespace Embers.Tests.Expressions
 {
     [TestClass]

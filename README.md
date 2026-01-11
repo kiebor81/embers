@@ -1,17 +1,22 @@
 
 # Embers
 
-**Embers** (Embedded Ruby Script) is a compact Ruby interpreter implemented in C# targeting .NET 9. Designed for embedding, scripting, and lightweight runtime execution, Embers brings the expressive power of Ruby to .NET-based systems.
+**Embers** (Embedded Ruby Script) is a compact, embeddable Ruby-inspired interpreter written in C# for .NET 9. It is designed for applications that need a lightweight, scriptable runtime (e.g. games, tools, or plugin systems) without the overhead of creating and maintaining a complex, custom implementation.
 
-Embers is an experimental runtime, taking inspiration from and building upon the following abandoned projects:
+In a nutshell:
+> *Embers is intended for developers who want a structured scripting language integrated directly into their .NET applications, without outsourcing control to an external runtime.*
+
+Embers is **not** a 1:1 implementation of Ruby. Instead, it provides a deliberately scoped, Ruby-like language with familiar syntax and semantics, prioritising embeddability, extensibility, and host integration over parity-completeness.
+
+Embers is an experimental runtime, inspired by and building upon earlier projects that are no longer actively maintained:
 - [Embers by Joy-less](https://github.com/Joy-less/Embers)
 - [RubySharp by AjLopez](https://github.com/ajlopez/RubySharp)
 
-While a large portion of commonly used functions from Ruby's StdLib are present in the solution, full type binding and implementation is far from complete. Embers' architecture adheres to a strict pattern making it easy to extend, and these features will evolve and mature over time.
+While a large portion of commonly used functions from Ruby's StdLib are present in the solution, full type binding and language coverage are intentionally incomplete; either out of scope or reserved for future development. Embers follows a strict architectural pattern, making it straightforward to extend, with features evolving and maturing as required.
 
 ## Overview
 
-Embers is built around a clean, minimal core with the goal of executing Ruby-style scripts in constrained or embedded environments. The interpreter features:
+Embers is built around a clean, minimal core with the goal of executing Ruby-like scripts in constrained or embedded environments. The interpreter features:
 
 - A recursive descent parser for Ruby-like syntax
 - Lexical analysis via a custom `Lexer`
@@ -23,6 +28,8 @@ Embers is built around a clean, minimal core with the goal of executing Ruby-sty
 ---
 
 ## Design
+
+The following section is primarily useful for contributors or developers extending Embers, or those interested in the architectural patterns and topography of the solution.
 
 ### Execution Flow
 
@@ -90,8 +97,8 @@ graph TD
 ## Projects
 
 - `Embers`: Core interpreter (main focus)
-- `Embers.Console`: Example CLI host for executing `.rb` scripts or launching an interactive REPL
-- `Embers.Tests`: Unit tests covering interpreter functionality
+- `Embers.Console`: Example CLI host for executing embers (`.rb`, `.rs`, `.ers`, `.emb`) scripts or launching an interactive REPL
+- `Embers.Tests`: Unit and integration tests covering Embers' functionality
 
 ## Design Goals
 
@@ -99,7 +106,7 @@ graph TD
 - **Embedding First**: Built to be embedded in other applications, not just run standalone
 - **Ruby-Inspired**: Implements a Ruby-like language subset with idiomatic constructs
 - **Simplicity**: Clear structure with low cognitive overhead for contributors
-- **Performance**: Optimized for fast startup and execution in memory-limited contexts
+- **Performance**: Designed for fast startup and predictable execution in memory-limited contexts
 
 ## Key Components
 
@@ -178,7 +185,7 @@ dotnet test Embers.Tests
 
 ## Security Configuration
 
-Ruby-C# interop is powerful, but allowing any foreign code execution complete and unfettered access to .NET at runtime, can be equally dangerous and allows for potential malicious code injection. To combat this, Embers includes a host-level **type access policy** system to restrict which .NET types and namespaces can be accessed or exposed to the interpreter. This system is defined in `Embers.Security.TypeAccessPolicy` and enforces security through two modes:
+Embers' Ruby-C# interop is powerful, but allowing any foreign code execution complete and unfettered access to .NET at runtime, can be equally dangerous and allows for potential malicious code injection. To combat this, Embers includes a host-level **type access policy** system to restrict which .NET types and namespaces can be accessed or exposed to the interpreter. This system is defined in `Embers.Security.TypeAccessPolicy` and enforces security through two modes:
 
 ### Security Modes
 
@@ -226,7 +233,9 @@ TypeAccessPolicy.Clear();
 
 ### Configuring the Policy
 
-`TypeAccessPolicy` is internal only. The policy is governed by the machine (runtime) instance via the public API:
+`TypeAccessPolicy` is internal only. For embedded, pre-shipped, or user-authored scripts, it is strongly recommended to use `WhitelistOnly` mode.
+
+The policy is governed by the machine (runtime) instance via the public API:
 
 ```csharp
         /// <summary>
@@ -282,7 +291,7 @@ This ensures unregistered types are never exposed to interpreted code under `Whi
 
 ## Building a Custom DSL
 
-Embers enables you to define host-side .NET methods as callable functions within Ruby scripts. This is the foundation for building domain-specific languages (DSLs) tailored to your application's runtime and obscuring your functional code.
+Embers enables you to define host-side .NET methods as callable functions within Ruby-like scripts. This is the foundation for building domain-specific languages (DSLs) tailored to your application's runtime while encapsulating host functionality behind a stable scripting interface.
 
 ### Define a Host Function
 
@@ -352,7 +361,7 @@ puts generate_guid
 
 ## StdLib Function Registration
 
-Embers includes a reflection-based standard library system for automatic function discovery and registration. Functions can be registered as global methods or as instance methods on native types.
+Embers includes a reflection-based standard library system for automatic function discovery and registration. Functions can be registered as global methods or as instance methods on native types (Ruby types mapped onto underlying C# representations).
 
 ### Define a StdLib Function
 
@@ -442,7 +451,9 @@ For more details and if you would like to help build on Embers thorugh contribut
 
 ## Practical Use Cases
 
-Embers is designed for embedding into diverse .NET applications. Here are detailed, real-world scenarios demonstrating how to integrate Embers into your projects:
+Embers is designed for embedding into diverse .NET applications. The following are detailed, real-world scenarios demonstrating how to integrate Embers into your projects. These examples demonstrate advanced embedding scenarios. 
+
+If you're evaluating Embers conceptually, you may wish to skim this section.
 
 ---
 

@@ -1,7 +1,6 @@
 ﻿using Embers.Exceptions;
 using Embers.Security;
 using Embers.StdLib;
-using System.Reflection;
 
 namespace Embers
 {

@@ -940,7 +940,26 @@
                     ParseToken(TokenType.Separator, ",");
 
                 var keyexpression = ParseExpression();
-                ParseToken(TokenType.Operator, "=>");
+                
+                // Check for modern syntax (name: value) or old syntax (key => value)
+                if (TryParseToken(TokenType.Operator, ":"))
+                {
+                    // Modern syntax - convert name to symbol
+                    if (keyexpression is NameExpression nameExpr)
+                    {
+                        keyexpression = new ConstantExpression(new Symbol(nameExpr.Name));
+                    }
+                    else
+                    {
+                        throw new SyntaxError("modern hash syntax (key:) only supports symbol keys");
+                    }
+                }
+                else
+                {
+                    // Old syntax - requires =>
+                    ParseToken(TokenType.Operator, "=>");
+                }
+                
                 var valueexpression = ParseExpression();
 
                 keyexpressions.Add(keyexpression);

@@ -10,6 +10,8 @@ Embers uses a reflection-based system to automatically discover and register sta
 
 ## Creating a New StdLib Function
 
+All StdLib functions should inherit from `StdFunction`, which implements `IFunction` and provides standard behaviour for registration and invocation.
+
 ### Step 1: Create Your Function Class
 
 Create a new class that inherits from `StdFunction` in the appropriate namespace:
@@ -72,7 +74,7 @@ public class AbsFunction : StdFunction
 }
 ```
 
-> **Note**: Use `TargetTypes` (plural) when a function should work on multiple types. Use `TargetType` (singular) for a single type. Both properties are supported for backward compatibility.
+> **Note**: `TargetType` is intended usage (singular) for a single type. `TargetTypes` was introduced later for handling scenarios like numerics where there is high functional overlap. Both properties are supported for backward compatibility. However, new contributions should prefer `TargetTypes` for consistency, even when registering against a single type. `TargetType` may be deprecated in a future release.
 
 ### Supported Target Types
 
@@ -132,7 +134,8 @@ Your function will automatically be discovered and registered when the `Machine`
 
 ## Supporting Blocks
 
-If your function needs to accept blocks (Ruby closures), override `ApplyWithBlock`:
+`ApplyWithBlock` is invoked when the Embers method is called with a block; otherwise, `context.Block` may be null.
+If your function needs to accept blocks (Ruby closures), override `ApplyWithBlock`. Blocks execute synchronously and share the current execution context unless explicitly isolated by the host.
 
 ```csharp
 [StdLib("each", TargetType = "Array")]
@@ -290,7 +293,7 @@ namespace Embers.Tests.StdLib.Numeric
 1. **Discovery**: `StdLibRegistry` uses reflection to find all classes decorated with `[StdLib]` attribute
 2. **Caching**: Methods are cached by target type in a `Dictionary<string, Dictionary<string, Type>>`
 3. **Resolution**: When `DynamicArray.GetMethod(name)` is called, it queries `StdLibRegistry.GetMethod("Array", name)`
-4. **Instantiation**: A new instance of the function class is created on each call
+4. **Instantiation**: Function instances are lightweight and stateless; per-call instantiation simplifies isolation and avoids shared mutable state.
 
 ## Contributing
 
@@ -300,5 +303,5 @@ When contributing new StdLib functions:
 2. Add the `[StdLib]` attribute with the Ruby method name(s)
 3. Specify `TargetType` if it's type-specific
 4. Implement `Apply` (and optionally `ApplyWithBlock`)
-5. Add comprehensive tests
+5. When applicable, tests should also verify that invalid input produces the correct Ruby-style exception (`TypeError`, `ArgumentError`, etc.).
 6. Update this documentation if adding a new category
