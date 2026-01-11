@@ -126,8 +126,28 @@ You can embed Embers in any .NET 9 project:
 
 ```csharp
 var machine = new Machine();
-machine.Execute("puts 'Hello from embedded Ruby!'");
+machine.Execute("puts 'Hello from Embers!'");
 ```
+
+#### Execution Methods
+
+The `Machine` exposes three execution entry points:
+
+- `ExecuteText(string code)`  
+  Parses and executes Embers code directly from a string.
+
+- `ExecuteFile(string path)`  
+  Parses and executes an Embers script from a file on disk.
+
+- `Execute(string input)`  
+  Convenience method that proxies to `ExecuteFile` or `ExecuteText` based on whether the input resolves to an existing file path.
+
+**Note**:  
+`Execute` determines whether to treat its input as a file path using `File.Exists`.
+
+If the input appears to be a file path (e.g. contains path separators, file extensions, or is rooted) but does not resolve to an existing file, `Execute` will throw a `FileNotFoundException` rather than attempting to execute it as code.
+
+> For explicit intent and clarity, prefer calling `ExecuteText` or `ExecuteFile` directly.
 
 ### CLI Usage (Example)
 
@@ -328,7 +348,7 @@ Use `HostFunctionInjector` to automatically discover and register all `[HostFunc
 ```csharp
 Machine machine = new();
 machine.InjectFromCallingAssembly();
-machine.Execute("hello"); // prints "Hello from Embers!"
+machine.ExecuteText("hello"); // prints "Hello from Embers!"
 ```
 
 You can also inject from a specific assembly or all referenced ones if you are following a plugin architecture or have separated your DSL across projects:
@@ -340,7 +360,7 @@ machine.InjectFromReferencedAssemblies();
 
 ### Multiple Names and Composition
 
-You can expose a function under multiple Ruby aliases:
+You can expose a function under multiple aliases:
 
 ```csharp
 [HostFunction("guid", "generate_guid")]
@@ -353,7 +373,7 @@ internal class GuidFunction : HostFunction
 }
 ```
 
-Then from Ruby:
+Then from Embers:
 
 ```ruby
 puts guid
@@ -444,8 +464,8 @@ The `StdLibRegistry` automatically discovers all `[StdLib]` decorated functions 
 ```csharp
 var machine = new Machine();
 // StdLib functions are automatically registered during Machine initialization
-machine.Execute("puts 5.abs");     // => 5
-machine.Execute("puts (-10).abs"); // => 10
+machine.ExecuteText("puts 5.abs");     // => 5
+machine.ExecuteText("puts (-10).abs"); // => 10
 ```
 
 For more details and if you would like to help build on Embers thorugh contributing StdLib functions, see [STDLIB.md](STDLIB.md).
@@ -490,7 +510,7 @@ public partial class RubyGameScript : Node
         
         // Load and execute quest script
         string questScript = FileAccess.Open("res://scripts/quest_01.rb", FileAccess.ModeFlags.Read).GetAsText();
-        embers.Execute(questScript);
+        embers.ExecuteFile(questScript);
     }
 }
 
@@ -562,7 +582,7 @@ end
 
 #### Autoload Integration
 
-Create a Godot autoload singleton for global Ruby scripting:
+Create a Godot autoload singleton for global scripting:
 
 ```csharp
 using Embers;
@@ -596,7 +616,7 @@ public partial class RubyEngine : Node
                 if (fileName.EndsWith(".rb"))
                 {
                     string script = FileAccess.Open($"{directory}{fileName}", FileAccess.ModeFlags.Read).GetAsText();
-                    Machine.Execute(script);
+                    Machine.ExecuteFile(script);
                     GD.Print($"Loaded Ruby autoload: {fileName}");
                 }
                 fileName = dir.GetNext();
@@ -607,7 +627,7 @@ public partial class RubyEngine : Node
     public object CallRubyFunction(string functionName, params object[] args)
     {
         string call = $"{functionName}({string.Join(", ", args.Select(a => $"'{a}'"))})";
-        return Machine.Evaluate(call);
+        return Machine.ExecuteText(call);
     }
 }
 ```
@@ -682,7 +702,7 @@ public class FileOrganizerApp
     
     public void ExecuteUserRule(string ruleName)
     {
-        rubyEngine.Execute($"run_rule('{ruleName}')");
+        rubyEngine.ExecuteText($"run_rule('{ruleName}')");
     }
     
     private void LoadUserScripts()
@@ -699,7 +719,7 @@ public class FileOrganizerApp
                 try
                 {
                     string script = File.ReadAllText(file);
-                    rubyEngine.Execute(script);
+                    rubyEngine.ExecuteFile(script);
                     Console.WriteLine($"Loaded rule: {Path.GetFileName(file)}");
                 }
                 catch (Exception ex)
@@ -857,7 +877,7 @@ public class PluginManager
         }, SecurityMode.WhitelistOnly);
         
         // Isolated context per plugin
-        machine.Execute(File.ReadAllText(pluginPath));
+        machine.ExecuteText(File.ReadAllText(pluginPath));
     }
 }
 ```

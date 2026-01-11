@@ -82,6 +82,43 @@ namespace Embers
         public Context RootContext { get { return rootcontext; } }
 
         /// <summary>
+        /// Short-hand proxy for ExecuteText and ExecuteFile.
+        /// </summary>
+        /// <param name="argument">The executable argument.</param>
+        public object Execute(string argument)
+        {
+            if (File.Exists(argument))
+                return ExecuteFile(argument);
+            
+            // Check if it looks like a file path but doesn't exist
+            if (LooksLikeFilePath(argument))
+                throw new FileNotFoundException($"File not found: {argument}");
+            
+            return ExecuteText(argument);
+        }
+
+        /// <summary>
+        /// Determines if a string looks like a file path (contains path separators or file extensions).
+        /// </summary>
+        private static bool LooksLikeFilePath(string argument)
+        {
+            // Check for path separators
+            if (argument.Contains('/') || argument.Contains('\\'))
+                return true;
+            
+            // Check for common file extensions
+            if (argument.EndsWith(".rb", StringComparison.OrdinalIgnoreCase) ||
+                argument.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                return true;
+            
+            // Check if it's an absolute path (Windows: C:, D:, etc. or Unix: starts with /)
+            if (Path.IsPathRooted(argument))
+                return true;
+            
+            return false;
+        }
+
+        /// <summary>
         /// Executes the text.
         /// </summary>
         /// <param name="text">The text.</param>

@@ -272,5 +272,43 @@ namespace Embers.Tests
             Assert.IsNotNull(result2);
             Assert.AreEqual(42, result2);
         }
+
+        [TestMethod]
+        public void Execute_WithFilePath_ExecutesFile()
+        {
+            Assert.AreEqual(1, machine.Execute("MachineFiles\\SimpleAssign.rb"));
+            Assert.AreEqual(1, machine.RootContext.GetValue("a"));
+        }
+
+        [TestMethod]
+        public void Execute_WithCode_ExecutesText()
+        {
+            var result = machine.Execute("b = 5; b * 2");
+            Assert.AreEqual(10, result);
+            Assert.AreEqual(5, machine.RootContext.GetValue("b"));
+        }
+
+        [TestMethod]
+        public void Execute_WithNonExistentPath_ExecutesAsText()
+        {
+            // If the path doesn't look like a file, it should execute as text
+            var result = machine.Execute("c = 100");
+            Assert.AreEqual(100, result);
+            Assert.AreEqual(100, machine.RootContext.GetValue("c"));
+        }
+
+        [TestMethod]
+        public void Execute_WithNonExistentFilePath_ThrowsFileNotFoundException()
+        {
+            // If it looks like a file path but doesn't exist, throw FileNotFoundException
+            Assert.ThrowsException<FileNotFoundException>(() => machine.Execute("path/to/nonexistent.rb"));
+        }
+
+        [TestMethod]
+        public void Execute_WithNonExistentFilePathBackslash_ThrowsFileNotFoundException()
+        {
+            // Test with Windows-style path separator
+            Assert.ThrowsException<FileNotFoundException>(() => machine.Execute("path\\to\\nonexistent.rb"));
+        }
     }
 }
