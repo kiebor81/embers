@@ -68,7 +68,7 @@ Pull requests that introduce new behaviour without tests will not be accepted.
 When applicable, tests should also verify:
 
 - Error conditions
-- Correct exception types (`TypeError`, `ArgumentError`, etc.) where applicable
+- Correct exception types (`TypeError`, `ArgumentError`, etc.)
 - Boundary cases
 
 Run the full test suite before submitting:
