@@ -198,7 +198,7 @@ Create a Godot autoload singleton for global scripting:
                     return ((long)v).ToString(CultureInfo.InvariantCulture);
 
                 case Variant.Type.Float:
-                    // Ruby wants dot decimal; invariant culture avoids commas.
+                    // Embers uses Ruby-like numeric literals; invariant culture avoids commas.
                     return ((double)v).ToString(CultureInfo.InvariantCulture);
 
                 case Variant.Type.String:
@@ -294,14 +294,14 @@ using System.IO;
 
 public class FileOrganizerApp
 {
-    private Machine rubyEngine;
+    private Machine embersEngine;
     
     public FileOrganizerApp()
     {
-        rubyEngine = new Machine();
+        embersEngine = new Machine();
         
         // Configure security - only allow safe file operations
-        rubyEngine.SetTypeAccessPolicy(new[]
+        embersEngine.SetTypeAccessPolicy(new[]
         {
             "System.IO.File",
             "System.IO.Directory",
@@ -311,7 +311,7 @@ public class FileOrganizerApp
         }, SecurityMode.WhitelistOnly);
         
         // Inject custom DSL functions
-        rubyEngine.InjectFromCallingAssembly();
+        embersEngine.InjectFromCallingAssembly();
         
         // Load user scripts from app data
         LoadUserScripts();
@@ -319,7 +319,7 @@ public class FileOrganizerApp
     
     public void ExecuteUserRule(string ruleName)
     {
-        rubyEngine.ExecuteText($"run_rule('{ruleName}')");
+        embersEngine.ExecuteText($"run_rule('{ruleName}')");
     }
     
     private void LoadUserScripts()
@@ -336,7 +336,7 @@ public class FileOrganizerApp
                 try
                 {
                     string script = File.ReadAllText(file);
-                    rubyEngine.ExecuteFile(script);
+                    embersEngine.ExecuteText(script);
                     Console.WriteLine($"Loaded rule: {Path.GetFileName(file)}");
                 }
                 catch (Exception ex)

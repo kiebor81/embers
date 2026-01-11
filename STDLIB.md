@@ -206,7 +206,7 @@ Embers/
 ### Naming Conventions
 - Function class name: `<MethodName>Function` (e.g., `MapFunction`, `UpcaseFunction`)
 - Namespace: `Embers.StdLib.<Category>` (e.g., `Embers.StdLib.Arrays`)
-- Ruby method name: snake case (e.g., `"to_s"`, `"start_with"`)
+- Ruby-like method name: snake case (e.g., `"to_s"`, `"start_with"`)
 
 ## Testing
 
@@ -300,7 +300,7 @@ namespace Embers.Tests.StdLib.Numeric
 When contributing new StdLib functions:
 
 1. Create your function in the appropriate namespace
-2. Add the `[StdLib]` attribute with the Ruby method name(s)
+2. Add the `[StdLib]` attribute with the Ruby-like method name(s)
 3. Specify `TargetType` if it's type-specific
 4. Implement `Apply` (and optionally `ApplyWithBlock`)
 5. When applicable, tests should also verify that invalid input produces the correct Ruby-style exception (`TypeError`, `ArgumentError`, etc.).
