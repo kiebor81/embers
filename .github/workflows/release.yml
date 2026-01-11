@@ -35,12 +35,6 @@ jobs:
     - name: Extract version
       shell: bash
       run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
-
-    - name: Pack NuGet package
-      run: dotnet pack Embers/Embers.csproj --configuration Release --output ./nuget /p:Version=${{ env.VERSION }}
-    
-    - name: Push to NuGet
-      run: dotnet nuget push ./nuget/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate 2>&1
     
     - name: Publish Embers library
       run: dotnet publish Embers/Embers.csproj --configuration Release --output ./publish/Embers
