@@ -10,3 +10,5 @@ obj/
 **/obj/
 Thumbs.db
 TestResults/
+nuget/
+publish/
