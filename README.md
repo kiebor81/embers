@@ -519,6 +519,32 @@ public partial class RubyGameScript : Node
     }
 }
 
+// Host function for print to gd console
+[HostFunction("gd_print")]
+internal class GdPrintFunction : HostFunction
+{
+    public override object Apply(DynamicObject self, Context context, IList<object> values)
+    {
+        foreach (var value in values)
+        {
+            GD.Print(ToPrintable(value));
+        }
+
+        return null;
+    }
+
+    private static object ToPrintable(object value)
+    {
+        if (value == null)
+            return "nil";
+
+        if (value is Variant v)
+            return v;
+
+        return value.ToString() ?? "nil";
+    }
+}
+
 // Host function for finding nodes
 [HostFunction("find_node")]
 internal class FindNodeFunction : HostFunction
@@ -557,7 +583,7 @@ internal class SpawnEnemyFunction : HostFunction
 ```ruby
 # Dynamic quest behavior
 def on_quest_trigger
-  puts "Quest started!"
+  gd_print "Quest started!"
   
   # Spawn enemies dynamically
   spawn_enemy("goblin", 100, 200)
