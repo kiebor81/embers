@@ -84,7 +84,9 @@ public class AbsFunction : StdFunction
 - `"Fixnum"` - Methods for integers
 - `"Float"` - Methods for floating-point numbers
 - `"Range"` - Methods for ranges
-- Add more as needed...
+- `"Symbol"` - Methods for symbols
+- `"DateTime"` - Methods for date and time
+- `"NilClass"` - Methods for Null
 
 ### Example: Numeric Functions
 
