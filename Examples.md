@@ -6,18 +6,18 @@ The following are detailed, real-world scenarios demonstrating how to integrate 
 
 ### 1. Game Scripting in Godot (Dynamic Node Interaction & Autoloads)
 
-**Use Case**: Enable game designers to script behaviors, quest logic, and NPC interactions in Ruby without recompiling the game.
+**Use Case**: Enable game designers to script behaviors, quest logic, and NPC interactions in Embers without recompiling the game.
 
 #### Dynamic Node Interaction
 
-Expose Godot nodes to Ruby scripts for real-time manipulation:
+Expose Godot nodes to Embers scripts for real-time manipulation:
 
 ```csharp
 using Embers;
 using Embers.Host;
 using Godot;
 
-public partial class RubyGameScript : Node
+public partial class EmbersGameScript : Node
 {
     private Machine embers;
     
@@ -28,7 +28,7 @@ public partial class RubyGameScript : Node
         // Register host functions for node access
         embers.InjectFromCallingAssembly();
         
-        // Pass Godot context to Ruby
+        // Pass Godot context to Embers
         embers.RootContext.SetLocalValue("scene", GetTree().Root);
         embers.RootContext.SetLocalValue("player", GetNode<CharacterBody2D>("Player"));
         
@@ -102,7 +102,7 @@ internal class SpawnEnemyFunction : HostFunction
 ```ruby
 # Dynamic quest behavior
 def on_quest_trigger
-  gd_print "Quest started!"
+  gd_print("Quest started!")
   
   # Spawn enemies dynamically
   spawn_enemy("goblin", 100, 200)
@@ -125,7 +125,7 @@ def enemy_think(enemy)
     enemy.Velocity = direction * 50
   else
     # Patrol
-    enemy.Velocity = System::Vector2.new(0, 0)
+    enemy.Velocity = Godot::Vector2.new(0, 0)
   end
 end
 ```
@@ -166,7 +166,7 @@ Create a Godot autoload singleton for global scripting:
                     {
                         string script = FileAccess.Open($"{directory}{fileName}", FileAccess.ModeFlags.Read).GetAsText();
                         LoadedScripts[fileName.Replace(".rb", "")] = script;
-                        GD.Print($"Loaded Ruby autoload: {fileName}");
+                        GD.Print($"Loaded Embers autoload: {fileName}");
                     }
                     fileName = dir.GetNext();
                 }
@@ -217,7 +217,7 @@ Create a Godot autoload singleton for global scripting:
                     }
 
                 default:
-                    // Fallback: pass as string literal so Ruby always parses
+                    // Fallback: pass as string literal so Embers always parses
                     return $"\"{EscapeRubyString(v.ToString())}\"";
             }
         }
@@ -252,7 +252,7 @@ Create a Godot autoload singleton for global scripting:
     }
 ```
 
-**Global Ruby Script** (`/autoloads/game_utils.rb`):
+**Global Script** (`/autoloads/game_utils.rb`):
 
 ```ruby
 # Global utility functions available throughout the game
@@ -270,10 +270,12 @@ print("Damage dealt: %s" % damage);
 ```
 
 ```c#
-var embers_engine = GetNode<RubyEngine>("/root/RubyEngine");
+var embers_engine = GetNode<Runtime>("/root/Runtime");
 var damage = embers_engine.Execute("calculate_damage", [10, 5, 25])
 GD.Print($"Damage dealt: {damage}");
 ```
+
+Consuming scripts from a `user://` location with functionality exposed only via `HostFunction` effectively creates a user facing scripting model that can be used for player content modification and creation.
 
 ---
 
