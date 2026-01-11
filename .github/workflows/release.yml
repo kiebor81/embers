@@ -29,6 +29,9 @@ jobs:
       - name: Restore
         run: dotnet restore Embers/Embers.csproj
 
+      - name: Build (Embers core)
+        run: dotnet build Embers/Embers.csproj --configuration Release
+
       - name: Pack (Embers core)
         shell: pwsh
         run: |
