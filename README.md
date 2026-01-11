@@ -6,7 +6,7 @@
 In a nutshell:
 > *Embers is intended for developers who want a structured scripting language integrated directly into their .NET applications, without outsourcing control to an external runtime.*
 
-Embers is **not** a 1:1 implementation of Ruby. Instead, it provides a deliberately scoped, Ruby-like language with familiar syntax and semantics, prioritising embeddability, extensibility, and host integration over parity-completeness.
+Embers is **not** a 1:1 implementation of Ruby in .NET. It is not IronRuby or a drop-in replacement for existing Ruby runtimes. Instead, it provides a deliberately scoped, Ruby-like language with familiar syntax and semantics, prioritising embeddability, extensibility, and host integration over parity-completeness.
 
 Embers is an experimental runtime, inspired by and building upon earlier projects that are no longer actively maintained:
 - [Embers by Joy-less](https://github.com/Joy-less/Embers)
