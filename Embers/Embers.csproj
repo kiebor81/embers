@@ -8,17 +8,21 @@
   </PropertyGroup>
 
 	<PropertyGroup>
+		<AssemblyName>Embers</AssemblyName>
 		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-		<PackageId>Embers</PackageId>
-		<Version>1.0.0</Version>
+		<PackageId>Embers.Runtime</PackageId>
+		<Version>1.0.1</Version>
 		<Authors>Your Name</Authors>
 		<Description>Embedded Ruby Script - A Ruby-inspired interpreter for .NET</Description>
 		<PackageProjectUrl>https://github.com/kiebor81/embers</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/kiebor81/embers</RepositoryUrl>
-		<License>LICENSE</License>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Folder Include="StdLib\Time\" />
+		<None Include="..\README.md"
+				Pack="true"
+				PackagePath="README.md" />
 	</ItemGroup>
 </Project>
