@@ -6,6 +6,8 @@ The following are detailed, real-world scenarios demonstrating how to integrate 
 
 ### 1. Game Scripting in Godot (Dynamic Node Interaction & Autoloads)
 
+For game engines like Godot and Unity, Embers doesn't give you Ruby syntax to replace built-in language support, but it does give you a boundary between developer code and user code.
+
 **Use Case**: Enable game designers to script behaviors, quest logic, and NPC interactions in Embers without recompiling the game.
 
 #### Dynamic Node Interaction
@@ -34,7 +36,7 @@ public partial class EmbersGameScript : Node
         
         // Load and execute quest script
         string questScript = FileAccess.Open("res://scripts/quest_01.rb", FileAccess.ModeFlags.Read).GetAsText();
-        embers.ExecuteFile(questScript);
+        embers.Execute(questScript);
     }
 }
 
@@ -97,7 +99,7 @@ internal class SpawnEnemyFunction : HostFunction
 }
 ```
 
-**Ruby Quest Script** (`quest_01.rb`):
+**Embers Quest Script** (`quest_01.rb`):
 
 ```ruby
 # Dynamic quest behavior
