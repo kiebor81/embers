@@ -1,0 +1,59 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v1.0.0
+
+jobs:
+  build:
+    name: Build Release
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build solution
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Run tests
+      run: dotnet test --configuration Release --no-build --verbosity normal
+    
+    - name: Pack NuGet package
+      run: dotnet pack Embers/Embers.csproj --configuration Release --output ./nuget
+    
+    - name: Push to NuGet
+      run: dotnet nuget push ./nuget/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+    
+    - name: Publish Embers library
+      run: dotnet publish Embers/Embers.csproj --configuration Release --output ./publish/Embers
+    
+    - name: Publish Embers.Console
+      run: dotnet publish Embers.Console/Embers.Console.csproj --configuration Release --output ./publish/Embers.Console
+    
+    - name: Create artifacts
+      run: |
+        mkdir -p artifacts
+        cd publish
+        tar -czf ../artifacts/embers-${{ github.ref_name }}.tar.gz Embers/
+        tar -czf ../artifacts/embers-console-${{ github.ref_name }}.tar.gz Embers.Console/
+        cd ..
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: artifacts/*
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

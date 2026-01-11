@@ -9,6 +9,13 @@
 
 	<PropertyGroup>
 		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+		<PackageId>Embers</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>Your Name</Authors>
+		<Description>Embedded Ruby Script - A Ruby-inspired interpreter for .NET</Description>
+		<PackageProjectUrl>https://github.com/kiebor81/embers</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/kiebor81/embers</RepositoryUrl>
+		<License>LICENSE</License>
 	</PropertyGroup>
 
 	<ItemGroup>
