@@ -33,10 +33,10 @@ jobs:
       run: dotnet test --configuration Release --no-build --verbosity normal --logger "console;verbosity=detailed"
     
     - name: Pack NuGet package
-      run: dotnet pack Embers/Embers.csproj --configuration Release --output ./nuget
+      run: dotnet pack Embers/Embers.csproj --configuration Release --output ./nuget /p:Version=${{ github.ref_name }}
     
     - name: Push to NuGet
-      run: dotnet nuget push ./nuget/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push ./nuget/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate 2>&1
     
     - name: Publish Embers library
       run: dotnet publish Embers/Embers.csproj --configuration Release --output ./publish/Embers
