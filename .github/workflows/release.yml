@@ -32,8 +32,12 @@ jobs:
     - name: Run tests
       run: dotnet test --configuration Release --no-build --verbosity normal --logger "console;verbosity=detailed"
     
+    - name: Extract version
+      shell: bash
+      run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+
     - name: Pack NuGet package
-      run: dotnet pack Embers/Embers.csproj --configuration Release --output ./nuget /p:Version=${{ github.ref_name }}
+      run: dotnet pack Embers/Embers.csproj --configuration Release --output ./nuget /p:Version=${{ env.VERSION }}
     
     - name: Push to NuGet
       run: dotnet nuget push ./nuget/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate 2>&1
