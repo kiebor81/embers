@@ -1,5 +1,10 @@
-
 # Embers
+
+[![NuGet](https://img.shields.io/nuget/v/Embers.Runtime.svg)](https://www.nuget.org/packages/Embers.Runtime)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Build](https://github.com/kiebor81/embers/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/kiebor81/embers/actions/workflows/build-and-test.yml)
+[![Release](https://github.com/kiebor81/embers/actions/workflows/release.yml/badge.svg)](https://github.com/kiebor81/embers/actions/workflows/release.yml)
+
 
 **Embers** (Embedded Ruby Script) is a compact, embeddable Ruby-inspired interpreter written in C# for .NET 9. It is designed for applications that need a lightweight, scriptable runtime (e.g. games, tools, or plugin systems) without the overhead of creating and maintaining a complex, custom implementation.
 
