@@ -167,6 +167,9 @@ Supports:
 - Instance methods on native types (e.g., `5.abs`, `3.14.ceil`, `now.year`)
 - C# interop via direct .NET type access (e.g., `System.DateTime.Now`)
 
+**Note**
+Availability of .NET types depends on the configured type access policy.
+
 ## Build & Test
 
 ### Build
