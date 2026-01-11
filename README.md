@@ -167,7 +167,7 @@ Supports:
 - Instance methods on native types (e.g., `5.abs`, `3.14.ceil`, `now.year`)
 - C# interop via direct .NET type access (e.g., `System.DateTime.Now`)
 
-**Note**
+**Note**:
 Availability of .NET types depends on the configured type access policy.
 
 ## Build & Test
@@ -331,7 +331,7 @@ machine.InjectFromCallingAssembly();
 machine.Execute("hello"); // prints "Hello from Embers!"
 ```
 
-You can also inject from a specific assembly or all referenced ones if you are follwing a plugin architecture or have separated your DSL across projects:
+You can also inject from a specific assembly or all referenced ones if you are following a plugin architecture or have separated your DSL across projects:
 
 ```csharp
 machine.InjectFromAssembly(typeof(MyDSLClass).Assembly);
