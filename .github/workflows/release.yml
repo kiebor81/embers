@@ -1,0 +1,47 @@
+name: Release (NuGet)
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build_and_test:
+    uses: ./.github/workflows/build-and-test.yml
+
+  publish:
+    runs-on: windows-latest
+    needs: build_and_test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore
+        run: dotnet restore Embers/Embers.csproj
+
+      - name: Pack (Embers core)
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $version = $tag.TrimStart("v")
+          dotnet pack Embers/Embers.csproj `
+            --configuration Release `
+            --no-build `
+            -p:PackageVersion=$version `
+            -o ./artifacts
+
+      - name: Publish to NuGet
+        run: dotnet nuget push "./artifacts/*.nupkg" `
+          --api-key "${{ secrets.NUGET_API_KEY }}" `
+          --source "https://api.nuget.org/v3/index.json" `
+          --skip-duplicate
