@@ -590,54 +590,124 @@ end
 Create a Godot autoload singleton for global scripting:
 
 ```csharp
-using Embers;
-using Godot;
+    [GlobalClass]
+    public partial class Runtime : Node
+    {
+        private Machine Machine { get; set; }
 
-public partial class RubyEngine : Node
-{
-    public Machine Machine { get; private set; }
-    
-    public override void _Ready()
-    {
-        Machine = new Machine();
-        Machine.InjectFromCallingAssembly();
-        
-        // Load global scripts from autoload directory
-        LoadGlobalScripts("res://ruby/autoload/");
-        
-        GD.Print("Ruby Engine initialized");
-    }
-    
-    private void LoadGlobalScripts(string directory)
-    {
-        var dir = DirAccess.Open(directory);
-        if (dir != null)
+        private System.Collections.Generic.Dictionary<string, string> LoadedScripts { get; set; } = [];
+
+        private string ScriptContext => string.Join("\n", LoadedScripts.Values);
+
+        public override void _Ready()
         {
-            dir.ListDirBegin();
-            string fileName = dir.GetNext();
-            
-            while (fileName != "")
+            Machine = new Machine();
+            Machine.InjectFromCallingAssembly();
+            LoadGlobalScripts("res://autoloads/");
+            GD.Print("Embers Engine initialized");
+        }
+
+        private void LoadGlobalScripts(string directory)
+        {
+            var dir = DirAccess.Open(directory);
+            if (dir != null)
             {
-                if (fileName.EndsWith(".rb"))
+                dir.ListDirBegin();
+                string fileName = dir.GetNext();
+
+                while (fileName != "")
                 {
-                    string script = FileAccess.Open($"{directory}{fileName}", FileAccess.ModeFlags.Read).GetAsText();
-                    Machine.ExecuteFile(script);
-                    GD.Print($"Loaded Ruby autoload: {fileName}");
+                    if (fileName.EndsWith(".rb"))
+                    {
+                        string script = FileAccess.Open($"{directory}{fileName}", FileAccess.ModeFlags.Read).GetAsText();
+                        LoadedScripts[fileName.Replace(".rb", "")] = script;
+                        GD.Print($"Loaded Ruby autoload: {fileName}");
+                    }
+                    fileName = dir.GetNext();
                 }
-                fileName = dir.GetNext();
             }
         }
+
+        public Variant Execute(string functionName, Array args)
+        {
+            var embersArgs = string.Join(", ", args.Select(ToEmbersLiteral));
+            string call =
+                $"{ScriptContext}\n{functionName}({embersArgs})";
+
+            return ToGodotVariant(Machine.Execute(call));
+        }
+
+        private static string ToEmbersLiteral(Variant v)
+        {
+            switch (v.VariantType)
+            {
+                case Variant.Type.Nil:
+                    return "nil";
+
+                case Variant.Type.Bool:
+                    return (bool)v ? "true" : "false";
+
+                case Variant.Type.Int:
+                    return ((long)v).ToString(CultureInfo.InvariantCulture);
+
+                case Variant.Type.Float:
+                    // Ruby wants dot decimal; invariant culture avoids commas.
+                    return ((double)v).ToString(CultureInfo.InvariantCulture);
+
+                case Variant.Type.String:
+                    return $"\"{EscapeRubyString((string)v)}\"";
+
+                case Variant.Type.Array:
+                    {
+                        var arr = (Array)v;
+                        return "[" + string.Join(", ", arr.Select(ToEmbersLiteral)) + "]";
+                    }
+
+                case Variant.Type.Dictionary:
+                    {
+                        var dict = (Dictionary)v;
+                        // Ruby hash: { "k" => v, "k2" => v2 }
+                        var pairs = dict.Select(kv => $"{ToEmbersLiteral(kv.Key)} => {ToEmbersLiteral(kv.Value)}");
+                        return "{ " + string.Join(", ", pairs) + " }";
+                    }
+
+                default:
+                    // Fallback: pass as string literal so Ruby always parses
+                    return $"\"{EscapeRubyString(v.ToString())}\"";
+            }
+        }
+
+        private static string EscapeRubyString(string s) =>
+            s.Replace("\\", "\\\\")
+             .Replace("\"", "\\\"")
+             .Replace("\n", "\\n")
+             .Replace("\r", "\\r")
+             .Replace("\t", "\\t");
+
+        private static Variant ToGodotVariant(object? value)
+        {
+            if (value == null)
+                return new Variant(); // Return default-constructed Variant for 'nil'
+
+            return value switch
+            {
+                bool b => b,
+                int i => i,
+                long l => (double)l,
+                float f => (double)f,
+                double d => d,
+                string s => s,
+
+                // Godot types (if Embers ever returns them from a Host Function)
+                GodotObject o => o,
+                _ => value.ToString() ?? ""
+            };
+        }
+
     }
-    
-    public object CallRubyFunction(string functionName, params object[] args)
-    {
-        string call = $"{functionName}({string.Join(", ", args.Select(a => $"'{a}'"))})";
-        return Machine.ExecuteText(call);
-    }
-}
 ```
 
-**Global Ruby Script** (`ruby/autoload/game_utils.rb`):
+**Global Ruby Script** (`/autoloads/game_utils.rb`):
 
 ```ruby
 # Global utility functions available throughout the game
@@ -645,25 +715,18 @@ def calculate_damage(attacker_level, defender_level, base_damage)
   multiplier = 1.0 + ((attacker_level - defender_level) * 0.1)
   (base_damage * multiplier).to_i.clamp(1, 9999)
 end
-
-def format_gold(amount)
-  "#{amount.to_s.reverse.scan(/.{1,3}/).join(',').reverse}g"
-end
-
-def random_loot(enemy_type, player_luck)
-  items = ["Potion", "Gold", "Sword", "Shield"]
-  chance = rand(100) + player_luck
-  
-  return nil if chance < 30
-  return items.sample
-end
 ```
 
-Then call from any C# script:
+Then call from any gdscript:
 
-```csharp
-var rubyEngine = GetNode<RubyEngine>("/root/RubyEngine");
-var damage = rubyEngine.CallRubyFunction("calculate_damage", 10, 5, 25);
+```gdscript
+var damage = Embers.Execute("calculate_damage", [10, 5, 25])
+print("Damage dealt: %s" % damage);
+```
+
+```c#
+var embers_engine = GetNode<RubyEngine>("/root/RubyEngine");
+var damage = embers_engine.Execute("calculate_damage", [10, 5, 25])
 GD.Print($"Damage dealt: {damage}");
 ```
 
