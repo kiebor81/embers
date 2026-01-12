@@ -577,14 +577,13 @@ abs(-5)      # => 5 (global)
 
 Embers maps Ruby types to C# types through `NativeClass`:
 
-- **Fixnum** → `int`
+- **Fixnum** → `int` / `long`
 - **Float** → `double`
 - **String** → `string`
 - **Array** → `List<object>`
 - **Hash** → `Dictionary<object, object>`
 - **DateTime** → `System.DateTime`
 - **NilClass** → `null`
-- **TrueClass** / **FalseClass** → `bool`
 - **Range** → `Range`
 
 ### Automatic Discovery
