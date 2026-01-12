@@ -31,7 +31,7 @@ namespace Embers.Expressions
             if (callable is IFunction function)
                 return function.Apply(context.Self, context, values);
             if (callable is Delegate del)
-                return del.DynamicInvoke(values.ToArray());
+                return del.DynamicInvoke([.. values]);
             if (callable is Block block)
                 return block.Apply(values);
 

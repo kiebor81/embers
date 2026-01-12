@@ -40,7 +40,7 @@ namespace Embers.Annotations
                         var applyMethod = type.GetMethod("Apply", 
                             BindingFlags.Public | BindingFlags.Instance,
                             null,
-                            new[] { typeof(DynamicObject), typeof(Context), typeof(IList<object>) },
+                            [typeof(DynamicObject), typeof(Context), typeof(IList<object>)],
                             null);
 
                         if (applyMethod != null)

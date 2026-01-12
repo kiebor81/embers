@@ -154,21 +154,7 @@ If the input appears to be a file path (e.g. contains path separators, file exte
 
 > For explicit intent and clarity, prefer calling `ExecuteText` or `ExecuteFile` directly.
 
-### CLI Usage (Example)
-
-From `Embers.Console`:
-
-```bash
-dotnet run --project Embers.Console "script.rb"
-```
-
-Or launch the REPL:
-
-```bash
-dotnet run --project Embers.Console
-```
-
-Exit the REPL using `exit`, `quit`, or `bye` commands.
+---
 
 ## Script Syntax
 
@@ -199,7 +185,7 @@ Availability of .NET types depends on the configured type access policy.
 
 ## Security Configuration
 
-Embers' Ruby-C# interop is powerful, but allowing any foreign code execution complete and unfettered access to .NET at runtime, can be equally dangerous and allows for potential malicious code injection. To combat this, Embers includes a host-level **type access policy** system to restrict which .NET types and namespaces can be accessed or exposed to the interpreter. This system is defined in `Embers.Security.TypeAccessPolicy` and enforces security through two modes:
+Embers' C# interop is powerful, but allowing any foreign code execution complete and unfettered access to .NET at runtime, can be equally dangerous and allows for potential malicious code injection. To combat this, Embers includes a host-level **type access policy** system to restrict which .NET types and namespaces can be accessed or exposed to the interpreter. This system is defined in `Embers.Security.TypeAccessPolicy` and enforces security through two modes:
 
 ### Security Modes
 
@@ -511,6 +497,19 @@ internal class HelpFunction : HostFunction
 
 This mechanism is intended to enable rich developer tooling without coupling Embers to any specific user interface or documentation format.
 
+#### Exclude From Discovery
+
+To exclude a function from this mechanism, `ScannerIgnoreAttribute` can be applied to the function class.
+
+e.g.
+
+```csharp
+[HostFunction("awesome"), ScannerIgnore]
+internal class AwesomeFunction : HostFunction { }
+```
+
+This is useful for internal, experimental, iterative, or implementation-detail functions that should not appear in tooling output.
+
 ---
 
 ## StdLib Function Registration
@@ -600,22 +599,6 @@ machine.ExecuteText("puts (-10).abs"); // => 10
 ```
 
 For more details and if you would like to help build on Embers thorugh contributing StdLib functions, see [STDLIB.md](STDLIB.md).
-
----
-
-## Build & Test
-
-### Build
-
-```bash
-dotnet build
-```
-
-### Run Tests
-
-```bash
-dotnet test Embers.Tests
-```
 
 ---
 

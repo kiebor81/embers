@@ -10,7 +10,7 @@ namespace Embers.Console.Injected
         {
             var guid = Guid.NewGuid();
             return Convert.ToBase64String(guid.ToByteArray())
-                .Replace("/", "_").Replace("+", "-").Substring(0, 22);
+                .Replace("/", "_").Replace("+", "-")[..22];
         }
     }
 

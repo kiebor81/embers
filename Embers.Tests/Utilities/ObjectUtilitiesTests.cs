@@ -44,11 +44,7 @@ namespace Embers.Tests.Utilities
         [TestMethod]
         public void GetIndexedValuesFromList()
         {
-            List<int> list = new();
-
-            list.Add(1);
-            list.Add(2);
-            list.Add(3);
+            List<int> list = [1, 2, 3];
 
             Assert.AreEqual(1, ObjectUtilities.GetIndexedValue(list, [0]));
             Assert.AreEqual(2, ObjectUtilities.GetIndexedValue(list, [1]));
@@ -58,11 +54,12 @@ namespace Embers.Tests.Utilities
         [TestMethod]
         public void GetIndexedValuesFromDictionary()
         {
-            Dictionary<string, int> numbers = new();
-
-            numbers["one"] = 1;
-            numbers["two"] = 2;
-            numbers["three"] = 3;
+            Dictionary<string, int> numbers = new()
+            {
+                ["one"] = 1,
+                ["two"] = 2,
+                ["three"] = 3
+            };
 
             Assert.AreEqual(1, ObjectUtilities.GetIndexedValue(numbers, ["one"]));
             Assert.AreEqual(2, ObjectUtilities.GetIndexedValue(numbers, ["two"]));
@@ -84,7 +81,7 @@ namespace Embers.Tests.Utilities
         [TestMethod]
         public void SetIndexedValuesInList()
         {
-            List<int> list = new();
+            List<int> list = [];
 
             ObjectUtilities.SetIndexedValue(list, [0], 1);
             ObjectUtilities.SetIndexedValue(list, [1], 2);
@@ -99,7 +96,7 @@ namespace Embers.Tests.Utilities
         [TestMethod]
         public void SetIndexedValuesInDictionary()
         {
-            Dictionary<string, int> dictionary = new();
+            Dictionary<string, int> dictionary = [];
 
             ObjectUtilities.SetIndexedValue(dictionary, ["one"], 1);
             ObjectUtilities.SetIndexedValue(dictionary, ["two"], 2);

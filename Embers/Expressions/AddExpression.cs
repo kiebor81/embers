@@ -11,13 +11,13 @@
             if (leftvalue is string || rightvalue is string)
                 return leftvalue.ToString() + rightvalue.ToString();
 
-            if (leftvalue is long)
+            if (leftvalue is long v)
                 if (rightvalue is long)
-                    return (long)leftvalue + (long)rightvalue;
+                    return v + (long)rightvalue;
                 else if (rightvalue is int)
-                    return (long)leftvalue + (int)rightvalue;
+                    return v + (int)rightvalue;
                 else
-                    return (long)leftvalue + (double)rightvalue;
+                    return v + (double)rightvalue;
             else if (leftvalue is int)
                 if (rightvalue is long)
                     return (int)leftvalue + (long)rightvalue;

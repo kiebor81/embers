@@ -114,9 +114,11 @@ namespace Embers.Tests.Expressions
         public void GetIndexedDictionaryEntry()
         {
             Machine machine = new();
-            var hash = new DynamicHash();
-            hash[new Symbol("one")] = 1;
-            hash[new Symbol("two")] = 2;
+            var hash = new DynamicHash
+            {
+                [new Symbol("one")] = 1,
+                [new Symbol("two")] = 2
+            };
 
             IndexedExpression expression = new(new ConstantExpression(hash), new ConstantExpression(new Symbol("one")));
 
@@ -130,9 +132,11 @@ namespace Embers.Tests.Expressions
         public void GetIndexedDictionaryEntryAsNil()
         {
             Machine machine = new();
-            var hash = new DynamicHash();
-            hash[new Symbol("one")] = 1;
-            hash[new Symbol("two")] = 2;
+            var hash = new DynamicHash
+            {
+                [new Symbol("one")] = 1,
+                [new Symbol("two")] = 2
+            };
 
             IndexedExpression expression = new(new ConstantExpression(hash), new ConstantExpression(new Symbol("three")));
 

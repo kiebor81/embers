@@ -16,7 +16,7 @@ namespace Embers.StdLib.Strings
                 throw new ArgumentError("lines expects a string argument");
 
             if (values[0] is string s)
-                return s.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None).ToList();
+                return s.Split(["\r\n", "\n", "\r"], StringSplitOptions.None).ToList();
 
             throw new TypeError("lines expects a string");
         }

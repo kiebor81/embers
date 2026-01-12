@@ -60,7 +60,7 @@ namespace Embers.Expressions
                 
                 // Check for trailing block in arguments
                 IFunction? nativeBlock = null;
-                var nativeArgList = arguments != null ? arguments.ToList() : new List<IExpression>();
+                var nativeArgList = arguments != null ? arguments.ToList() : [];
                 
                 // Only extract block for StdLib methods; manual methods still get block in values
                 if (isStdLibMethod && nativeArgList.Count > 0 && nativeArgList[^1] is BlockExpression nativeBlockExpr)

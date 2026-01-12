@@ -8,14 +8,14 @@ namespace Embers.StdLib
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public sealed class StdLibAttribute(params string[] names) : Attribute
     {
-        public string[] Names { get; } = names ?? Array.Empty<string>();
+        public string[] Names { get; } = names ?? [];
 
         /// <summary>
         /// Target type names for automatic registration (e.g., "Array", "String", "Fixnum", "Float").
         /// If null or empty array, the function is registered globally on the root context.
         /// Multiple types can be specified for functions that work on multiple types (e.g., numeric functions).
         /// </summary>
-        public string[] TargetTypes { get; set; } = Array.Empty<string>();
+        public string[] TargetTypes { get; set; } = [];
 
         /// <summary>
         /// Legacy single TargetType property for backward compatibility.
@@ -24,7 +24,7 @@ namespace Embers.StdLib
         public string? TargetType 
         { 
             get => TargetTypes.Length > 0 ? TargetTypes[0] : null;
-            set => TargetTypes = value != null ? new[] { value } : Array.Empty<string>();
+            set => TargetTypes = value != null ? [value] : [];
         }
     }
 }

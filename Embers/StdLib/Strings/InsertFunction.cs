@@ -19,7 +19,7 @@ namespace Embers.StdLib.Strings
             {
                 if (index < 0 || index > s.Length)
                     throw new ArgumentError("insert: index out of bounds");
-                return s.Substring(0, index) + sub + s.Substring(index);
+                return s[..index] + sub + s[index..];
             }
 
             throw new TypeError("insert expects a string, integer, and string");

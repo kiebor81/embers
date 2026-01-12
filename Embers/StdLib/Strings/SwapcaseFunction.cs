@@ -16,7 +16,7 @@ namespace Embers.StdLib.Strings
                 throw new ArgumentError("swapcase expects a string argument");
 
             if (values[0] is string s)
-                return new string(s.Select(c => char.IsUpper(c) ? char.ToLower(c) : char.ToUpper(c)).ToArray());
+                return new string([.. s.Select(c => char.IsUpper(c) ? char.ToLower(c) : char.ToUpper(c))]);
 
             throw new TypeError("swapcase expects a string");
         }

@@ -24,11 +24,11 @@ namespace Embers.StdLib.Strings
 
             // If no separator is provided (only the string itself in values[0]), split on whitespace
             if (values.Count == 1)
-                return s.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                return s.Split([' ', '\t', '\n', '\r'], StringSplitOptions.RemoveEmptyEntries).ToList();
 
             // Otherwise, use the provided separator
             var separator = values[1]?.ToString() ?? "";
-            return s.Split(new[] { separator }, StringSplitOptions.None).ToList();
+            return s.Split([separator], StringSplitOptions.None).ToList();
         }
     }
 }

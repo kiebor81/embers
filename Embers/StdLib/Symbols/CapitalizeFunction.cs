@@ -21,7 +21,7 @@ namespace Embers.StdLib.Symbols
             if (string.IsNullOrEmpty(symbol.Name))
                 return symbol;
 
-            var capitalized = char.ToUpper(symbol.Name[0]) + symbol.Name.Substring(1).ToLower();
+            var capitalized = char.ToUpper(symbol.Name[0]) + symbol.Name[1..].ToLower();
             return new Symbol(capitalized);
         }
     }

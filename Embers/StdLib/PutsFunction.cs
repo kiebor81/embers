@@ -1,6 +1,5 @@
 ﻿using Embers.Exceptions;
 using Embers.Language;
-using System.Diagnostics;
 
 namespace Embers.StdLib
 {

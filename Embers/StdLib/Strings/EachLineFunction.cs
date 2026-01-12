@@ -20,7 +20,7 @@ namespace Embers.StdLib.Strings
 
             if (values[0] is string s)
             {
-                var lines = s.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
+                var lines = s.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
                 foreach (var line in lines)
                 {
                     context.Block.Apply(self, context, [line]);

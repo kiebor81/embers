@@ -19,7 +19,7 @@ namespace Embers.StdLib.Strings
                 return "";
 
             if (values[0] is string s && s.Length > 0)
-                return char.ToUpper(s[0]) + s.Substring(1);
+                return char.ToUpper(s[0]) + s[1..];
 
             throw new TypeError("capitalize expects a string");
         }

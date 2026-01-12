@@ -1,4 +1,3 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Embers.Language;
 
 namespace Embers.Tests.Language

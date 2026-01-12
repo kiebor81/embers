@@ -17,7 +17,7 @@ namespace Embers.StdLib.Strings
 
             var value = values[0];
             if (value is string s)
-                return new string(s.Reverse().ToArray());
+                return new string([.. s.Reverse()]);
             if (value is IEnumerable<object> arr)
                 return arr.Reverse().ToList();
 

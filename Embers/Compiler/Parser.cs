@@ -17,7 +17,7 @@
             ["*", "/", "%"],
             ["**"]
         ];
-        private Lexer lexer;
+        private readonly Lexer lexer;
 
         public Parser(string text)
         {
@@ -103,7 +103,7 @@
         {
             var result = ParseBinaryExpression(0);
 
-            if (!(result is NameExpression))
+            if (result is not NameExpression)
                 return result;
 
             var nexpr = (NameExpression)result;
@@ -872,7 +872,7 @@
                 if (i > start)
                 {
                     // Add literal part
-                    parts.Add(new ConstantExpression(raw.Substring(start, i - start)));
+                    parts.Add(new ConstantExpression(raw[start..i]));
                 }
 
                 if (i < raw.Length && raw[i] == '#' && raw[i + 1] == '{')
@@ -887,7 +887,7 @@
                         i++;
                     }
                     int exprEnd = i - 1; // position of closing }
-                    string exprText = raw.Substring(exprStart, exprEnd - exprStart);
+                    string exprText = raw[exprStart..exprEnd];
                     // Parse the embedded expression using a new Parser instance
                     var exprParser = new Parser(exprText);
                     var expr = exprParser.ParseExpression();
@@ -1028,7 +1028,7 @@
         private IExpression ParseCompoundAssignment(IExpression target, string op)
         {
             IExpression rhs = ParseExpression();
-            string binOp = op.Substring(0, op.Length - 1); // "+=" → "+"
+            string binOp = op[..^1]; // "+=" → "+"
 
             IExpression left = target switch
             {

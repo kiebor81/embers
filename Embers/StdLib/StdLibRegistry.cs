@@ -10,8 +10,8 @@ namespace Embers.StdLib
     /// </summary>
     internal static class StdLibRegistry
     {
-        private static readonly Dictionary<string, Dictionary<string, Type>> TypeMethodCache = new();
-        private static readonly object InitLock = new();
+        private static readonly Dictionary<string, Dictionary<string, Type>> TypeMethodCache = [];
+        private static readonly Lock InitLock = new();
         private static volatile bool isInitialized = false;
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Embers.StdLib
                     // Determine target types (null/empty = global, otherwise specific types)
                     var targetTypes = attr.TargetTypes != null && attr.TargetTypes.Length > 0
                         ? attr.TargetTypes
-                        : new[] { string.Empty };
+                        : [string.Empty];
 
                     // Register on all target types
                     foreach (var targetType in targetTypes)
@@ -56,7 +56,7 @@ namespace Embers.StdLib
                         var key = targetType ?? string.Empty;
 
                         if (!TypeMethodCache.ContainsKey(key))
-                            TypeMethodCache[key] = new Dictionary<string, Type>();
+                            TypeMethodCache[key] = [];
 
                         // Register all names for this function
                         foreach (var name in attr.Names)
@@ -122,10 +122,10 @@ namespace Embers.StdLib
             lock (InitLock)
             {
                 if (TypeMethodCache.TryGetValue(targetType, out var methods))
-                    return methods.Keys.ToList(); // Return copy to avoid collection modification
+                    return [.. methods.Keys]; // Return copy to avoid collection modification
             }
 
-            return Enumerable.Empty<string>();
+            return [];
         }
 
         /// <summary>

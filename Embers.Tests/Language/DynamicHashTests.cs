@@ -8,7 +8,7 @@ namespace Embers.Tests.Language
         [TestMethod]
         public void EmptyHashToString()
         {
-            DynamicHash hash = new();
+            DynamicHash hash = [];
 
             Assert.AreEqual("{}", hash.ToString());
         }
@@ -16,10 +16,11 @@ namespace Embers.Tests.Language
         [TestMethod]
         public void HashToString()
         {
-            DynamicHash hash = new();
-
-            hash[new Symbol("one")] = 1;
-            hash[new Symbol("two")] = 2;
+            DynamicHash hash = new()
+            {
+                [new Symbol("one")] = 1,
+                [new Symbol("two")] = 2
+            };
 
             var result = hash.ToString();
 

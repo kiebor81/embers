@@ -1,5 +1,27 @@
 # Examples
 
+Embers can be used in a multitude of ways. The repository contains a REPL/CLI example you can use to explore host integration.
+
+## CLI Usage (Example)
+
+From `Embers.Console`:
+
+```bash
+dotnet run --project Embers.Console "script.rb"
+```
+
+Or launch the REPL:
+
+```bash
+dotnet run --project Embers.Console
+```
+
+Exit the REPL using `exit`, `quit`, or `bye` commands.
+
+---
+
+## Use Cases
+
 The following are detailed, real-world scenarios demonstrating how to integrate Embers into your projects. These examples demonstrate advanced embedding scenarios. 
 
 ---

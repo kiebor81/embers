@@ -8,7 +8,7 @@ namespace Embers.Tests.Language
         [TestMethod]
         public void EmptyArrayToString()
         {
-            DynamicArray array = new();
+            DynamicArray array = [];
 
             Assert.AreEqual("[]", array.ToString());
         }
@@ -16,10 +16,11 @@ namespace Embers.Tests.Language
         [TestMethod]
         public void ArrayToString()
         {
-            DynamicArray array = new();
-
-            array[0] = 1;
-            array[1] = 2;
+            DynamicArray array = new()
+            {
+                [0] = 1,
+                [1] = 2
+            };
 
             var result = array.ToString();
 
@@ -29,10 +30,11 @@ namespace Embers.Tests.Language
         [TestMethod]
         public void ArrayToStringWithNils()
         {
-            DynamicArray array = new();
-
-            array[0] = 1;
-            array[3] = 2;
+            DynamicArray array = new()
+            {
+                [0] = 1,
+                [3] = 2
+            };
 
             var result = array.ToString();
 

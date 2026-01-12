@@ -118,3 +118,18 @@ Pull requests should have a clear, focused purpose. Large, unfocused PRs may be 
 
 If you are unsure about a contribution or want feedback before writing code, please open an issue to discuss it first.
 
+---
+
+## Build & Test
+
+### Build
+
+```bash
+dotnet build
+```
+
+### Run Tests
+
+```bash
+dotnet test Embers.Tests
+```
