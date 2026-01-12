@@ -18,16 +18,16 @@ namespace Embers.Tests
         [TestMethod]
         public void ExecuteSimpleAssignFile()
         {
-            Assert.AreEqual(1, machine.ExecuteFile("MachineFiles\\SimpleAssign.rb"));
-            Assert.AreEqual(1, machine.RootContext.GetValue("a"));
+            Assert.AreEqual(1L, machine.ExecuteFile("MachineFiles\\SimpleAssign.rb"));
+            Assert.AreEqual(1L, machine.RootContext.GetValue("a"));
         }
 
         [TestMethod]
         public void ExecuteSimpleAssignsFile()
         {
-            Assert.AreEqual(2, machine.ExecuteFile("MachineFiles\\SimpleAssigns.rb"));
-            Assert.AreEqual(1, machine.RootContext.GetValue("a"));
-            Assert.AreEqual(2, machine.RootContext.GetValue("b"));
+            Assert.AreEqual(2L, machine.ExecuteFile("MachineFiles\\SimpleAssigns.rb"));
+            Assert.AreEqual(1L, machine.RootContext.GetValue("a"));
+            Assert.AreEqual(2L, machine.RootContext.GetValue("b"));
         }
 
         [TestMethod]
@@ -77,7 +77,7 @@ namespace Embers.Tests
             var obj = (DynamicObject)result;
 
             Assert.AreEqual("Nero", obj.GetValue("name"));
-            Assert.AreEqual(6, obj.GetValue("age"));
+            Assert.AreEqual(6L, obj.GetValue("age"));
             Assert.AreEqual("Dog", obj.Class.Name);
         }
 
@@ -102,8 +102,8 @@ namespace Embers.Tests
 
             var dobj = (DynamicObject)result;
 
-            Assert.AreEqual(10, dobj.GetValue("x"));
-            Assert.AreEqual(20, dobj.GetValue("y"));
+            Assert.AreEqual(10L, dobj.GetValue("x"));
+            Assert.AreEqual(20L, dobj.GetValue("y"));
         }
 
         [TestMethod]
@@ -134,7 +134,7 @@ namespace Embers.Tests
 
             var result = machine.ExecuteText("a");
             Assert.IsNotNull(result);
-            Assert.AreEqual(1, result);
+            Assert.AreEqual(1L, result);
         }
 
         [TestMethod]
@@ -147,7 +147,7 @@ namespace Embers.Tests
 
             var result = machine.ExecuteText("a");
             Assert.IsNotNull(result);
-            Assert.AreEqual(1, result);
+            Assert.AreEqual(1L, result);
         }
 
         [TestMethod]
@@ -173,8 +173,8 @@ namespace Embers.Tests
         {
             machine.ExecuteFile("MachineFiles\\RepeatedModule.rb");
 
-            Assert.AreEqual(1, machine.ExecuteText("MyModule::ONE"));
-            Assert.AreEqual(2, machine.ExecuteText("MyModule::TWO"));
+            Assert.AreEqual(1L, machine.ExecuteText("MyModule::ONE"));
+            Assert.AreEqual(2L, machine.ExecuteText("MyModule::TWO"));
         }
 
         [TestMethod]
@@ -253,7 +253,7 @@ namespace Embers.Tests
             Assert.AreSame(machine.ExecuteText("Module"), machine.ExecuteText("MyModule.class"));
 
             Assert.IsNotNull(result2);
-            Assert.AreEqual(42, result2);
+            Assert.AreEqual(42L, result2);
         }
 
         [TestMethod]
@@ -270,22 +270,22 @@ namespace Embers.Tests
             Assert.AreSame(machine.ExecuteText("Class"), machine.ExecuteText("MyClass.class"));
 
             Assert.IsNotNull(result2);
-            Assert.AreEqual(42, result2);
+            Assert.AreEqual(42L, result2);
         }
 
         [TestMethod]
         public void Execute_WithFilePath_ExecutesFile()
         {
-            Assert.AreEqual(1, machine.Execute("MachineFiles\\SimpleAssign.rb"));
-            Assert.AreEqual(1, machine.RootContext.GetValue("a"));
+            Assert.AreEqual(1L, machine.Execute("MachineFiles\\SimpleAssign.rb"));
+            Assert.AreEqual(1L, machine.RootContext.GetValue("a"));
         }
 
         [TestMethod]
         public void Execute_WithCode_ExecutesText()
         {
             var result = machine.Execute("b = 5; b * 2");
-            Assert.AreEqual(10, result);
-            Assert.AreEqual(5, machine.RootContext.GetValue("b"));
+            Assert.AreEqual(10L, result);
+            Assert.AreEqual(5L, machine.RootContext.GetValue("b"));
         }
 
         [TestMethod]
@@ -293,8 +293,8 @@ namespace Embers.Tests
         {
             // If the path doesn't look like a file, it should execute as text
             var result = machine.Execute("c = 100");
-            Assert.AreEqual(100, result);
-            Assert.AreEqual(100, machine.RootContext.GetValue("c"));
+            Assert.AreEqual(100L, result);
+            Assert.AreEqual(100L, machine.RootContext.GetValue("c"));
         }
 
         [TestMethod]

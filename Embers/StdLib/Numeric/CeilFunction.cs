@@ -13,11 +13,12 @@ namespace Embers.StdLib.Numeric
 
             var value = values[0];
             double d;
-            if (value is int i) d = i;
+            if (value is long l) d = l;
+            else if (value is int i) d = i;
             else if (value is double dd) d = dd;
             else throw new TypeError("ceil expects a numeric argument");
 
-            return (int)Math.Ceiling(d);
+            return (long)Math.Ceiling(d);
         }
     }
 }

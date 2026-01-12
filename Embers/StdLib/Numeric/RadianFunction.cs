@@ -12,7 +12,8 @@ namespace Embers.StdLib.Numeric
                 throw new ArgumentError("radian expects a numeric argument");
 
             double degrees;
-            if (values[0] is int i) degrees = i;
+            if (values[0] is long l) degrees = l;
+            else if (values[0] is int i) degrees = i;
             else if (values[0] is double d) degrees = d;
             else throw new TypeError("radian expects a numeric argument");
 

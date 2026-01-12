@@ -14,8 +14,11 @@ namespace Embers.StdLib.Ranges
             if (range == null)
                 throw new Exceptions.TypeError("range must be a Range");
 
-            if (values[1] is not int testValue)
+            // Accept both int and long
+            if (values[1] is not int and not long)
                 return false;
+            
+            int testValue = Convert.ToInt32(values[1]);
 
             // Get first and last values from range
             int first = 0;

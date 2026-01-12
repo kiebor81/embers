@@ -11,9 +11,9 @@ namespace Embers.Compiler
         private const char EndOfLine = '\n';
         private const char Variable = '@';
 
-        private const string Separators = ";()[],.|{}";
+        private const string Separators = ";()[],.|{}&";
 
-        private static readonly string[] operators = ["?", ":", "+", "-", "*", "/", "%", "**", "=", "<", ">", "!", "==", "<=", ">=", "!=", "=>", "..", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**="];
+        private static readonly string[] operators = ["?", ":", "+", "-", "*", "/", "%", "**", "=", "<", ">", "!", "==", "<=", ">=", "!=", "=>", "->", "..", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**="];
 
         private readonly ICharStream stream;
         private readonly Stack<Token> tokens = new();

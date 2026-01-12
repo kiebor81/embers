@@ -57,9 +57,24 @@ namespace Embers.Utilities
         {
             Type type = obj.GetType();
 
+            // Convert long arguments to int for .NET interop
+            // .NET methods typically expect int, but Embers now uses long as default integer type
+            object[]? args = null;
+            if (arguments != null)
+            {
+                args = new object[arguments.Count];
+                for (int i = 0; i < arguments.Count; i++)
+                {
+                    if (arguments[i] is long longValue && longValue >= int.MinValue && longValue <= int.MaxValue)
+                        args[i] = (int)longValue;
+                    else
+                        args[i] = arguments[i];
+                }
+            }
+
             try
             {
-                return type.InvokeMember(name, System.Reflection.BindingFlags.GetProperty | System.Reflection.BindingFlags.GetField | System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Instance, null, obj, arguments?.ToArray());
+                return type.InvokeMember(name, System.Reflection.BindingFlags.GetProperty | System.Reflection.BindingFlags.GetField | System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Instance, null, obj, args);
             }
             catch
             {
@@ -78,9 +93,9 @@ namespace Embers.Utilities
 
         public static bool IsNumber(object obj)
         {
-            return obj is int ||
+            return obj is long ||
+                obj is int ||
                 obj is short ||
-                obj is long ||
                 obj is decimal ||
                 obj is double ||
                 obj is float ||

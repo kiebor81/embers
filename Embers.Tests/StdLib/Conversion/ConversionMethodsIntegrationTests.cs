@@ -19,49 +19,49 @@ namespace Embers.Tests.StdLib.Conversion
         public void Fixnum_ToIMethod_ReturnsSelf()
         {
             var result = machine.ExecuteText("42.to_i");
-            Assert.AreEqual(42, result);
+            Assert.AreEqual(42L, result);
         }
 
         [TestMethod]
         public void Float_ToIMethod_TruncatesToInteger()
         {
             var result = machine.ExecuteText("3.14.to_i");
-            Assert.AreEqual(3, result);
+            Assert.AreEqual(3L, result);
         }
 
         [TestMethod]
         public void Float_ToIMethod_NegativeNumber()
         {
             var result = machine.ExecuteText("(-3.99).to_i");
-            Assert.AreEqual(-3, result);
+            Assert.AreEqual(-3L, result);
         }
 
         [TestMethod]
         public void String_ToIMethod_ParsesInteger()
         {
             var result = machine.ExecuteText("'42'.to_i");
-            Assert.AreEqual(42, result);
+            Assert.AreEqual(42L, result);
         }
 
         [TestMethod]
         public void String_ToIMethod_ParsesNegative()
         {
             var result = machine.ExecuteText("'-123'.to_i");
-            Assert.AreEqual(-123, result);
+            Assert.AreEqual(-123L, result);
         }
 
         [TestMethod]
         public void True_ToIMethod_ReturnsOne()
         {
             var result = machine.ExecuteText("true.to_i");
-            Assert.AreEqual(1, result);
+            Assert.AreEqual(1L, result);
         }
 
         [TestMethod]
         public void False_ToIMethod_ReturnsZero()
         {
             var result = machine.ExecuteText("false.to_i");
-            Assert.AreEqual(0, result);
+            Assert.AreEqual(0L, result);
         }
 
         // to_f tests
@@ -178,7 +178,7 @@ namespace Embers.Tests.StdLib.Conversion
         public void ConversionInExpression_UsedInCalculation()
         {
             var result = machine.ExecuteText("'10'.to_i + '20'.to_i");
-            Assert.AreEqual(30, result);
+            Assert.AreEqual(30L, result);
         }
 
         [TestMethod]
@@ -193,7 +193,7 @@ namespace Embers.Tests.StdLib.Conversion
         public void ToIntAlias_WorksCorrectly()
         {
             var result = machine.ExecuteText("'42'.to_int");
-            Assert.AreEqual(42, result);
+            Assert.AreEqual(42L, result);
         }
 
         [TestMethod]

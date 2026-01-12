@@ -12,15 +12,17 @@ namespace Embers.StdLib.Conversion
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)
-                return 0;
+                return 0L;
 
             var value = values[0];
             try
             {
-                if (value is int i) return i;
-                if (value is double d) return (int)d;
-                if (value is string s) return int.Parse(s, System.Globalization.CultureInfo.InvariantCulture);
-                return Convert.ToInt32(value);
+                if (value is long l) return l;
+                if (value is int i) return (long)i;
+                if (value is double d) return (long)d;
+                if (value is string s) return long.Parse(s, System.Globalization.CultureInfo.InvariantCulture);
+                if (value is bool b) return b ? 1L : 0L;
+                return Convert.ToInt64(value);
             }
             catch
             {

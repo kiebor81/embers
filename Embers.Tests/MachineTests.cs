@@ -251,18 +251,18 @@ namespace Embers.Tests
         public void ExecuteText()
         {
             Machine machine = new();
-            Assert.AreEqual(2, machine.ExecuteText("a=1\nb=2"));
-            Assert.AreEqual(1, machine.RootContext.GetValue("a"));
-            Assert.AreEqual(2, machine.RootContext.GetValue("b"));
+            Assert.AreEqual(2L, machine.ExecuteText("a=1\nb=2"));
+            Assert.AreEqual(1L, machine.RootContext.GetValue("a"));
+            Assert.AreEqual(2L, machine.RootContext.GetValue("b"));
         }
 
         [TestMethod]
         public void ExecuteReader()
         {
             Machine machine = new();
-            Assert.AreEqual(2, machine.ExecuteReader(new StringReader("a=1\nb=2")));
-            Assert.AreEqual(1, machine.RootContext.GetValue("a"));
-            Assert.AreEqual(2, machine.RootContext.GetValue("b"));
+            Assert.AreEqual(2L, machine.ExecuteReader(new StringReader("a=1\nb=2")));
+            Assert.AreEqual(1L, machine.RootContext.GetValue("a"));
+            Assert.AreEqual(2L, machine.RootContext.GetValue("b"));
         }
 
         [TestMethod]
@@ -310,7 +310,7 @@ namespace Embers.Tests
             var result = machine.ExecuteText("class MyClass;def foo;3;end;end;myobj = MyClass.new;myobj.foo");
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result);
+            Assert.AreEqual(3L, result);
         }
 
         [TestMethod]
@@ -321,7 +321,7 @@ namespace Embers.Tests
             var result = machine.ExecuteText("class MyClass;def foo a,b;a+b;end;end; myobj = MyClass.new; myobj.foo 1,2");
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result);
+            Assert.AreEqual(3L, result);
         }
 
         [TestMethod]
@@ -332,7 +332,7 @@ namespace Embers.Tests
             var result = machine.ExecuteText("class MyClass;def foo(a,b);a+b;end;end; myobj = MyClass.new; myobj.foo(1,2)");
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result);
+            Assert.AreEqual(3L, result);
         }
 
         [TestMethod]
@@ -347,7 +347,7 @@ namespace Embers.Tests
 
             var obj = (DynamicObject)result;
 
-            Assert.AreEqual(10, obj.GetValue("age"));
+            Assert.AreEqual(10L, obj.GetValue("age"));
         }
 
         [TestMethod]
@@ -363,9 +363,9 @@ namespace Embers.Tests
             var list = (IList)result;
 
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(1, list[0]);
-            Assert.AreEqual(2, list[1]);
-            Assert.AreEqual(3, list[2]);
+            Assert.AreEqual(1L, list[0]);
+            Assert.AreEqual(2L, list[1]);
+            Assert.AreEqual(3L, list[2]);
         }
 
         [TestMethod]
@@ -381,9 +381,9 @@ namespace Embers.Tests
             var list = (IList)result;
 
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(1, list[0]);
-            Assert.AreEqual(2, list[1]);
-            Assert.AreEqual(3, list[2]);
+            Assert.AreEqual(1L, list[0]);
+            Assert.AreEqual(2L, list[1]);
+            Assert.AreEqual(3L, list[2]);
         }
 
         [TestMethod]

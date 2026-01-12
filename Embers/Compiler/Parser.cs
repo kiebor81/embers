@@ -117,7 +117,7 @@
             if (!NextTokenStartsExpressionList())
                 return result;
 
-            return new CallExpression(((NameExpression)result).Name, ParseExpressionList());
+            return new CallExpression(((NameExpression)result).Name, ParseExpressionListWithBlockArgs());
         }
 
         private IfExpression ParseIfExpression()
@@ -207,10 +207,10 @@
                 break;
             }
 
-            IList<string> parameters = ParseParameterList();
+            var (parameters, blockParam) = ParseParameterListWithBlock();
             IExpression body = ParseCommandList();
 
-            return new DefExpression(named, parameters, body);
+            return new DefExpression(named, parameters, body, blockParam);
         }
 
         private ClassExpression ParseClassExpression()
@@ -279,6 +279,42 @@
             return parameters;
         }
 
+        private (IList<string> parameters, string? blockParam) ParseParameterListWithBlock(bool canhaveparens = true)
+        {
+            IList<string> parameters = [];
+            string? blockParam = null;
+
+            bool inparentheses = false;
+            
+            if (canhaveparens)
+                inparentheses = TryParseToken(TokenType.Separator, "(");
+
+            while (true)
+            {
+                // Check for block parameter (&param)
+                if (TryParseToken(TokenType.Separator, "&"))
+                {
+                    string blockParamName = ParseName();
+                    blockParam = blockParamName;
+                    // Block parameter must be last
+                    break;
+                }
+
+                string name = TryParseName();
+                if (name == null)
+                    break;
+                    
+                parameters.Add(name);
+                if (!TryParseToken(TokenType.Separator, ","))
+                    break;
+            }
+
+            if (inparentheses)
+                ParseToken(TokenType.Separator, ")");
+
+            return (parameters, blockParam);
+        }
+
         private IList<IExpression> ParseExpressionList()
         {
             IList<IExpression> expressions = [];
@@ -286,6 +322,58 @@
             bool inparentheses = TryParseToken(TokenType.Separator, "(");
 
             for (IExpression expression = ParseExpression(); expression != null; expression = ParseExpression())
+            {
+                expressions.Add(expression);
+                if (!TryParseToken(TokenType.Separator, ","))
+                    break;
+            }
+
+            if (inparentheses)
+            {
+                ParseToken(TokenType.Separator, ")");
+                if (TryParseName("do"))
+                    expressions.Add(ParseBlockExpression());
+                else if (TryParseToken(TokenType.Separator, "{"))
+                    expressions.Add(ParseBlockExpression(true));
+            }
+
+            return expressions;
+        }
+
+        private IExpression? ParseSingleExpressionWithBlockPrefix()
+        {
+            // Check for &expression (block argument)
+            if (TryParseToken(TokenType.Separator, "&"))
+            {
+                // Check for &:symbol syntax (shorthand for &symbol.to_proc)
+                if (TryParseToken(TokenType.Separator, ":"))
+                {
+                    Token? nameToken = lexer.NextToken();
+                    if (nameToken == null || nameToken.Type != TokenType.Name)
+                        throw new SyntaxError("Expected symbol name after &:");
+                    
+                    // Create :symbol.to_proc call
+                    IExpression symbolExpr = new ConstantExpression(new Language.Symbol(nameToken.Value));
+                    IExpression toProcCall = new DotExpression(symbolExpr, "to_proc", []);
+                    return new BlockArgumentExpression(toProcCall);
+                }
+                
+                IExpression expr = ParseExpression();
+                if (expr != null)
+                    return new BlockArgumentExpression(expr);
+                throw new SyntaxError("Expected expression after &");
+            }
+            
+            return ParseExpression();
+        }
+
+        private IList<IExpression> ParseExpressionListWithBlockArgs()
+        {
+            IList<IExpression> expressions = [];
+
+            bool inparentheses = TryParseToken(TokenType.Separator, "(");
+
+            for (IExpression? expression = ParseSingleExpressionWithBlockPrefix(); expression != null; expression = ParseSingleExpressionWithBlockPrefix())
             {
                 expressions.Add(expression);
                 if (!TryParseToken(TokenType.Separator, ","))
@@ -527,7 +615,7 @@
                     if (TryParseToken(TokenType.Separator, "{"))
                         expression = new DotExpression(expression, name, [ParseBlockExpression(true)]);
                     else if (NextTokenStartsExpressionList())
-                        expression = new DotExpression(expression, name, ParseExpressionList());
+                        expression = new DotExpression(expression, name, ParseExpressionListWithBlockArgs());
                     else
                         expression = new DotExpression(expression, name, []);
 
@@ -566,7 +654,7 @@
                 return null;
 
             if (token.Type == TokenType.Integer)
-                return new ConstantExpression(int.Parse(token.Value, System.Globalization.CultureInfo.InvariantCulture));
+                return new ConstantExpression(long.Parse(token.Value, System.Globalization.CultureInfo.InvariantCulture));
 
             if (token.Type == TokenType.Real)
                 return new ConstantExpression(double.Parse(token.Value, System.Globalization.CultureInfo.InvariantCulture));
@@ -662,13 +750,63 @@
 
                     if (NextTokenStartsExpressionList())
                     {
-                        args = ParseExpressionList();
+                        args = ParseExpressionListWithBlockArgs();
                     }
 
                     return new YieldExpression(args);
                 }
 
+                if (token.Value == "lambda")
+                {
+                    BlockExpression block;
+                    if (TryParseToken(TokenType.Separator, "{"))
+                        block = ParseBlockExpression(true);
+                    else if (TryParseName("do"))
+                        block = ParseBlockExpression();
+                    else
+                        throw new SyntaxError("lambda requires a block");
+
+                    return new LambdaExpression(block);
+                }
+
+                if (token.Value == "proc")
+                {
+                    BlockExpression block;
+                    if (TryParseToken(TokenType.Separator, "{"))
+                        block = ParseBlockExpression(true);
+                    else if (TryParseName("do"))
+                        block = ParseBlockExpression();
+                    else
+                        throw new SyntaxError("proc requires a block");
+
+                    return new LambdaExpression(block);
+                }
+
                 return new NameExpression(token.Value);
+            }
+
+            // Stabby lambda syntax: ->(params) { body } or -> { body }
+            if (token.Type == TokenType.Operator && token.Value == "->")
+            {
+                IList<string> parameters = [];
+                
+                // Check for parameters in parentheses
+                if (TryParseToken(TokenType.Separator, "("))
+                {
+                    parameters = ParseParameterList(false);
+                    ParseToken(TokenType.Separator, ")");
+                }
+                
+                // Parse the block body
+                BlockExpression block;
+                if (TryParseToken(TokenType.Separator, "{"))
+                    block = new BlockExpression(parameters, ParseCommandList(true));
+                else if (TryParseName("do"))
+                    block = new BlockExpression(parameters, ParseCommandList());
+                else
+                    throw new SyntaxError("stabby lambda requires a block");
+
+                return new LambdaExpression(block);
             }
 
             if (token.Type == TokenType.InstanceVarName)

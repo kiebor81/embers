@@ -22,9 +22,9 @@ namespace Embers.Tests
         [TestMethod]
         public void EvaluateSimpleArithmetic()
         {
-            Assert.AreEqual(2, EvaluateExpression("1+1"));
-            Assert.AreEqual(1 / 2, EvaluateExpression("1/2"));
-            Assert.AreEqual(1 + (3 * 2), EvaluateExpression("1 + 3 * 2"));
+            Assert.AreEqual(2L, EvaluateExpression("1+1"));
+            Assert.AreEqual(0L, EvaluateExpression("1/2"));
+            Assert.AreEqual(1L + (3 * 2), EvaluateExpression("1 + 3 * 2"));
         }
 
         [TestMethod]
@@ -38,8 +38,8 @@ namespace Embers.Tests
         [TestMethod]
         public void EvaluateSimpleAssignment()
         {
-            Assert.AreEqual(2, Execute("a = 2"));
-            Assert.AreEqual(2, EvaluateExpression("a"));
+            Assert.AreEqual(2L, Execute("a = 2"));
+            Assert.AreEqual(2L, EvaluateExpression("a"));
         }
 
         [TestMethod]
@@ -54,9 +54,9 @@ namespace Embers.Tests
             var list = (IList)result;
 
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(1, list[0]);
-            Assert.AreEqual(2, list[1]);
-            Assert.AreEqual(3, list[2]);
+            Assert.AreEqual(1L, list[0]);
+            Assert.AreEqual(2L, list[1]);
+            Assert.AreEqual(3L, list[2]);
         }
 
         [TestMethod]
@@ -138,7 +138,7 @@ namespace Embers.Tests
             var result = EvaluateExpression("MyModule::ONE");
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(1, result);
+            Assert.AreEqual(1L, result);
         }
 
         [TestMethod]
@@ -268,7 +268,7 @@ namespace Embers.Tests
             var result = Execute("total = 0\n[1,2,3].each do |x| total = total + x end\ntotal");
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(6, result);
+            Assert.AreEqual(6L, result);
         }
 
         [TestMethod]
@@ -277,7 +277,7 @@ namespace Embers.Tests
             var result = Execute("total = 0\nfor k in 1..3\ntotal = total + k\nend\ntotal");
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(6, result);
+            Assert.AreEqual(6L, result);
         }
 
         [TestMethod]
@@ -286,7 +286,7 @@ namespace Embers.Tests
             var result = Execute("total = 0\n(1..3).each do |x| total = total + x end\ntotal");
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(6, result);
+            Assert.AreEqual(6L, result);
         }
 
         [TestMethod]
@@ -674,8 +674,8 @@ namespace Embers.Tests
         {
             Assert.AreEqual("yes", EvaluateExpression("true ? 'yes' : 'no'"));
             Assert.AreEqual("no", EvaluateExpression("false ? 'yes' : 'no'"));
-            Assert.AreEqual(42, EvaluateExpression("1 == 1 ? 42 : 0"));
-            Assert.AreEqual(0, EvaluateExpression("1 != 1 ? 42 : 0"));
+            Assert.AreEqual(42L, EvaluateExpression("1 == 1 ? 42 : 0"));
+            Assert.AreEqual(0L, EvaluateExpression("1 != 1 ? 42 : 0"));
         }
 
         [TestMethod]
@@ -711,7 +711,7 @@ namespace Embers.Tests
         [TestMethod]
         public void LoopControlFlow()
         {
-            Assert.AreEqual(6, Execute(@"
+            Assert.AreEqual(6L, Execute(@"
 total = 0
 for i in 1..5 do
     if i < 4 then
@@ -723,7 +723,7 @@ end
 total
             "));
 
-            Assert.AreEqual(9, Execute(@"
+            Assert.AreEqual(9L, Execute(@"
 total = -1
 for i in 1..10 do
     if i < 10 then
@@ -734,7 +734,7 @@ end
 total
             "));
 
-            Assert.AreEqual(5, Execute(@"
+            Assert.AreEqual(5L, Execute(@"
 i = 0
 while i < 5
     i = i + 1
@@ -747,12 +747,12 @@ i
         [TestMethod]
         public void ModuloAndPowerOperators()
         {
-            Assert.AreEqual(1, EvaluateExpression("5 % 2"));
-            Assert.AreEqual(0, EvaluateExpression("4 % 2"));
+            Assert.AreEqual(1L, EvaluateExpression("5 % 2"));
+            Assert.AreEqual(0L, EvaluateExpression("4 % 2"));
 
-            Assert.AreEqual(8, EvaluateExpression("2 ** 3"));
-            Assert.AreEqual(1, EvaluateExpression("10 % 3 % 3"));
-            Assert.AreEqual(81, EvaluateExpression("3 ** 2 ** 2"));  // Should be right-associative
+            Assert.AreEqual(8L, EvaluateExpression("2 ** 3"));
+            Assert.AreEqual(1L, EvaluateExpression("10 % 3 % 3"));
+            Assert.AreEqual(81L, EvaluateExpression("3 ** 2 ** 2"));  // Should be right-associative
         }
 
         [TestMethod]
@@ -830,7 +830,7 @@ end
 
 double(3) { |n| n + 1 }  # Should yield 6 → 7
 ");
-            Assert.AreEqual(7, result);
+            Assert.AreEqual(7L, result);
         }
 
         [TestMethod]
@@ -869,7 +869,7 @@ puts count
 tally { count += 1 }
 count
 ");
-            Assert.AreEqual(2, result);
+            Assert.AreEqual(2L, result);
         }
 
         private object EvaluateExpression(string text)

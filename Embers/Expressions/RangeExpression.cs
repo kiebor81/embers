@@ -16,8 +16,13 @@ namespace Embers.Expressions
 
         public object Evaluate(Context context)
         {
-            int from = (int)fromexpression.Evaluate(context);
-            int to = (int)toexpression.Evaluate(context);
+            var fromValue = fromexpression.Evaluate(context);
+            var toValue = toexpression.Evaluate(context);
+            
+            // Convert long to int for range (arrays need int indices)
+            int from = fromValue is long l1 ? (int)l1 : (int)fromValue;
+            int to = toValue is long l2 ? (int)l2 : (int)toValue;
+            
             return new Range(from, to);
         }
 

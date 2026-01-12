@@ -12,11 +12,13 @@ namespace Embers.StdLib.Numeric
                 throw new ArgumentError("pow expects two numeric arguments");
 
             double x, y;
-            if (values[0] is int i1) x = i1;
+            if (values[0] is long l1) x = l1;
+            else if (values[0] is int i1) x = i1;
             else if (values[0] is double d1) x = d1;
             else throw new TypeError("pow expects numeric arguments");
 
-            if (values[1] is int i2) y = i2;
+            if (values[1] is long l2) y = l2;
+            else if (values[1] is int i2) y = i2;
             else if (values[1] is double d2) y = d2;
             else throw new TypeError("pow expects numeric arguments");
 

@@ -23,7 +23,7 @@ namespace Embers.Tests.StdLib.Arrays
             var list = result as System.Collections.IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(4, list.Count);
-            Assert.AreEqual(4, list[3]);
+            Assert.AreEqual(4L, list[3]);
         }
 
         [TestMethod]
@@ -53,7 +53,7 @@ namespace Embers.Tests.StdLib.Arrays
             ");
             
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result);
+            Assert.AreEqual(3L, result);
         }
 
         [TestMethod]
@@ -96,7 +96,7 @@ namespace Embers.Tests.StdLib.Arrays
             ");
             
             Assert.IsNotNull(result);
-            Assert.AreEqual(1, result);
+            Assert.AreEqual(1L, result);
         }
 
         [TestMethod]
@@ -113,7 +113,7 @@ namespace Embers.Tests.StdLib.Arrays
             var list = result as System.Collections.IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(2, list.Count);
-            Assert.AreEqual(2, list[0]);
+            Assert.AreEqual(2L, list[0]);
         }
 
         [TestMethod]
@@ -144,7 +144,7 @@ namespace Embers.Tests.StdLib.Arrays
             var list = result as System.Collections.IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(1, list[0]);
+            Assert.AreEqual(1L, list[0]);
         }
 
         // ==================== FIRST METHOD TESTS ====================
@@ -159,7 +159,7 @@ namespace Embers.Tests.StdLib.Arrays
             ");
             
             Assert.IsNotNull(result);
-            Assert.AreEqual(1, result);
+            Assert.AreEqual(1L, result);
         }
 
         [TestMethod]
@@ -186,7 +186,7 @@ namespace Embers.Tests.StdLib.Arrays
             ");
             
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result);
+            Assert.AreEqual(3L, result);
         }
 
         [TestMethod]
@@ -257,9 +257,9 @@ namespace Embers.Tests.StdLib.Arrays
             var list = result as System.Collections.IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(1, list[0]);
-            Assert.AreEqual(2, list[1]);
-            Assert.AreEqual(3, list[2]);
+            Assert.AreEqual(1L, list[0]);
+            Assert.AreEqual(2L, list[1]);
+            Assert.AreEqual(3L, list[2]);
         }
 
         [TestMethod]
@@ -326,9 +326,9 @@ namespace Embers.Tests.StdLib.Arrays
             var list = result as System.Collections.IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(1, list[0]);
-            Assert.AreEqual(2, list[1]);
-            Assert.AreEqual(3, list[2]);
+            Assert.AreEqual(1L, list[0]);
+            Assert.AreEqual(2L, list[1]);
+            Assert.AreEqual(3L, list[2]);
         }
 
         [TestMethod]
@@ -361,10 +361,10 @@ namespace Embers.Tests.StdLib.Arrays
             var list = result as System.Collections.IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(4, list.Count);
-            Assert.AreEqual(1, list[0]);
-            Assert.AreEqual(2, list[1]);
-            Assert.AreEqual(3, list[2]);
-            Assert.AreEqual(4, list[3]);
+            Assert.AreEqual(1L, list[0]);
+            Assert.AreEqual(2L, list[1]);
+            Assert.AreEqual(3L, list[2]);
+            Assert.AreEqual(4L, list[3]);
         }
 
         [TestMethod]
@@ -394,7 +394,7 @@ namespace Embers.Tests.StdLib.Arrays
             ");
             
             Assert.IsNotNull(result);
-            var list = new List<object> { 1, 2, 3 };
+            var list = new List<object> { 1L, 2L, 3L };
             Assert.IsTrue(list.Contains(result));
         }
 
@@ -427,11 +427,11 @@ namespace Embers.Tests.StdLib.Arrays
             Assert.AreEqual(5, list.Count);
             
             // Check all elements are present
-            Assert.IsTrue(list.Contains(1));
-            Assert.IsTrue(list.Contains(2));
-            Assert.IsTrue(list.Contains(3));
-            Assert.IsTrue(list.Contains(4));
-            Assert.IsTrue(list.Contains(5));
+            Assert.IsTrue(list.Contains(1L));
+            Assert.IsTrue(list.Contains(2L));
+            Assert.IsTrue(list.Contains(3L));
+            Assert.IsTrue(list.Contains(4L));
+            Assert.IsTrue(list.Contains(5L));
         }
 
         [TestMethod]
@@ -448,9 +448,9 @@ namespace Embers.Tests.StdLib.Arrays
             var list = result as System.Collections.IList;
             Assert.IsNotNull(list);
             // Original array should be unchanged
-            Assert.AreEqual(1, list[0]);
-            Assert.AreEqual(2, list[1]);
-            Assert.AreEqual(3, list[2]);
+            Assert.AreEqual(1L, list[0]);
+            Assert.AreEqual(2L, list[1]);
+            Assert.AreEqual(3L, list[2]);
         }
 
         // ==================== MAP METHOD TESTS ====================
@@ -468,9 +468,9 @@ namespace Embers.Tests.StdLib.Arrays
             var list = result as System.Collections.IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(2, list[0]);
-            Assert.AreEqual(4, list[1]);
-            Assert.AreEqual(6, list[2]);
+            Assert.AreEqual(2L, list[0]);
+            Assert.AreEqual(4L, list[1]);
+            Assert.AreEqual(6L, list[2]);
         }
 
         [TestMethod]
@@ -503,9 +503,9 @@ namespace Embers.Tests.StdLib.Arrays
             var list = result as System.Collections.IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(3, list[0]);
-            Assert.AreEqual(4, list[1]);
-            Assert.AreEqual(5, list[2]);
+            Assert.AreEqual(3L, list[0]);
+            Assert.AreEqual(4L, list[1]);
+            Assert.AreEqual(5L, list[2]);
         }
 
         [TestMethod]
@@ -538,9 +538,9 @@ namespace Embers.Tests.StdLib.Arrays
             var list = result as System.Collections.IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(6, list[0]);  // 3 * 2
-            Assert.AreEqual(8, list[1]);  // 4 * 2
-            Assert.AreEqual(10, list[2]); // 5 * 2
+            Assert.AreEqual(6L, list[0]);  // 3 * 2
+            Assert.AreEqual(8L, list[1]);  // 4 * 2
+            Assert.AreEqual(10L, list[2]); // 5 * 2
         }
 
         [TestMethod]

@@ -69,6 +69,29 @@ namespace Embers.Expressions
                     nativeArgList.RemoveAt(nativeArgList.Count - 1);
                 }
 
+                // Check for &block argument syntax
+                foreach (var argument in nativeArgList.ToList())
+                {
+                    if (argument is BlockArgumentExpression blockArgExpr)
+                    {
+                        // This is a &block argument - extract the IFunction from the Proc
+                        object blockValue = blockArgExpr.Evaluate(context);
+                        if (blockValue is Embers.Language.Proc proc)
+                        {
+                            nativeBlock = proc.GetFunction();
+                        }
+                        else if (blockValue == null)
+                        {
+                            nativeBlock = null;
+                        }
+                        else
+                        {
+                            throw new Embers.Exceptions.TypeError($"Expected Proc for block argument, got {blockValue.GetType().Name}");
+                        }
+                        nativeArgList.Remove(argument);  // Don't add to values - block is passed separately
+                    }
+                }
+
                 // Create a new context with the block if present
                 var nativeContext = nativeBlock != null ? new Context(context, nativeBlock) : context;
 
@@ -107,6 +130,29 @@ namespace Embers.Expressions
             {
                 block = new BlockFunction(blockExpr);
                 argList.RemoveAt(argList.Count - 1);
+            }
+
+            // Check for &block argument syntax
+            foreach (var argument in argList.ToList())
+            {
+                if (argument is BlockArgumentExpression blockArgExpr)
+                {
+                    // This is a &block argument - extract the IFunction from the Proc
+                    object blockValue = blockArgExpr.Evaluate(context);
+                    if (blockValue is Embers.Language.Proc proc)
+                    {
+                        block = proc.GetFunction();
+                    }
+                    else if (blockValue == null)
+                    {
+                        block = null;
+                    }
+                    else
+                    {
+                        throw new Embers.Exceptions.TypeError($"Expected Proc for block argument, got {blockValue.GetType().Name}");
+                    }
+                    argList.Remove(argument);  // Don't add to values - block is passed separately
+                }
             }
 
             // Evaluate remaining arguments
