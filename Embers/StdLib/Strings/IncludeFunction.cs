@@ -1,11 +1,15 @@
 using Embers.Language;
 using Embers.Exceptions;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Strings
 {
     [StdLib("include?", TargetType = "String")]
     public class IncludeFunction : StdFunction
     {
+        [Comments("Checks if the string or array includes the specified item.")]
+        [Arguments(ParamNames = new[] { "string", "item" }, ParamTypes = new[] { typeof(string), typeof(string) })]
+        [Returns(ReturnType = typeof(Boolean))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count < 2 || values[0] == null || values[1] == null)

@@ -1,5 +1,6 @@
 using Embers.Language;
 using Embers.Exceptions;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Strings
 {
@@ -9,6 +10,9 @@ namespace Embers.StdLib.Strings
     [StdLib("index", TargetType = "String")]
     public class IndexFunction : StdFunction
     {
+        [Comments("Returns the index of a substring in a string or element in an array, or -1 if not found.")]
+        [Arguments(ParamNames = new[] { "string", "item" }, ParamTypes = new[] { typeof(string), typeof(string) })]
+        [Returns(ReturnType = typeof(Number))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count < 2 || values[0] == null || values[1] == null)

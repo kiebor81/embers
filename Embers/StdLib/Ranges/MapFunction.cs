@@ -1,10 +1,14 @@
 using Embers.Language;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Ranges
 {
     [StdLib("map", TargetType = "Range")]
     public class MapFunction : StdFunction
     {
+        [Comments("Applies the given block to each element of the range and returns an array of the results.")]
+        [Arguments(ParamNames = new[] { "range", "block" }, ParamTypes = new[] { typeof(Language.Range), typeof(Block) })]
+        [Returns(ReturnType = typeof(Array))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values.Count != 1)

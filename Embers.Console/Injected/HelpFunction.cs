@@ -1,11 +1,15 @@
 using Embers.Host;
 using Embers.Language;
+using Embers.Annotations;
 
 namespace Embers.Console.Injected;
 
 [HostFunction("help")]
 internal class HelpFunction : HostFunction
 {
+    [Comments("Displays help information for available functions.")]
+    [Arguments(ParamNames = new[] { "functionName" }, ParamTypes = new[] { typeof(string) })]
+    [Returns(ReturnType = typeof(void))]
     public override object Apply(DynamicObject self, Context context, IList<object> values)
     {
 
@@ -13,7 +17,7 @@ internal class HelpFunction : HostFunction
 
         System.Console.WriteLine("");
 
-        var documentation_dict = Annotations.FunctionScanner.ScanFunctionDocumentation();
+        var documentation_dict = FunctionScanner.ScanFunctionDocumentation();
 
         IEnumerable<string> keysToDisplay;
         if (values == null || values.Count == 0)

@@ -1,10 +1,14 @@
 using Embers.Language;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Ranges
 {
     [StdLib("include?", TargetType = "Range")]
     public class IncludeFunction : StdFunction
     {
+        [Comments("Returns true if the range includes the given value.")]
+        [Arguments(ParamNames = new[] { "range", "value" }, ParamTypes = new[] { typeof(Language.Range), typeof(object) })]
+        [Returns(ReturnType = typeof(Boolean))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values.Count != 2)

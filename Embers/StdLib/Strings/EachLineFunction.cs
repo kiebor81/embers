@@ -1,11 +1,15 @@
 using Embers.Language;
 using Embers.Exceptions;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Strings
 {
     [StdLib("each_line", TargetType = "String")]
     public class EachLineFunction : StdFunction
     {
+        [Comments("Iterates over each line in the string, executing the provided block for each line.")]
+        [Arguments(ParamNames = new[] { "string" }, ParamTypes = new[] { typeof(string) })]
+        [Returns(ReturnType = typeof(void))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)

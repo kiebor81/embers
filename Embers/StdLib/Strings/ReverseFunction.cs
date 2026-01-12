@@ -1,14 +1,15 @@
 using Embers.Exceptions;
 using Embers.Language;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Strings
 {
-    /// <summary>
-    /// Returns the reversed string or array.
-    /// </summary>
     [StdLib("reverse", TargetType = "String")]
     public class ReverseFunction : StdFunction
     {
+        [Comments("Returns the reversed string.")]
+        [Arguments(ParamNames = new[] { "string" }, ParamTypes = new[] { typeof(string) })]
+        [Returns(ReturnType = typeof(string))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)

@@ -1,10 +1,14 @@
 using Embers.Language;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Ranges
 {
     [StdLib("min", TargetType = "Range")]
     public class MinFunction : StdFunction
     {
+        [Comments("Returns the minimum element of the range.")]
+        [Arguments(ParamNames = new[] { "range" }, ParamTypes = new[] { typeof(Language.Range) })]
+        [Returns(ReturnType = typeof(object))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values.Count != 1)

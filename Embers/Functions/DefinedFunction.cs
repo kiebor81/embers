@@ -1,4 +1,5 @@
-﻿using Embers.Expressions;
+﻿using Embers.Annotations;
+using Embers.Expressions;
 using Embers.Language;
 
 namespace Embers.Functions
@@ -9,6 +10,7 @@ namespace Embers.Functions
     /// The existence of a block allows for more complex behaviour, such as passing in a closure or additional context.
     /// </summary>
     /// <seealso cref="Embers.Functions.ICallableWithBlock" />
+    [ScannerIgnore]
     public class DefinedFunction(IExpression body, IList<string> parameters, Context context, string? blockParameterName = null) : ICallableWithBlock
     {
         private readonly IExpression body = body;

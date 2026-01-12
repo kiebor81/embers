@@ -1,5 +1,6 @@
 using Embers.Language;
 using Embers.Exceptions;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Numeric
 {
@@ -9,6 +10,9 @@ namespace Embers.StdLib.Numeric
     [StdLib("min", TargetTypes = new[] { "Fixnum", "Float" })]
     public class MinFunction : StdFunction
     {
+        [Comments("Returns the minimum value from a list of numbers.")]
+        [Arguments(ParamNames = new[] { "values" }, ParamTypes = new[] { typeof(Number) })]
+        [Returns(ReturnType = typeof(Number))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0)

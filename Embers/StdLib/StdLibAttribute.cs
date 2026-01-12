@@ -6,10 +6,10 @@ namespace Embers.StdLib
     /// on specific native classes or language types.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    public sealed class StdLibAttribute : Attribute
+    public sealed class StdLibAttribute(params string[] names) : Attribute
     {
-        public string[] Names { get; }
-        
+        public string[] Names { get; } = names ?? Array.Empty<string>();
+
         /// <summary>
         /// Target type names for automatic registration (e.g., "Array", "String", "Fixnum", "Float").
         /// If null or empty array, the function is registered globally on the root context.
@@ -25,11 +25,6 @@ namespace Embers.StdLib
         { 
             get => TargetTypes.Length > 0 ? TargetTypes[0] : null;
             set => TargetTypes = value != null ? new[] { value } : Array.Empty<string>();
-        }
-
-        public StdLibAttribute(params string[] names)
-        {
-            Names = names ?? Array.Empty<string>();
         }
     }
 }

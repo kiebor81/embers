@@ -1,10 +1,14 @@
 using Embers.Language;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Symbols
 {
     [StdLib("capitalize", TargetType = "Symbol")]
     public class CapitalizeFunction : StdFunction
     {
+        [Comments("Capitalizes the symbol (first letter uppercase, rest lowercase).")]
+        [Arguments(ParamNames = new[] { "symbol" }, ParamTypes = new[] { typeof(Symbol) })]
+        [Returns(ReturnType = typeof(Symbol))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values.Count != 1)

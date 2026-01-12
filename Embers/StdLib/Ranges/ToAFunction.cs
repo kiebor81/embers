@@ -1,10 +1,14 @@
 using Embers.Language;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Ranges
 {
     [StdLib("to_a", TargetType = "Range")]
     public class ToAFunction : StdFunction
     {
+        [Comments("Converts the range to an array.")]
+        [Arguments(ParamNames = new[] { "range" }, ParamTypes = new[] { typeof(Language.Range) })]
+        [Returns(ReturnType = typeof(Array))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values.Count != 1)

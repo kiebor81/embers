@@ -1,4 +1,5 @@
-﻿using Embers.Language;
+﻿using Embers.Annotations;
+using Embers.Language;
 
 namespace Embers.Functions
 {
@@ -8,6 +9,7 @@ namespace Embers.Functions
     /// It represents the `require` functionality.
     /// </summary>
     /// <seealso cref="Embers.Functions.IFunction" />
+    [ScannerIgnore]
     public class RequireFunction(Machine machine) : IFunction
     {
         private readonly Machine machine = machine;

@@ -1,10 +1,14 @@
 using Embers.Language;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Ranges
 {
     [StdLib("select", TargetType = "Range")]
     public class SelectFunction : StdFunction
     {
+        [Comments("Returns an array of elements for which the given block returns true.")]
+        [Arguments(ParamNames = new[] { "range", "block" }, ParamTypes = new[] { typeof(Language.Range), typeof(Block) })]
+        [Returns(ReturnType = typeof(Array))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values.Count != 1)

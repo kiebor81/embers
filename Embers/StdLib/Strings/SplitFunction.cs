@@ -1,5 +1,6 @@
 using Embers.Language;
 using Embers.Exceptions;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Strings
 {
@@ -9,6 +10,9 @@ namespace Embers.StdLib.Strings
     [StdLib("split", TargetType = "String")]
     public class SplitFunction : StdFunction
     {
+        [Comments("Splits the string into an array using the given separator. If no separator is provided, splits on whitespace.")]
+        [Arguments(ParamNames = new[] { "string", "separator" }, ParamTypes = new[] { typeof(string), typeof(string) })]
+        [Returns(ReturnType = typeof(Array))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)

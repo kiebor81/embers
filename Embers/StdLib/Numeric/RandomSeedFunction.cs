@@ -1,5 +1,6 @@
 using Embers.Language;
 using Embers.Exceptions;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Numeric
 {
@@ -9,6 +10,9 @@ namespace Embers.StdLib.Numeric
         // Shared random instance for all random functions
         private static Random _random = new();
 
+        [Comments("Sets the seed for the random number generator.")]
+        [Arguments(ParamNames = new[] { "seed" }, ParamTypes = new[] { typeof(Number) })]
+        [Returns(ReturnType = typeof(void))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)

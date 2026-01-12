@@ -32,7 +32,7 @@ namespace Embers.Annotations
                 {
                     // Get all types that implement IFunction
                     var functionTypes = assembly.GetTypes()
-                        .Where(t => typeof(IFunction).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
+                        .Where(t => typeof(IFunction).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract && !HasScannerIgnoreAttribute(t));
 
                     foreach (var type in functionTypes)
                     {
@@ -121,6 +121,14 @@ namespace Embers.Annotations
                 return string.Empty;
 
             return attribute.ReturnType.Name;
+        }
+
+        /// <summary>
+        /// Checks if a type has the ScannerIgnoreAttribute (not inherited).
+        /// </summary>
+        private static bool HasScannerIgnoreAttribute(Type type)
+        {
+            return type.GetCustomAttribute<ScannerIgnoreAttribute>(inherit: false) != null;
         }
 
         /// <summary>

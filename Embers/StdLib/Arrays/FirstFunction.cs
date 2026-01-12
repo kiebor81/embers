@@ -1,5 +1,6 @@
 using Embers.Language;
 using Embers.Exceptions;
+using Embers.Annotations;
 using System.Collections;
 
 namespace Embers.StdLib.Arrays
@@ -7,6 +8,9 @@ namespace Embers.StdLib.Arrays
     [StdLib("first", TargetType = "Array")]
     public class FirstFunction : StdFunction
     {
+        [Comments("Returns the first element of an array.")]
+        [Arguments(ParamNames = new[] { "array_data" }, ParamTypes = new[] { typeof(Array) })]
+        [Returns(ReturnType = typeof(object))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)
@@ -16,6 +20,7 @@ namespace Embers.StdLib.Arrays
             {
                 if (arr.Count == 0)
                     return null;
+
                 return arr[0];
             }
 

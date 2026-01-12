@@ -100,13 +100,42 @@ namespace Embers.Tests.Annotations
         {
             var documentation = FunctionScanner.ScanFunctionDocumentation();
             
-            // Should include various StdLib functions
-            var stdLibFunctionNames = documentation.Keys
-                .Where(k => k.EndsWith("Function"))
-                .ToList();
-            
-            Assert.IsTrue(stdLibFunctionNames.Count > 0, 
+            // Should include various StdLib functions by their registered names
+            Assert.IsTrue(documentation.Count > 0, 
                 "Should include StdLib function implementations");
+            
+            // Verify at least some expected StdLib functions are present
+            var hasStdLibFunctions = documentation.Keys.Any(k => 
+                k.Contains("puts") || k.Contains("upcase") || k.Contains("downcase"));
+            
+            Assert.IsTrue(hasStdLibFunctions, 
+                "Should include expected StdLib functions like puts, upcase, downcase");
+        }
+
+        [TestMethod]
+        public void ScanFunctionDocumentation_SkipsClassesWithScannerIgnoreAttribute()
+        {
+            var documentation = FunctionScanner.ScanFunctionDocumentation();
+            
+            // IgnoredTestFunction should not be in the scanned results
+            Assert.IsFalse(documentation.ContainsKey("ignored_test"), 
+                "Functions with ScannerIgnoreAttribute should be skipped");
+            Assert.IsFalse(documentation.ContainsKey("IgnoredTestFunction"), 
+                "Functions with ScannerIgnoreAttribute should not appear by class name");
+        }
+    }
+
+    // Test class with ScannerIgnoreAttribute - should be skipped during scanning
+    [ScannerIgnore]
+    [StdLib("ignored_test")]
+    public class IgnoredTestFunction : StdFunction
+    {
+        [Comments("This function should be ignored.")]
+        [Arguments(ParamNames = new[] { "value" }, ParamTypes = new[] { typeof(object) })]
+        [Returns(ReturnType = typeof(string))]
+        public override object Apply(DynamicObject self, Context context, IList<object> values)
+        {
+            return "ignored";
         }
     }
 }

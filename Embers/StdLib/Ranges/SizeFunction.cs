@@ -1,10 +1,14 @@
 using Embers.Language;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Ranges
 {
     [StdLib("size", TargetType = "Range")]
     public class SizeFunction : StdFunction
     {
+        [Comments("Returns the number of elements in the range.")]
+        [Arguments(ParamNames = new[] { "range" }, ParamTypes = new[] { typeof(Language.Range) })]
+        [Returns(ReturnType = typeof(Number))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values.Count != 1)

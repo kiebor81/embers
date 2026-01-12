@@ -1,5 +1,6 @@
 using Embers.Language;
 using Embers.Exceptions;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Conversion
 {
@@ -9,6 +10,9 @@ namespace Embers.StdLib.Conversion
     [StdLib("to_i", "to_int", "to_integer", TargetTypes = new[] { "Fixnum", "Float", "String", "NilClass", "TrueClass", "FalseClass", "Array", "Hash", "Range", "DateTime" })]
     public class ToIFunction : StdFunction
     {
+        [Comments("Converts the value to an integer.")]
+        [Arguments(ParamNames = new[] { "value" }, ParamTypes = new[] { typeof(object) })]
+        [Returns(ReturnType = typeof(Number))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)

@@ -1,10 +1,14 @@
 using Embers.Language;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Ranges
 {
     [StdLib("max", TargetType = "Range")]
     public class MaxFunction : StdFunction
     {
+        [Comments("Returns the maximum element of the range.")]
+        [Arguments(ParamNames = new[] { "range" }, ParamTypes = new[] { typeof(Language.Range) })]
+        [Returns(ReturnType = typeof(object))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values.Count != 1)

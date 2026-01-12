@@ -1,5 +1,6 @@
 using Embers.Language;
 using Embers.Exceptions;
+using Embers.Annotations;
 using System.Collections;
 
 namespace Embers.StdLib.Arrays
@@ -9,6 +10,9 @@ namespace Embers.StdLib.Arrays
     {
         private static readonly Random _random = new();
 
+        [Comments("Returns a new array with the elements shuffled randomly.")]
+        [Arguments(ParamNames = new[] { "array_data" }, ParamTypes = new[] { typeof(Array) })]
+        [Returns(ReturnType = typeof(Array))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)

@@ -1,11 +1,15 @@
 using Embers.Language;
 using Embers.Exceptions;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Strings
 {
     [StdLib("lines", TargetType = "String")]
     public class LinesFunction : StdFunction
     {
+        [Comments("Returns an array of lines in the string.")]
+        [Arguments(ParamNames = new[] { "string" }, ParamTypes = new[] { typeof(string) })]
+        [Returns(ReturnType = typeof(Array))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)

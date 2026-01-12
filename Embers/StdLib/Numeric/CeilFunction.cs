@@ -1,11 +1,15 @@
 using Embers.Language;
 using Embers.Exceptions;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Numeric
 {
     [StdLib("ceil", TargetTypes = new[] { "Fixnum", "Float" })]
     public class CeilFunction : StdFunction
     {
+        [Comments("Returns the smallest integer greater than or equal to the given number.")]
+        [Arguments(ParamNames = new[] { "number" }, ParamTypes = new[] { typeof(Number) })]
+        [Returns(ReturnType = typeof(Number))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)

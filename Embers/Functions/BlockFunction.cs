@@ -1,4 +1,5 @@
-﻿using Embers.Expressions;
+﻿using Embers.Annotations;
+using Embers.Expressions;
 using Embers.Language;
 
 namespace Embers.Functions
@@ -7,6 +8,7 @@ namespace Embers.Functions
     /// BlockFunction represents a block of code that can be executed with a specific context.
     /// </summary>
     /// <seealso cref="Embers.Functions.IFunction" />
+    [ScannerIgnore]
     public class BlockFunction(BlockExpression block) : IFunction
     {
         private readonly BlockExpression block = block;

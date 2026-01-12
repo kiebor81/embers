@@ -1,4 +1,6 @@
 using Embers.Language;
+using Embers.Exceptions;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Symbols
 {
@@ -10,21 +12,23 @@ namespace Embers.StdLib.Symbols
     [StdLib("to_proc", TargetType = "Symbol")]
     public class ToProcFunction : StdFunction
     {
+        [Comments("Converts the symbol to a proc that calls the named method on its argument.")]
+        [Arguments(ParamNames = new[] { "symbol" }, ParamTypes = new[] { typeof(Symbol) })]
+        [Returns(ReturnType = typeof(Proc))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values.Count != 1)
-                throw new Exceptions.ArgumentError($"wrong number of arguments (given {values.Count - 1}, expected 0)");
+                throw new ArgumentError($"wrong number of arguments (given {values.Count - 1}, expected 0)");
 
-            var symbol = values[0] as Symbol;
-            if (symbol == null)
-                throw new Exceptions.TypeError("symbol must be a Symbol");
+            if (values[0] is not Symbol symbol)
+                throw new TypeError("symbol must be a Symbol");
 
             // Create a Block that calls the method named by the symbol
             var methodName = symbol.Name;
             
             // The block takes one parameter and calls the method on it
             var block = new Block(
-                new List<string> { "obj" },
+                ["obj"],
                 new SymbolToProcExpression(methodName),
                 context
             );
@@ -51,16 +55,13 @@ namespace Embers.StdLib.Symbols
             var obj = context.GetLocalValue("obj");
             
             if (obj == null)
-                throw new Exceptions.NoMethodError($"undefined method '{methodName}' for nil");
+                throw new NoMethodError($"undefined method '{methodName}' for nil");
 
             // Call the method on the object
             if (obj is DynamicObject dynObj)
             {
-                var method = dynObj.GetMethod(methodName);
-                if (method == null)
-                    throw new Exceptions.NoMethodError($"undefined method '{methodName}' for {dynObj.Class.Name}");
-                
-                return method.Apply(dynObj, context, new List<object>());
+                var method = dynObj.GetMethod(methodName) ?? throw new NoMethodError($"undefined method '{methodName}' for {dynObj.Class.Name}");
+                return method.Apply(dynObj, context, []);
             }
             else
             {
@@ -72,7 +73,7 @@ namespace Embers.StdLib.Symbols
                     var nativeMethod = methodClass?.GetInstanceMethod(methodName, context);
                     if (nativeMethod != null)
                     {
-                        return nativeMethod(obj, new List<object>());
+                        return nativeMethod(obj, []);
                     }
                 }
                 

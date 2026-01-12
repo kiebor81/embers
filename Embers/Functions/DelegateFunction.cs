@@ -1,4 +1,5 @@
-﻿using Embers.Language;
+﻿using Embers.Annotations;
+using Embers.Language;
 
 namespace Embers.Functions
 {
@@ -6,6 +7,7 @@ namespace Embers.Functions
     /// A simple IFunction wrapper for delegate-based logic.
     /// Useful for adapting raw blocks or host functions dynamically.
     /// </summary>
+    [ScannerIgnore]
     public class DelegateFunction(Func<DynamicObject, Context, IList<object>, object> function) : IFunction
     {
         private readonly Func<DynamicObject, Context, IList<object>, object> function = function ?? throw new ArgumentNullException(nameof(function));

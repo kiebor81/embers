@@ -1,5 +1,6 @@
 using Embers.Language;
 using Embers.Exceptions;
+using Embers.Annotations;
 using System.Globalization;
 
 namespace Embers.StdLib.Time
@@ -7,6 +8,8 @@ namespace Embers.StdLib.Time
     [StdLib("now")]
     public class NowFunction : StdFunction
     {
+        [Comments("Returns the current date and time.")]
+        [Returns(ReturnType = typeof(DateTime))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             return DateTime.Now;
@@ -16,6 +19,8 @@ namespace Embers.StdLib.Time
     [StdLib("today")]
     public class TodayFunction : StdFunction
     {
+        [Comments("Returns the current date with the time set to midnight.")]
+        [Returns(ReturnType = typeof(DateTime))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             return DateTime.Today;
@@ -25,6 +30,9 @@ namespace Embers.StdLib.Time
     [StdLib("parse_date")]
     public class ParseDateTimeFunction : StdFunction
     {
+        [Comments("Parses a string into a DateTime object.")]
+        [Arguments(ParamNames = new[] { "date_string" }, ParamTypes = new[] { typeof(string) })]
+        [Returns(ReturnType = typeof(DateTime))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)
@@ -38,6 +46,9 @@ namespace Embers.StdLib.Time
     [StdLib("strftime", TargetTypes = new[] { "DateTime" })]
     public class StrftimeFunction : StdFunction
     {
+        [Comments("Formats a DateTime object into a string based on the given format.")]
+        [Arguments(ParamNames = new[] { "date_time", "format" }, ParamTypes = new[] { typeof(DateTime), typeof(string) })]
+        [Returns(ReturnType = typeof(string))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count < 2 || values[0] == null || values[1] == null)
@@ -51,6 +62,9 @@ namespace Embers.StdLib.Time
     [StdLib("year", TargetTypes = new[] { "DateTime" })]
     public class YearFunction : StdFunction
     {
+        [Comments("Returns the year component of a DateTime object.")]
+        [Arguments(ParamNames = new[] { "date_time" }, ParamTypes = new[] { typeof(DateTime) })]
+        [Returns(ReturnType = typeof(Number))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)
@@ -64,6 +78,9 @@ namespace Embers.StdLib.Time
     [StdLib("month", TargetTypes = new[] { "DateTime" })]
     public class MonthFunction : StdFunction
     {
+        [Comments("Returns the month component of a DateTime object.")]
+        [Arguments(ParamNames = new[] { "date_time" }, ParamTypes = new[] { typeof(DateTime) })]
+        [Returns(ReturnType = typeof(Number))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)
@@ -77,6 +94,9 @@ namespace Embers.StdLib.Time
     [StdLib("day", TargetTypes = new[] { "DateTime" })]
     public class DayFunction : StdFunction
     {
+        [Comments("Returns the day component of a DateTime object.")]
+        [Arguments(ParamNames = new[] { "date_time" }, ParamTypes = new[] { typeof(DateTime) })]
+        [Returns(ReturnType = typeof(Number))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)
@@ -90,6 +110,9 @@ namespace Embers.StdLib.Time
     [StdLib("hour", TargetTypes = new[] { "DateTime" })]
     public class HourFunction : StdFunction
     {
+        [Comments("Returns the hour component of a DateTime object.")]
+        [Arguments(ParamNames = new[] { "date_time" }, ParamTypes = new[] { typeof(DateTime) })]
+        [Returns(ReturnType = typeof(Number))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)
@@ -103,6 +126,9 @@ namespace Embers.StdLib.Time
     [StdLib("sec", TargetTypes = new[] { "DateTime" })]
     public class SecFunction : StdFunction
     {
+        [Comments("Returns the second component of a DateTime object.")]
+        [Arguments(ParamNames = new[] { "date_time" }, ParamTypes = new[] { typeof(DateTime) })]
+        [Returns(ReturnType = typeof(Number))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)

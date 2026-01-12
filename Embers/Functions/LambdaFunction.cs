@@ -1,4 +1,5 @@
-﻿using Embers.Language;
+﻿using Embers.Annotations;
+using Embers.Language;
 
 namespace Embers.Functions
 {
@@ -6,6 +7,7 @@ namespace Embers.Functions
     /// LambdaFunction is a function that is defined by a lambda expression.
     /// </summary>
     /// <seealso cref="Embers.Functions.IFunction" />
+    [ScannerIgnore]
     public class LambdaFunction(Func<DynamicObject, Context, IList<object>, object> lambda) : IFunction
     {
         private readonly Func<DynamicObject, Context, IList<object>, object> lambda = lambda;

@@ -1,11 +1,15 @@
 using Embers.Language;
 using Embers.Exceptions;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Numeric
 {
     [StdLib("sqrt", TargetTypes = new[] { "Fixnum", "Float" })]
     public class SqrtFunction : StdFunction
     {
+        [Comments("Returns the square root of a non-negative number.")]
+        [Arguments(ParamNames = new[] { "number" }, ParamTypes = new[] { typeof(Number) })]
+        [Returns(ReturnType = typeof(Number))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values == null || values.Count == 0 || values[0] == null)

@@ -1,10 +1,14 @@
 using Embers.Language;
+using Embers.Annotations;
 
 namespace Embers.StdLib.Ranges
 {
     [StdLib("step", TargetType = "Range")]
     public class StepFunction : StdFunction
     {
+        [Comments("Iterates over the range, yielding every `step`-th element to the given block.")]
+        [Arguments(ParamNames = new[] { "range", "step" }, ParamTypes = new[] { typeof(Language.Range), typeof(Number) })]
+        [Returns(ReturnType = typeof(Language.Range))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             if (values.Count != 2)

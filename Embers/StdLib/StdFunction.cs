@@ -1,4 +1,5 @@
-﻿using Embers.Functions;
+﻿using Embers.Annotations;
+using Embers.Functions;
 using Embers.Language;
 
 namespace Embers.StdLib
@@ -9,6 +10,7 @@ namespace Embers.StdLib
     /// Clases derived from StdFunction will automatically be included in the standard library and can be used as functions in the language.
     /// </summary>
     /// <seealso cref="IFunction" />
+    [ScannerIgnore]
     public abstract class StdFunction : IFunction
     {
         public abstract object Apply(DynamicObject self, Context context, IList<object> values);

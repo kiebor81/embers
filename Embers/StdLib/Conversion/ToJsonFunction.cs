@@ -1,5 +1,6 @@
 using Embers.Exceptions;
 using Embers.Language;
+using Embers.Annotations;
 using System.Text.Json;
 
 namespace Embers.StdLib.Conversion
@@ -10,6 +11,9 @@ namespace Embers.StdLib.Conversion
     [StdLib("to_json")]
     public class ToJsonFunction : StdFunction
     {
+        [Comments("Converts an object to its JSON string representation.")]
+        [Arguments(ParamNames = new[] { "value" }, ParamTypes = new[] { typeof(object) })]
+        [Returns(ReturnType = typeof(string))]
         public override object Apply(DynamicObject self, Context context, IList<object> arguments)
         {
             try

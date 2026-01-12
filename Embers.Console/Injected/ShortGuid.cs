@@ -1,5 +1,6 @@
 ﻿using Embers.Host;
 using Embers.Language;
+using Embers.Annotations;
 
 namespace Embers.Console.Injected
 {
@@ -16,6 +17,8 @@ namespace Embers.Console.Injected
     [HostFunction("short_guid")]
     internal class ShortGuidFunction : HostFunction
     {
+        [Comments("Generates a new short GUID.")]
+        [Returns(ReturnType = typeof(string))]
         public override object Apply(DynamicObject self, Context context, IList<object> values)
         {
             return ShortGuid.NewShortGuid();
