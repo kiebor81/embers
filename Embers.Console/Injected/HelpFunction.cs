@@ -15,7 +15,22 @@ internal class HelpFunction : HostFunction
 
         var documentation_dict = Annotations.FunctionScanner.ScanFunctionDocumentation();
 
-        foreach (var key in documentation_dict.Keys)
+        IEnumerable<string> keysToDisplay;
+        if (values == null || values.Count == 0)
+        {
+            keysToDisplay = documentation_dict.Keys;
+        }
+        else
+        {
+            var lookupKey = values[0].ToString();
+            keysToDisplay = documentation_dict.Keys.Where(k => 
+            {
+                var keyParts = k.Split(',').Select(p => p.Trim());
+                return keyParts.Contains(lookupKey);
+            });
+        }
+
+        foreach (var key in keysToDisplay)
         {
             System.Console.WriteLine($"Method: {key}");
             var doc = documentation_dict[key];

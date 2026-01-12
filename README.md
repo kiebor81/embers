@@ -373,6 +373,146 @@ puts generate_guid
 
 ---
 
+## Function Documentation & Introspection
+
+Embers supports method-level documentation attributes for both host functions and standard library functions. These attributes are intended to support tooling such as REPL help, documentation generation, and editor integrations.
+
+Documentation metadata is extracted at runtime via reflection and does not affect execution behaviour. All documentation attributes are optional; functions without annotations will still be discovered and executed normally.
+
+### Supported Attributes
+
+The following attributes can be applied to the `Apply` method of any `IFunction` implementation:
+
+`CommentsAttribute`
+
+Provides high-level descriptive text for the function.
+
+e.g.
+
+```csharp
+[Comments(
+    "Prints a message to the host output.",
+    "Primarily intended for debugging or logging."
+)]
+```
+
+`ArgumentsAttribute`
+
+Describes parameter names and expected types.
+
+e.g.
+
+```csharp
+[Arguments(
+    ParamNames = new[] { "message" },
+    ParamTypes = new[] { typeof(string) }
+)]
+```
+
+`ReturnsAttribute`
+
+Specifies the return type for documentation purposes.
+
+e.g.
+
+```csharp
+[Returns(ReturnType = typeof(void))]
+```
+
+Complete example:
+
+```csharp
+[HostFunction("hello")]
+internal class HelloFunction : HostFunction
+{
+    [Comments("Prints a greeting message.")]
+    [Arguments(ParamNames = new[] { "message" }, ParamTypes = new[] { typeof(string) })]
+    [Returns(ReturnType = typeof(void))]
+    public override object Apply(DynamicObject self, Context context, IList<object> values)
+    {
+        Console.WriteLine($"Hello {values[0]}");
+        return null;
+    }
+}
+```
+
+### Runtime Discovery
+
+At runtime, host applications can scan all loaded assemblies to extract documentation metadata from functions. This is performed by the `FunctionScanner` and produces a structured representation of available functions and their signatures.
+
+This mechanism is intended for tooling and introspection and may be used by hosts to implement features such as:
+- REPL `help` commands
+- Auto-generated documentation
+- Editor hints or completions
+
+`FunctionScanner.ScanFunctionDocumentation()` returns a dictionary mapping function aliases to structured documentation data (comments, arguments, and return information).
+
+The format and presentation of this information should be entirely host-defined when consumed.
+
+An example `help` function may resemble
+
+```csharp
+// Example host-defined help command using function annotations
+[HostFunction("help")]
+internal class HelpFunction : HostFunction
+{
+    // add attributes for self documentation
+    [Comments("Provides method look-up and documentation.", "Prints results to console.")]
+    [Arguments(ParamNames = new[] { "method_name" }, ParamTypes = new[] { typeof(string) })]
+    [Returns(ReturnType = typeof(void))]
+    public override object Apply(DynamicObject self, Context context, IList<object> values)
+    {
+
+        var documentation_dict = Annotations.FunctionScanner.ScanFunctionDocumentation();
+
+        IEnumerable<string> keysToDisplay;
+
+        // did user provide a method name as string to lookup?
+        // format help "<<METHOD_NAME>>"
+        // if they did, find that method and return
+        // otherwise get the full list
+        if (values == null || values.Count == 0)
+        {
+            keysToDisplay = documentation_dict.Keys;
+        }
+        else
+        {
+            var lookupKey = values[0].ToString();
+            keysToDisplay = documentation_dict.Keys.Where(k => 
+            {
+                var keyParts = k.Split(',').Select(p => p.Trim());
+                return keyParts.Contains(lookupKey);
+            });
+        }
+
+        // extract documentation and write to console output
+        foreach (var key in keysToDisplay)
+        {
+            System.Console.WriteLine($"Method: {key}");
+            var doc = documentation_dict[key];
+            
+            if (!string.IsNullOrEmpty(doc.Comments))
+                System.Console.WriteLine($"  Comments: {doc.Comments}");
+            
+            if (!string.IsNullOrEmpty(doc.Arguments))
+                System.Console.WriteLine($"  Arguments: {doc.Arguments}");
+            
+            if (!string.IsNullOrEmpty(doc.Returns))
+                System.Console.WriteLine($"  Returns: {doc.Returns}");
+
+            System.Console.WriteLine("");
+
+        }
+
+        return null;
+    }
+}
+```
+
+This mechanism is intended to enable rich developer tooling without coupling Embers to any specific user interface or documentation format.
+
+---
+
 ## StdLib Function Registration
 
 Embers includes a reflection-based standard library system for automatic function discovery and registration. Functions can be registered as global methods or as instance methods on native types (Ruby types mapped onto underlying C# representations).
