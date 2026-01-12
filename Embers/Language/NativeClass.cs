@@ -111,7 +111,15 @@ namespace Embers.Language
                 return nilclass;
             }
 
+
             if (self is int)
+            {
+                fixnumclass ??= (NativeClass)machine.RootContext.GetLocalValue("Fixnum");
+
+                return fixnumclass;
+            }
+
+            if (self is long)
             {
                 fixnumclass ??= (NativeClass)machine.RootContext.GetLocalValue("Fixnum");
 
@@ -172,6 +180,12 @@ namespace Embers.Language
                 arrayclass ??= (NativeClass)machine.RootContext.GetLocalValue("Array");
 
                 return arrayclass;
+            }
+
+            if (self is Proc)
+            {
+                var procclass = (NativeClass)machine.RootContext.GetLocalValue("Proc");
+                return procclass;
             }
 
             if (self is IEnumerable)

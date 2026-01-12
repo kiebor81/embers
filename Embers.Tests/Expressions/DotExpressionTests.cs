@@ -22,7 +22,7 @@ namespace Embers.Tests.Expressions
             var result = expression.Evaluate(null);
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result);
+            Assert.AreEqual(3L, result);
         }
 
         [TestMethod]

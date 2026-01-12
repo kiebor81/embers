@@ -190,7 +190,7 @@ namespace Embers.Tests.StdLib.Ranges
         public void RangeComplexChain()
         {
             var result = machine.ExecuteText("sum = 0; (1..20).select { |n| n % 3 == 0 }.each { |n| sum = sum + n }; sum");
-            Assert.AreEqual(63, result); // 3+6+9+12+15+18
+            Assert.AreEqual(63L, result); // 3+6+9+12+15+18
         }
     }
 }

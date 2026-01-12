@@ -13,7 +13,8 @@ namespace Embers.StdLib.Numeric
 
             var value = values[0];
             double d;
-            if (value is int i) d = i;
+            if (value is long l) d = l;
+            else if (value is int i) d = i;
             else if (value is double dd) d = dd;
             else throw new TypeError("sin expects a numeric argument");
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Embers.Language;
 
 namespace Embers.Expressions
 {
@@ -20,6 +21,16 @@ namespace Embers.Expressions
         {
             object value = expression.Evaluate(context);
             object indexvalue = indexexpression.Evaluate(context);
+
+            // Handle Proc: f[arg] is equivalent to f.call(arg)
+            if (value is Proc proc)
+            {
+                return proc.Call([indexvalue]);
+            }
+
+            // Convert long to int for indexing (arrays need int indices)
+            if (indexvalue is long l)
+                indexvalue = (int)l;
 
             if (indexvalue is int)
             {

@@ -15,6 +15,8 @@ namespace Embers.StdLib.Numeric
                 return null;
 
             var value = values[0];
+            if (value is long l)
+                return Math.Abs(l);
             if (value is int i)
                 return Math.Abs(i);
             if (value is double d)

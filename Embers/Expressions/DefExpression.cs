@@ -8,17 +8,21 @@ namespace Embers.Expressions
     /// A DefExpression consists of a named expression, a list of parameters, and an expression that defines the function body.
     /// </summary>
     /// <seealso cref="Embers.Expressions.BaseExpression" />
-    public class DefExpression(INamedExpression namedexpression, IList<string> parameters, IExpression expression) : BaseExpression
+    public class DefExpression(INamedExpression namedexpression, IList<string> parameters, IExpression expression, string? blockParameterName = null) : BaseExpression
     {
         private static readonly int hashcode = typeof(DefExpression).GetHashCode();
 
         private readonly INamedExpression namedexpression = namedexpression;
         private readonly IList<string> parameters = parameters;
         private readonly IExpression expression = expression;
+        private readonly string? blockParameterName = blockParameterName;
+
+        public IList<string> Parameters => parameters;
+        public string? BlockParameterName => blockParameterName;
 
         public override object? Evaluate(Context context)
         {
-            var result = new DefinedFunction(expression, parameters, context);
+            var result = new DefinedFunction(expression, parameters, context, blockParameterName);
 
             if (namedexpression.TargetExpression == null)
             {

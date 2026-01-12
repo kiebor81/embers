@@ -14,8 +14,10 @@ namespace Embers.StdLib.Ranges
             if (range == null)
                 throw new Exceptions.TypeError("range must be a Range");
 
-            if (values[1] is not int step)
+            if (values[1] is not int and not long)
                 throw new Exceptions.TypeError("step must be an integer");
+
+            int step = Convert.ToInt32(values[1]);
 
             if (step <= 0)
                 throw new Exceptions.ArgumentError("step must be positive");

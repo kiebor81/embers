@@ -21,7 +21,7 @@ namespace Embers.Tests.Expressions
 
             cmd.Evaluate(context);
 
-            Assert.AreEqual(6, context.GetValue("a"));
+            Assert.AreEqual(6L, context.GetValue("a"));
         }
 
         [TestMethod]

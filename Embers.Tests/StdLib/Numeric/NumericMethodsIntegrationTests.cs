@@ -16,7 +16,7 @@ namespace Embers.Tests.StdLib.Numeric
             var result = machine.ExecuteText("5.abs");
             
             Assert.IsNotNull(result);
-            Assert.AreEqual(5, result);
+            Assert.AreEqual(5L, result);
         }
 
         [TestMethod]
@@ -27,7 +27,7 @@ namespace Embers.Tests.StdLib.Numeric
             var result = machine.ExecuteText("x = -5\nx.abs");
             
             Assert.IsNotNull(result);
-            Assert.AreEqual(5, result);
+            Assert.AreEqual(5L, result);
         }
 
         [TestMethod]
@@ -49,7 +49,7 @@ namespace Embers.Tests.StdLib.Numeric
             var result = machine.ExecuteText("5.ceil");
             
             Assert.IsNotNull(result);
-            Assert.AreEqual(5, result);
+            Assert.AreEqual(5L, result);
         }
 
         [TestMethod]
@@ -59,7 +59,7 @@ namespace Embers.Tests.StdLib.Numeric
             var result = machine.ExecuteText("3.14.ceil");
             
             Assert.IsNotNull(result);
-            Assert.AreEqual(4, result);
+            Assert.AreEqual(4L, result);
         }
 
         // ==================== FLOOR METHOD TESTS ====================
@@ -71,7 +71,7 @@ namespace Embers.Tests.StdLib.Numeric
             var result = machine.ExecuteText("5.floor");
             
             Assert.IsNotNull(result);
-            Assert.AreEqual(5, result);
+            Assert.AreEqual(5L, result);
         }
 
         [TestMethod]
@@ -81,7 +81,7 @@ namespace Embers.Tests.StdLib.Numeric
             var result = machine.ExecuteText("3.14.floor");
             
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result);
+            Assert.AreEqual(3L, result);
         }
 
         // ==================== ROUND METHOD TESTS ====================
@@ -93,7 +93,7 @@ namespace Embers.Tests.StdLib.Numeric
             var result = machine.ExecuteText("5.round");
             
             Assert.IsNotNull(result);
-            Assert.AreEqual(5, result);
+            Assert.AreEqual(5L, result);
         }
 
         [TestMethod]
@@ -103,7 +103,7 @@ namespace Embers.Tests.StdLib.Numeric
             var result = machine.ExecuteText("3.14.round");
             
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result);
+            Assert.AreEqual(3L, result);
         }
 
         [TestMethod]
@@ -113,7 +113,7 @@ namespace Embers.Tests.StdLib.Numeric
             var result = machine.ExecuteText("3.78.round");
             
             Assert.IsNotNull(result);
-            Assert.AreEqual(4, result);
+            Assert.AreEqual(4L, result);
         }
 
         // ==================== SQRT METHOD TESTS ====================

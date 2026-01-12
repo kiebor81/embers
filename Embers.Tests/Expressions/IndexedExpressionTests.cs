@@ -17,7 +17,7 @@ namespace Embers.Tests.Expressions
             var result = expression.Evaluate(machine.RootContext);
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result);
+            Assert.AreEqual(2L, result);
         }
 
         [TestMethod]
@@ -31,7 +31,7 @@ namespace Embers.Tests.Expressions
             var result = expression.Evaluate(machine.RootContext);
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result);
+            Assert.AreEqual(3L, result);
         }
 
         [TestMethod]

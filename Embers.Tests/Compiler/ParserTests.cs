@@ -1,4 +1,4 @@
-﻿using Embers.Compiler;
+using Embers.Compiler;
 using Embers.Exceptions;
 using Embers.Expressions;
 using Embers.Language;
@@ -12,7 +12,7 @@ namespace Embers.Tests.Compiler
         public void ParseInteger()
         {
             Parser parser = new("123");
-            var expected = new ConstantExpression(123);
+            var expected = new ConstantExpression(123L);
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -51,7 +51,7 @@ namespace Embers.Tests.Compiler
         public void ParseAddTwoIntegers()
         {
             Parser parser = new("1+2");
-            var expected = new AddExpression(new ConstantExpression(1), new ConstantExpression(2));
+            var expected = new AddExpression(new ConstantExpression(1L), new ConstantExpression(2L));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -64,7 +64,7 @@ namespace Embers.Tests.Compiler
         public void ParseAddTwoIntegersInParentheses()
         {
             Parser parser = new("(1+2)");
-            var expected = new AddExpression(new ConstantExpression(1), new ConstantExpression(2));
+            var expected = new AddExpression(new ConstantExpression(1L), new ConstantExpression(2L));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -93,7 +93,7 @@ namespace Embers.Tests.Compiler
         public void ParseSubtractTwoIntegers()
         {
             Parser parser = new("1-2");
-            var expected = new SubtractExpression(new ConstantExpression(1), new ConstantExpression(2));
+            var expected = new SubtractExpression(new ConstantExpression(1L), new ConstantExpression(2L));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -106,7 +106,7 @@ namespace Embers.Tests.Compiler
         public void ParseSubtractThreeIntegers()
         {
             Parser parser = new("1-2-3");
-            var expected = new SubtractExpression(new SubtractExpression(new ConstantExpression(1), new ConstantExpression(2)), new ConstantExpression(3));
+            var expected = new SubtractExpression(new SubtractExpression(new ConstantExpression(1L), new ConstantExpression(2L)), new ConstantExpression(3L));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -119,7 +119,7 @@ namespace Embers.Tests.Compiler
         public void ParseMultiplyTwoIntegers()
         {
             Parser parser = new("3*2");
-            var expected = new MultiplyExpression(new ConstantExpression(3), new ConstantExpression(2));
+            var expected = new MultiplyExpression(new ConstantExpression(3L), new ConstantExpression(2L));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -132,7 +132,7 @@ namespace Embers.Tests.Compiler
         public void ParseAddAndMultiplyIntegers()
         {
             Parser parser = new("1+3*2");
-            var expected = new AddExpression(new ConstantExpression(1), new MultiplyExpression(new ConstantExpression(3), new ConstantExpression(2)));
+            var expected = new AddExpression(new ConstantExpression(1L), new MultiplyExpression(new ConstantExpression(3L), new ConstantExpression(2L)));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -145,7 +145,7 @@ namespace Embers.Tests.Compiler
         public void ParseDivideTwoIntegers()
         {
             Parser parser = new("3/2");
-            var expected = new DivideExpression(new ConstantExpression(3), new ConstantExpression(2));
+            var expected = new DivideExpression(new ConstantExpression(3L), new ConstantExpression(2L));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -158,7 +158,7 @@ namespace Embers.Tests.Compiler
         public void ParseSubtractAndDivideIntegers()
         {
             Parser parser = new("1-3/2");
-            var expected = new SubtractExpression(new ConstantExpression(1), new DivideExpression(new ConstantExpression(3), new ConstantExpression(2)));
+            var expected = new SubtractExpression(new ConstantExpression(1L), new DivideExpression(new ConstantExpression(3L), new ConstantExpression(2L)));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -171,7 +171,7 @@ namespace Embers.Tests.Compiler
         public void ParseNegativeInteger()
         {
             Parser parser = new("-123");
-            var expected = new NegativeExpression(new ConstantExpression(123));
+            var expected = new NegativeExpression(new ConstantExpression(123L));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -184,7 +184,7 @@ namespace Embers.Tests.Compiler
         public void ParsePositiveInteger()
         {
             Parser parser = new("+123");
-            var expected = new ConstantExpression(123);
+            var expected = new ConstantExpression(123L);
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -210,7 +210,7 @@ namespace Embers.Tests.Compiler
         public void ParseNegativeIntegerMinusInteger()
         {
             Parser parser = new("-123-10");
-            var expected = new SubtractExpression(new NegativeExpression(new ConstantExpression(123)), new ConstantExpression(10));
+            var expected = new SubtractExpression(new NegativeExpression(new ConstantExpression(123L)), new ConstantExpression(10L));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -223,7 +223,7 @@ namespace Embers.Tests.Compiler
         public void ParseCallExpressionSimplePuts()
         {
             Parser parser = new("puts 123");
-            var expected = new CallExpression("puts", [new ConstantExpression(123)]);
+            var expected = new CallExpression("puts", [new ConstantExpression(123L)]);
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -236,7 +236,7 @@ namespace Embers.Tests.Compiler
         public void ParseCallExpressionPutsWithTwoArguments()
         {
             Parser parser = new("puts 1,2");
-            var expected = new CallExpression("puts", [new ConstantExpression(1), new ConstantExpression(2)]);
+            var expected = new CallExpression("puts", [new ConstantExpression(1L), new ConstantExpression(2L)]);
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -249,7 +249,7 @@ namespace Embers.Tests.Compiler
         public void ParseCallExpressionPutsWithParentheses()
         {
             Parser parser = new("puts(123)");
-            var expected = new CallExpression("puts", [new ConstantExpression(123)]);
+            var expected = new CallExpression("puts", [new ConstantExpression(123L)]);
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -262,7 +262,7 @@ namespace Embers.Tests.Compiler
         public void ParseCallExpressionPutsWithTwoArgumentsAndParentheses()
         {
             Parser parser = new("puts(1,2)");
-            var expected = new CallExpression("puts", [new ConstantExpression(1), new ConstantExpression(2)]);
+            var expected = new CallExpression("puts", [new ConstantExpression(1L), new ConstantExpression(2L)]);
             
             var result = parser.ParseExpression();
 
@@ -298,7 +298,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleAssignCommand()
         {
             Parser parser = new("a=2");
-            var expected = new AssignExpression("a", new ConstantExpression(2));
+            var expected = new AssignExpression("a", new ConstantExpression(2L));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -311,7 +311,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleAssignCommandWithEndOfLine()
         {
             Parser parser = new("a=2\n");
-            var expected = new AssignExpression("a", new ConstantExpression(2));
+            var expected = new AssignExpression("a", new ConstantExpression(2L));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -324,7 +324,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleAssignCommandPrecededByAnEndOfLine()
         {
             Parser parser = new("\na=2");
-            var expected = new AssignExpression("a", new ConstantExpression(2));
+            var expected = new AssignExpression("a", new ConstantExpression(2L));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -346,7 +346,7 @@ namespace Embers.Tests.Compiler
         public void ParseAssignInstanceVarCommand()
         {
             Parser parser = new("@a=2");
-            var expected = new AssignInstanceVarExpression("a", new ConstantExpression(2));
+            var expected = new AssignInstanceVarExpression("a", new ConstantExpression(2L));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -359,7 +359,7 @@ namespace Embers.Tests.Compiler
         public void ParseAssignClassVarCommand()
         {
             Parser parser = new("@@a=2");
-            var expected = new AssignClassVarExpression("a", new ConstantExpression(2));
+            var expected = new AssignClassVarExpression("a", new ConstantExpression(2L));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -373,7 +373,7 @@ namespace Embers.Tests.Compiler
         {
             Parser parser = new("a.b = 2");
             DotExpression dotexpr = (DotExpression)(new Parser("a.b")).ParseExpression();
-            var expected = new AssignDotExpressions(dotexpr, new ConstantExpression(2));
+            var expected = new AssignDotExpressions(dotexpr, new ConstantExpression(2L));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -399,7 +399,7 @@ namespace Embers.Tests.Compiler
         public void ParseExpressionCommand()
         {
             Parser parser = new("1+2");
-            var expected = new AddExpression(new ConstantExpression(1), new ConstantExpression(2));
+            var expected = new AddExpression(new ConstantExpression(1L), new ConstantExpression(2L));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -438,7 +438,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleIfCommand()
         {
             Parser parser = new("if 1\n a=1\nend");
-            var expected = new IfExpression(new ConstantExpression(1), new AssignExpression("a", new ConstantExpression(1)));
+            var expected = new IfExpression(new ConstantExpression(1L), new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -451,7 +451,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleIfElseCommand()
         {
             Parser parser = new("if 1\n a=1\nelse\n a=2\nend");
-            var expected = new IfExpression(new ConstantExpression(1), new AssignExpression("a", new ConstantExpression(1)), new AssignExpression("a", new ConstantExpression(2)));
+            var expected = new IfExpression(new ConstantExpression(1L), new AssignExpression("a", new ConstantExpression(1L)), new AssignExpression("a", new ConstantExpression(2L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -464,8 +464,8 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleIfElifElseCommand()
         {
             Parser parser = new("if 1\n a=1\nelif 2\n a=2\nelse\n a=3\nend");
-            var innerexpected = new IfExpression(new ConstantExpression(2), new AssignExpression("a", new ConstantExpression(2)), new AssignExpression("a", new ConstantExpression(3)));
-            var expected = new IfExpression(new ConstantExpression(1), new AssignExpression("a", new ConstantExpression(1)), innerexpected);
+            var innerexpected = new IfExpression(new ConstantExpression(2L), new AssignExpression("a", new ConstantExpression(2L)), new AssignExpression("a", new ConstantExpression(3L)));
+            var expected = new IfExpression(new ConstantExpression(1L), new AssignExpression("a", new ConstantExpression(1L)), innerexpected);
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -478,7 +478,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleIfCommandWithThen()
         {
             Parser parser = new("if 1 then\n a=1\nend");
-            var expected = new IfExpression(new ConstantExpression(1), new AssignExpression("a", new ConstantExpression(1)));
+            var expected = new IfExpression(new ConstantExpression(1L), new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -491,7 +491,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleIfCommandWithThenOneLine()
         {
             Parser parser = new("if 1 then a=1 end");
-            var expected = new IfExpression(new ConstantExpression(1), new AssignExpression("a", new ConstantExpression(1)));
+            var expected = new IfExpression(new ConstantExpression(1L), new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -504,7 +504,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleIfCommandWithSemicolonOneLine()
         {
             Parser parser = new("if 1; a=1 end");
-            var expected = new IfExpression(new ConstantExpression(1), new AssignExpression("a", new ConstantExpression(1)));
+            var expected = new IfExpression(new ConstantExpression(1L), new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -517,7 +517,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleIfCommandWithThenOneLineAndOtherLine()
         {
             Parser parser = new("if 1 then a=1\nb=2 end");
-            var expected = new IfExpression(new ConstantExpression(1), new CompositeExpression([new AssignExpression("a", new ConstantExpression(1)), new AssignExpression("b", new ConstantExpression(2))]));
+            var expected = new IfExpression(new ConstantExpression(1L), new CompositeExpression([new AssignExpression("a", new ConstantExpression(1L)), new AssignExpression("b", new ConstantExpression(2L))]));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -530,7 +530,7 @@ namespace Embers.Tests.Compiler
         public void ParseIfCommandWithCompositeThenCommand()
         {
             Parser parser = new("if 1\n a=1\n b=2\nend");
-            var expected = new IfExpression(new ConstantExpression(1), new CompositeExpression([new AssignExpression("a", new ConstantExpression(1)), new AssignExpression("b", new ConstantExpression(2))]));
+            var expected = new IfExpression(new ConstantExpression(1L), new CompositeExpression([new AssignExpression("a", new ConstantExpression(1L)), new AssignExpression("b", new ConstantExpression(2L))]));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -552,7 +552,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleDefCommand()
         {
             Parser parser = new("def foo\na=1\nend");
-            var expected = new DefExpression(new NameExpression("foo"), [], new AssignExpression("a", new ConstantExpression(1)));
+            var expected = new DefExpression(new NameExpression("foo"), [], new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -608,7 +608,7 @@ namespace Embers.Tests.Compiler
         public void ParseObjectDefCommand()
         {
             Parser parser = new("def a.foo\na=1\nend");
-            var expected = new DefExpression(new DotExpression(new NameExpression("a"), "foo", []), [], new AssignExpression("a", new ConstantExpression(1)));
+            var expected = new DefExpression(new DotExpression(new NameExpression("a"), "foo", []), [], new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -621,7 +621,7 @@ namespace Embers.Tests.Compiler
         public void ParseSelfDefCommand()
         {
             Parser parser = new("def self.foo\na=1\nend");
-            var expected = new DefExpression(new DotExpression(new SelfExpression(), "foo", []), [], new AssignExpression("a", new ConstantExpression(1)));
+            var expected = new DefExpression(new DotExpression(new SelfExpression(), "foo", []), [], new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -634,7 +634,7 @@ namespace Embers.Tests.Compiler
         public void ParseObjectDefCommandUsingDoubleColon()
         {
             Parser parser = new("def a::foo\na=1\nend");
-            var expected = new DefExpression(new DoubleColonExpression(new NameExpression("a"), "foo"), [], new AssignExpression("a", new ConstantExpression(1)));
+            var expected = new DefExpression(new DoubleColonExpression(new NameExpression("a"), "foo"), [], new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -647,7 +647,7 @@ namespace Embers.Tests.Compiler
         public void ParseSelfDefCommandUsingDoubleColon()
         {
             Parser parser = new("def self::foo\na=1\nend");
-            var expected = new DefExpression(new DoubleColonExpression(new SelfExpression(), "foo"), [], new AssignExpression("a", new ConstantExpression(1)));
+            var expected = new DefExpression(new DoubleColonExpression(new SelfExpression(), "foo"), [], new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -673,7 +673,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleClassCommand()
         {
             Parser parser = new("class Dog\na=1\nend");
-            var expected = new ClassExpression(new NameExpression("Dog"), new AssignExpression("a", new ConstantExpression(1)));
+            var expected = new ClassExpression(new NameExpression("Dog"), new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -686,7 +686,7 @@ namespace Embers.Tests.Compiler
         public void ParseQualifiedClassCommand()
         {
             Parser parser = new("class Animals::Dog\na=1\nend");
-            var expected = new ClassExpression(new DoubleColonExpression(new NameExpression("Animals"), "Dog"), new AssignExpression("a", new ConstantExpression(1)));
+            var expected = new ClassExpression(new DoubleColonExpression(new NameExpression("Animals"), "Dog"), new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -713,7 +713,7 @@ namespace Embers.Tests.Compiler
         public void ParseDotExpressionWithIntegerArgument()
         {
             Parser parser = new("dog.foo 1");
-            var expected = new DotExpression(new NameExpression("dog"), "foo", [new ConstantExpression(1)]);
+            var expected = new DotExpression(new NameExpression("dog"), "foo", [new ConstantExpression(1L)]);
 
             var result = parser.ParseExpression();
 
@@ -727,7 +727,7 @@ namespace Embers.Tests.Compiler
         public void ParseDotExpressionWithIntegerArgumentInParentheses()
         {
             Parser parser = new("dog.foo(1)");
-            var expected = new DotExpression(new NameExpression("dog"), "foo", [new ConstantExpression(1)]);
+            var expected = new DotExpression(new NameExpression("dog"), "foo", [new ConstantExpression(1L)]);
 
             var result = parser.ParseExpression();
 
@@ -755,7 +755,7 @@ namespace Embers.Tests.Compiler
         public void ParseDotExpressionWithIntegerAsTarget()
         {
             Parser parser = new("1.foo");
-            var expected = new DotExpression(new ConstantExpression(1), "foo", []);
+            var expected = new DotExpression(new ConstantExpression(1L), "foo", []);
 
             var result = parser.ParseExpression();
 
@@ -799,12 +799,12 @@ namespace Embers.Tests.Compiler
             Parser parser = new("1==2 1!=2 1<2 1>2 1<=2 1>=2");
             var expected = new IExpression[] 
             {
-                new CompareExpression(new ConstantExpression(1), new ConstantExpression(2), CompareOperator.Equal),
-                new CompareExpression(new ConstantExpression(1), new ConstantExpression(2), CompareOperator.NotEqual),
-                new CompareExpression(new ConstantExpression(1), new ConstantExpression(2), CompareOperator.Less),
-                new CompareExpression(new ConstantExpression(1), new ConstantExpression(2), CompareOperator.Greater),
-                new CompareExpression(new ConstantExpression(1), new ConstantExpression(2), CompareOperator.LessOrEqual),
-                new CompareExpression(new ConstantExpression(1), new ConstantExpression(2), CompareOperator.GreaterOrEqual)
+                new CompareExpression(new ConstantExpression(1L), new ConstantExpression(2L), CompareOperator.Equal),
+                new CompareExpression(new ConstantExpression(1L), new ConstantExpression(2L), CompareOperator.NotEqual),
+                new CompareExpression(new ConstantExpression(1L), new ConstantExpression(2L), CompareOperator.Less),
+                new CompareExpression(new ConstantExpression(1L), new ConstantExpression(2L), CompareOperator.Greater),
+                new CompareExpression(new ConstantExpression(1L), new ConstantExpression(2L), CompareOperator.LessOrEqual),
+                new CompareExpression(new ConstantExpression(1L), new ConstantExpression(2L), CompareOperator.GreaterOrEqual)
             };
 
             foreach (var exp in expected)
@@ -893,7 +893,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleList()
         {
             Parser parser = new("[1,2,3]");
-            IExpression expected = new ArrayExpression([new ConstantExpression(1), new ConstantExpression(2), new ConstantExpression(3)]);
+            IExpression expected = new ArrayExpression([new ConstantExpression(1L), new ConstantExpression(2L), new ConstantExpression(3L)]);
 
             var result = parser.ParseExpression();
 
@@ -907,7 +907,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleListWithExpression()
         {
             Parser parser = new("[1,1+1,3]");
-            IExpression expected = new ArrayExpression([new ConstantExpression(1), new AddExpression(new ConstantExpression(1), new ConstantExpression(1)), new ConstantExpression(3)]);
+            IExpression expected = new ArrayExpression([new ConstantExpression(1L), new AddExpression(new ConstantExpression(1L), new ConstantExpression(1L)), new ConstantExpression(3L)]);
 
             var result = parser.ParseExpression();
 
@@ -921,7 +921,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleForInCommand()
         {
             Parser parser = new("for k in [1,2,3]\n puts k\nend");
-            var expected = new ForInExpression("k", new ArrayExpression([new ConstantExpression(1), new ConstantExpression(2), new ConstantExpression(3)]), new CallExpression("puts", [new NameExpression("k")]));
+            var expected = new ForInExpression("k", new ArrayExpression([new ConstantExpression(1L), new ConstantExpression(2L), new ConstantExpression(3L)]), new CallExpression("puts", [new NameExpression("k")]));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -934,7 +934,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleForInCommandWithDo()
         {
             Parser parser = new("for k in [1,2,3] do\n puts k\nend");
-            var expected = new ForInExpression("k", new ArrayExpression([new ConstantExpression(1), new ConstantExpression(2), new ConstantExpression(3)]), new CallExpression("puts", [new NameExpression("k")]));
+            var expected = new ForInExpression("k", new ArrayExpression([new ConstantExpression(1L), new ConstantExpression(2L), new ConstantExpression(3L)]), new CallExpression("puts", [new NameExpression("k")]));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -947,7 +947,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleForInCommandWithDoUsingReader()
         {
             Parser parser = new(new StringReader("for k in [1,2,3] do\n puts k\nend"));
-            var expected = new ForInExpression("k", new ArrayExpression([new ConstantExpression(1), new ConstantExpression(2), new ConstantExpression(3)]), new CallExpression("puts", [new NameExpression("k")]));
+            var expected = new ForInExpression("k", new ArrayExpression([new ConstantExpression(1L), new ConstantExpression(2L), new ConstantExpression(3L)]), new CallExpression("puts", [new NameExpression("k")]));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -960,7 +960,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleForInCommandWithDoSingleLine()
         {
             Parser parser = new("for k in [1,2,3] do puts(k) end");
-            var expected = new ForInExpression("k", new ArrayExpression([new ConstantExpression(1), new ConstantExpression(2), new ConstantExpression(3)]), new CallExpression("puts", [new NameExpression("k")]));
+            var expected = new ForInExpression("k", new ArrayExpression([new ConstantExpression(1L), new ConstantExpression(2L), new ConstantExpression(3L)]), new CallExpression("puts", [new NameExpression("k")]));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -973,7 +973,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleForInCommandSingleLine()
         {
             Parser parser = new("for k in [1,2,3]; puts k; end");
-            var expected = new ForInExpression("k", new ArrayExpression([new ConstantExpression(1), new ConstantExpression(2), new ConstantExpression(3)]), new CallExpression("puts", [new NameExpression("k")]));
+            var expected = new ForInExpression("k", new ArrayExpression([new ConstantExpression(1L), new ConstantExpression(2L), new ConstantExpression(3L)]), new CallExpression("puts", [new NameExpression("k")]));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -986,7 +986,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleIndexedExpression()
         {
             Parser parser = new("a[1]");
-            var expected = new IndexedExpression(new NameExpression("a"), new ConstantExpression(1));
+            var expected = new IndexedExpression(new NameExpression("a"), new ConstantExpression(1L));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -1012,7 +1012,7 @@ namespace Embers.Tests.Compiler
         public void ParseCallWithDoWithArguments()
         {
             Parser parser = new("1.upto(9) do |x| print x end");
-            var expected = new DotExpression(new ConstantExpression(1), "upto", [new ConstantExpression(9), new BlockExpression(["x"], new CallExpression("print", [new NameExpression("x")]))]);
+            var expected = new DotExpression(new ConstantExpression(1L), "upto", [new ConstantExpression(9L), new BlockExpression(["x"], new CallExpression("print", [new NameExpression("x")]))]);
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -1064,7 +1064,7 @@ namespace Embers.Tests.Compiler
         public void ParseCallWithBlockWithArguments()
         {
             Parser parser = new("1.upto(9) { |x| print x }");
-            var expected = new DotExpression(new ConstantExpression(1), "upto", [new ConstantExpression(9), new BlockExpression(["x"], new CallExpression("print", [new NameExpression("x")]))]);
+            var expected = new DotExpression(new ConstantExpression(1L), "upto", [new ConstantExpression(9L), new BlockExpression(["x"], new CallExpression("print", [new NameExpression("x")]))]);
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -1077,7 +1077,7 @@ namespace Embers.Tests.Compiler
         public void ParseEmptyModule()
         {
             Parser parser = new("module Module1; a=1; end");
-            var expected = new ModuleExpression("Module1", new AssignExpression("a", new ConstantExpression(1)));
+            var expected = new ModuleExpression("Module1", new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -1116,7 +1116,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleHash()
         {
             Parser parser = new("{ :one=>1, :two => 2 }");
-            var expected = new HashExpression([new ConstantExpression(new Symbol("one")), new ConstantExpression(new Symbol("two"))], [new ConstantExpression(1), new ConstantExpression(2)]);
+            var expected = new HashExpression([new ConstantExpression(new Symbol("one")), new ConstantExpression(new Symbol("two"))], [new ConstantExpression(1L), new ConstantExpression(2L)]);
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -1142,7 +1142,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleIndexedAssign()
         {
             Parser parser = new("a[1] = 2");
-            var expected = new AssignIndexedExpression(new NameExpression("a"), new ConstantExpression(1), new ConstantExpression(2));
+            var expected = new AssignIndexedExpression(new NameExpression("a"), new ConstantExpression(1L), new ConstantExpression(2L));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -1155,7 +1155,7 @@ namespace Embers.Tests.Compiler
         public void ParseDotIndexedAssign()
         {
             Parser parser = new("a.b[1] = 2");
-            var expected = new AssignIndexedExpression(new DotExpression(new NameExpression("a"), "b", []), new ConstantExpression(1), new ConstantExpression(2));
+            var expected = new AssignIndexedExpression(new DotExpression(new NameExpression("a"), "b", []), new ConstantExpression(1L), new ConstantExpression(2L));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -1168,7 +1168,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleRangeExpression()
         {
             Parser parser = new("1..10");
-            var expected = new RangeExpression(new ConstantExpression(1), new ConstantExpression(10));
+            var expected = new RangeExpression(new ConstantExpression(1L), new ConstantExpression(10L));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -1181,7 +1181,7 @@ namespace Embers.Tests.Compiler
         public void ParseRangeExpression()
         {
             Parser parser = new("1+2..10");
-            var expected = new RangeExpression(new AddExpression(new ConstantExpression(1), new ConstantExpression(2)), new ConstantExpression(10));
+            var expected = new RangeExpression(new AddExpression(new ConstantExpression(1L), new ConstantExpression(2L)), new ConstantExpression(10L));
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -1238,3 +1238,4 @@ namespace Embers.Tests.Compiler
         }
     }
 }
+

@@ -29,7 +29,7 @@ namespace Embers.Tests.Language
                 end
                 test { |x| x + 3 }
             ");
-            Assert.AreEqual(10, result);
+            Assert.AreEqual(10L, result);
         }
 
         [TestMethod]
@@ -41,7 +41,7 @@ namespace Embers.Tests.Language
                 end
                 test { |x, y| x * y }
             ");
-            Assert.AreEqual(50, result);
+            Assert.AreEqual(50L, result);
         }
 
         [TestMethod]
@@ -53,7 +53,7 @@ namespace Embers.Tests.Language
                 end
                 test { 99 }
             ");
-            Assert.AreEqual(99, result);
+            Assert.AreEqual(99L, result);
         }
 
         [TestMethod]
@@ -71,7 +71,7 @@ namespace Embers.Tests.Language
             ");
             // First yield: 1 * 2 = 2, second: 2 * 2 = 4, third: 3 * 2 = 6
             // sum = 0 + 4 + 6 = 10
-            Assert.AreEqual(10, result);
+            Assert.AreEqual(10L, result);
         }
 
         #endregion
@@ -88,9 +88,9 @@ namespace Embers.Tests.Language
             var list = result as IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(2, list[0]);
-            Assert.AreEqual(4, list[1]);
-            Assert.AreEqual(6, list[2]);
+            Assert.AreEqual(2L, list[0]);
+            Assert.AreEqual(4L, list[1]);
+            Assert.AreEqual(6L, list[2]);
         }
 
         [TestMethod]
@@ -103,9 +103,9 @@ namespace Embers.Tests.Language
             var list = result as IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(3, list[0]);
-            Assert.AreEqual(4, list[1]);
-            Assert.AreEqual(5, list[2]);
+            Assert.AreEqual(3L, list[0]);
+            Assert.AreEqual(4L, list[1]);
+            Assert.AreEqual(5L, list[2]);
         }
 
         [TestMethod]
@@ -117,7 +117,7 @@ namespace Embers.Tests.Language
                 arr.each { |x| sum = sum + x }
                 sum
             ");
-            Assert.AreEqual(10, result);
+            Assert.AreEqual(10L, result);
         }
 
         [TestMethod]
@@ -130,10 +130,10 @@ namespace Embers.Tests.Language
             var list = result as IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(4, list.Count);
-            Assert.AreEqual(6, list[0]);
-            Assert.AreEqual(8, list[1]);
-            Assert.AreEqual(10, list[2]);
-            Assert.AreEqual(12, list[3]);
+            Assert.AreEqual(6L, list[0]);
+            Assert.AreEqual(8L, list[1]);
+            Assert.AreEqual(10L, list[2]);
+            Assert.AreEqual(12L, list[3]);
         }
 
         #endregion
@@ -148,7 +148,7 @@ namespace Embers.Tests.Language
                 (1..5).each { |x| sum = sum + x }
                 sum
             ");
-            Assert.AreEqual(15, result);
+            Assert.AreEqual(15L, result);
         }
 
         #endregion
@@ -165,7 +165,7 @@ namespace Embers.Tests.Language
                 end
                 test { |x| x * 2 }
             ");
-            Assert.AreEqual(20, result);
+            Assert.AreEqual(20L, result);
         }
 
         [TestMethod]
@@ -183,7 +183,7 @@ namespace Embers.Tests.Language
                     end
                 }
             ");
-            Assert.AreEqual(10, result);
+            Assert.AreEqual(10L, result);
         }
 
         [TestMethod]
@@ -198,7 +198,7 @@ namespace Embers.Tests.Language
                     y + 3 
                 }
             ");
-            Assert.AreEqual(13, result);
+            Assert.AreEqual(13L, result);
         }
 
         #endregion
@@ -221,7 +221,7 @@ namespace Embers.Tests.Language
                 counter = Counter.new
                 counter.increment { |x| x * 2 }
             ");
-            Assert.AreEqual(2, result);
+            Assert.AreEqual(2L, result);
         }
 
         #endregion
@@ -240,9 +240,9 @@ namespace Embers.Tests.Language
             var list = result as IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(2, list[0]);
-            Assert.AreEqual(4, list[1]);
-            Assert.AreEqual(6, list[2]);
+            Assert.AreEqual(2L, list[0]);
+            Assert.AreEqual(4L, list[1]);
+            Assert.AreEqual(6L, list[2]);
         }
 
         [TestMethod]
@@ -254,9 +254,9 @@ namespace Embers.Tests.Language
             var list = result as IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(1, list[0]);
-            Assert.AreEqual(4, list[1]);
-            Assert.AreEqual(9, list[2]);
+            Assert.AreEqual(1L, list[0]);
+            Assert.AreEqual(4L, list[1]);
+            Assert.AreEqual(9L, list[2]);
         }
 
         [TestMethod]
@@ -271,13 +271,13 @@ namespace Embers.Tests.Language
             
             var list1 = outerList[0] as IList;
             Assert.IsNotNull(list1);
-            Assert.AreEqual(2, list1[0]);
-            Assert.AreEqual(4, list1[1]);
+            Assert.AreEqual(2L, list1[0]);
+            Assert.AreEqual(4L, list1[1]);
             
             var list2 = outerList[1] as IList;
             Assert.IsNotNull(list2);
-            Assert.AreEqual(6, list2[0]);
-            Assert.AreEqual(8, list2[1]);
+            Assert.AreEqual(6L, list2[0]);
+            Assert.AreEqual(8L, list2[1]);
         }
 
         #endregion
@@ -333,7 +333,7 @@ namespace Embers.Tests.Language
                 end
                 test { |y| y + x }
             ");
-            Assert.AreEqual(15, result);
+            Assert.AreEqual(15L, result);
         }
 
         [TestMethod]
@@ -347,7 +347,7 @@ namespace Embers.Tests.Language
                 test { x = 20 }
                 x
             ");
-            Assert.AreEqual(20, result);
+            Assert.AreEqual(20L, result);
         }
 
         [TestMethod]
@@ -363,8 +363,8 @@ namespace Embers.Tests.Language
             ");
             var list = result as IList;
             Assert.IsNotNull(list);
-            Assert.AreEqual(10, list[0]); // Block result
-            Assert.AreEqual(10, list[1]); // Original x unchanged
+            Assert.AreEqual(10L, list[0]); // Block result
+            Assert.AreEqual(10L, list[1]); // Original x unchanged
         }
 
         #endregion
@@ -382,9 +382,9 @@ namespace Embers.Tests.Language
             var list = result as IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(6, list[0]);
-            Assert.AreEqual(8, list[1]);
-            Assert.AreEqual(10, list[2]);
+            Assert.AreEqual(6L, list[0]);
+            Assert.AreEqual(8L, list[1]);
+            Assert.AreEqual(10L, list[2]);
         }
 
         [TestMethod]
@@ -408,9 +408,9 @@ namespace Embers.Tests.Language
             var list = result as IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(9, list[0]);
-            Assert.AreEqual(16, list[1]);
-            Assert.AreEqual(25, list[2]);
+            Assert.AreEqual(9L, list[0]);
+            Assert.AreEqual(16L, list[1]);
+            Assert.AreEqual(25L, list[2]);
         }
 
         [TestMethod]
@@ -430,7 +430,7 @@ namespace Embers.Tests.Language
                 
                 process
             ");
-            Assert.AreEqual(24, result); // (5 * 2) + (7 * 2) = 10 + 14 = 24
+            Assert.AreEqual(24L, result); // (5 * 2) + (7 * 2) = 10 + 14 = 24
         }
 
         [TestMethod]
@@ -448,7 +448,7 @@ namespace Embers.Tests.Language
                 calc = Calculator.new
                 calc.calculate { |x, m| x * m }
             ");
-            Assert.AreEqual(15, result);
+            Assert.AreEqual(15L, result);
         }
 
         #endregion

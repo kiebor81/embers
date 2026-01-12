@@ -44,9 +44,9 @@ namespace Embers.Tests.StdLib.Hashes
             var list = result as IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.IsTrue(list.Contains(1));
-            Assert.IsTrue(list.Contains(2));
-            Assert.IsTrue(list.Contains(3));
+            Assert.IsTrue(list.Contains(1L));
+            Assert.IsTrue(list.Contains(2L));
+            Assert.IsTrue(list.Contains(3L));
         }
 
         [TestMethod]
@@ -58,7 +58,7 @@ namespace Embers.Tests.StdLib.Hashes
                 h.each { |k, v| sum = sum + v }
                 sum
             ");
-            Assert.AreEqual(3, result);
+            Assert.AreEqual(3L, result);
         }
 
         [TestMethod]
@@ -71,9 +71,9 @@ namespace Embers.Tests.StdLib.Hashes
             var list = result as IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.IsTrue(list.Contains(2));
-            Assert.IsTrue(list.Contains(4));
-            Assert.IsTrue(list.Contains(6));
+            Assert.IsTrue(list.Contains(2L));
+            Assert.IsTrue(list.Contains(4L));
+            Assert.IsTrue(list.Contains(6L));
         }
 
         [TestMethod]
@@ -86,8 +86,8 @@ namespace Embers.Tests.StdLib.Hashes
             var hash = result as IDictionary;
             Assert.IsNotNull(hash);
             Assert.AreEqual(2, hash.Count);
-            Assert.AreEqual(3, hash[new Symbol("c")]);
-            Assert.AreEqual(4, hash[new Symbol("d")]);
+            Assert.AreEqual(3L, hash[new Symbol("c")]);
+            Assert.AreEqual(4L, hash[new Symbol("d")]);
         }
 
         [TestMethod]
@@ -100,8 +100,8 @@ namespace Embers.Tests.StdLib.Hashes
             var hash = result as IDictionary;
             Assert.IsNotNull(hash);
             Assert.AreEqual(2, hash.Count);
-            Assert.AreEqual(1, hash[new Symbol("a")]);
-            Assert.AreEqual(2, hash[new Symbol("b")]);
+            Assert.AreEqual(1L, hash[new Symbol("a")]);
+            Assert.AreEqual(2L, hash[new Symbol("b")]);
         }
 
         [TestMethod]
@@ -157,9 +157,9 @@ namespace Embers.Tests.StdLib.Hashes
             var hash = result as IDictionary;
             Assert.IsNotNull(hash);
             Assert.AreEqual(3, hash.Count);
-            Assert.AreEqual(1, hash[new Symbol("a")]);
-            Assert.AreEqual(3, hash[new Symbol("b")]);
-            Assert.AreEqual(4, hash[new Symbol("c")]);
+            Assert.AreEqual(1L, hash[new Symbol("a")]);
+            Assert.AreEqual(3L, hash[new Symbol("b")]);
+            Assert.AreEqual(4L, hash[new Symbol("c")]);
         }
 
         [TestMethod]
@@ -172,9 +172,9 @@ namespace Embers.Tests.StdLib.Hashes
             var list = result as IList;
             Assert.IsNotNull(list);
             Assert.AreEqual(3, list.Count);
-            Assert.IsTrue(list.Contains(4));
-            Assert.IsTrue(list.Contains(6));
-            Assert.IsTrue(list.Contains(8));
+            Assert.IsTrue(list.Contains(4L));
+            Assert.IsTrue(list.Contains(6L));
+            Assert.IsTrue(list.Contains(8L));
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Embers.Tests.Expressions
             
             // The times method should return the last yield result
             Assert.IsNotNull(result);
-            Assert.AreEqual(4, result); // Last iteration: 2 * 2 = 4
+            Assert.AreEqual(4L, result); // Last iteration: 2 * 2 = 4
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace Embers.Tests.Expressions
             
             // Should be 1 + 2 + 3 = 6
             Assert.IsNotNull(result);
-            Assert.AreEqual(6, result);
+            Assert.AreEqual(6L, result);
         }
 
         [TestMethod]
@@ -120,7 +120,7 @@ namespace Embers.Tests.Expressions
             var resultValue = machine.RootContext.GetValue("result");
             
             Assert.IsNotNull(resultValue);
-            Assert.AreEqual(50, resultValue);
+            Assert.AreEqual(50L, resultValue);
         }
     }
 }

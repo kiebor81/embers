@@ -41,9 +41,32 @@ namespace Embers.Expressions
                 arguments.RemoveAt(arguments.Count - 1);  // Remove block from arguments list
             }
 
-            // Evaluate remaining arguments
+            // Check for &block argument syntax
             foreach (var argument in arguments)
-                values.Add(argument.Evaluate(context));
+            {
+                if (argument is BlockArgumentExpression blockArgExpr)
+                {
+                    // This is a &block argument - extract the IFunction from the Proc
+                    object blockValue = blockArgExpr.Evaluate(context);
+                    if (blockValue is Embers.Language.Proc proc)
+                    {
+                        block = proc.GetFunction();
+                    }
+                    else if (blockValue == null)
+                    {
+                        block = null;
+                    }
+                    else
+                    {
+                        throw new Embers.Exceptions.TypeError($"Expected Proc for block argument, got {blockValue.GetType().Name}");
+                    }
+                    // Don't add to values - block is passed separately
+                }
+                else
+                {
+                    values.Add(argument.Evaluate(context));
+                }
+            }
 
             // Use block-aware function call if applicable
             if (function is DefinedFunction df)

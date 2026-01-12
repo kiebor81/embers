@@ -18,6 +18,7 @@ namespace Embers.StdLib.Conversion
             try
             {
                 if (value is double d) return d;
+                if (value is long l) return (double)l;
                 if (value is int i) return (double)i;
                 if (value is string s) return double.Parse(s, System.Globalization.CultureInfo.InvariantCulture);
                 return Convert.ToDouble(value);
