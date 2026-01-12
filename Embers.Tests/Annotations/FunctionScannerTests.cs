@@ -22,15 +22,15 @@ namespace Embers.Tests.Annotations
         {
             var documentation = FunctionScanner.ScanFunctionDocumentation();
             
-            Assert.IsTrue(documentation.ContainsKey("PutsFunction"), 
-                "Should find PutsFunction in scanned functions");
+            Assert.IsTrue(documentation.ContainsKey("puts, print"), 
+                "Should find puts, print in scanned functions");
         }
 
         [TestMethod]
         public void ScanFunctionDocumentation_PutsFunctionHasComments()
         {
             var documentation = FunctionScanner.ScanFunctionDocumentation();
-            var putsDoc = documentation["PutsFunction"];
+            var putsDoc = documentation["puts, print"];
             
             Assert.IsFalse(string.IsNullOrEmpty(putsDoc.Comments), 
                 "PutsFunction should have comments attribute");
@@ -42,7 +42,7 @@ namespace Embers.Tests.Annotations
         public void ScanFunctionDocumentation_PutsFunctionHasArguments()
         {
             var documentation = FunctionScanner.ScanFunctionDocumentation();
-            var putsDoc = documentation["PutsFunction"];
+            var putsDoc = documentation["puts, print"];
             
             Assert.IsFalse(string.IsNullOrEmpty(putsDoc.Arguments), 
                 "PutsFunction should have arguments attribute");
@@ -54,7 +54,7 @@ namespace Embers.Tests.Annotations
         public void ScanFunctionDocumentation_PutsFunctionHasReturnType()
         {
             var documentation = FunctionScanner.ScanFunctionDocumentation();
-            var putsDoc = documentation["PutsFunction"];
+            var putsDoc = documentation["puts, print"];
             
             Assert.IsFalse(string.IsNullOrEmpty(putsDoc.Returns), 
                 "PutsFunction should have return type attribute");
