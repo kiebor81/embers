@@ -12,7 +12,7 @@
 		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
 		<PackageId>Embers.Runtime</PackageId>
 		<Version>1.0.1</Version>
-		<Authors>Your Name</Authors>
+		<Authors>Kieran Borsden</Authors>
 		<Description>Embedded Ruby Script - A Ruby-inspired interpreter for .NET</Description>
 		<PackageProjectUrl>https://github.com/kiebor81/embers</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/kiebor81/embers</RepositoryUrl>
