@@ -27,7 +27,7 @@ namespace Embers.Tests
         public void AccessSystemDateTimeNow()
         {
             // Access a static property from a .NET type
-            object result = machine.ExecuteText("System.DateTime.Now");
+            object result = machine.ExecuteText("System::DateTime.Now");
             
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(DateTime));
@@ -37,7 +37,7 @@ namespace Embers.Tests
         public void CallSystemGuidNewGuid()
         {
             // Call a static method on a .NET type
-            object result = machine.ExecuteText("System.Guid.NewGuid()");
+            object result = machine.ExecuteText("System::Guid.NewGuid()");
             
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(Guid));
@@ -46,8 +46,8 @@ namespace Embers.Tests
         [TestMethod]
         public void CallSystemMathAbsolute()
         {
-            // Call a static method on System.Math
-            object result = machine.ExecuteText("System.Math.Abs(-42)");
+            // Call a static method on System::Math
+            object result = machine.ExecuteText("System::Math.Abs(-42)");
             
             Assert.IsNotNull(result);
             Assert.AreEqual(42L, result);
@@ -57,7 +57,7 @@ namespace Embers.Tests
         public void AccessIntMaxValue()
         {
             // Access a static constant field from a .NET type
-            object result = machine.ExecuteText("System.Int32.MaxValue");
+            object result = machine.ExecuteText("System::Int32.MaxValue");
             
             Assert.IsNotNull(result);
             Assert.AreEqual(int.MaxValue, result);
@@ -69,7 +69,7 @@ namespace Embers.Tests
         public void ChainSystemStringMethods()
         {
             // Chain methods from .NET types
-            object result = machine.ExecuteText("System.String.Concat('Hello', ' ', 'World')");
+            object result = machine.ExecuteText("System::String.Concat('Hello', ' ', 'World')");
             
             Assert.IsNotNull(result);
             Assert.AreEqual("Hello World", result);
@@ -79,7 +79,7 @@ namespace Embers.Tests
         public void CallMethodOnDateTimeInstance()
         {
             // Get a .NET object and call instance methods on it
-            object result = machine.ExecuteText("System.DateTime.Now.Year");
+            object result = machine.ExecuteText("System::DateTime.Now.Year");
             
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(int));
@@ -91,9 +91,9 @@ namespace Embers.Tests
         public void AccessMultipleDotNetTypes()
         {
             // Demonstrate accessing various .NET types in sequence
-            object guid = machine.ExecuteText("System.Guid.NewGuid()");
-            object now = machine.ExecuteText("System.DateTime.Now");
-            object max = machine.ExecuteText("System.Int32.MaxValue");
+            object guid = machine.ExecuteText("System::Guid.NewGuid()");
+            object now = machine.ExecuteText("System::DateTime.Now");
+            object max = machine.ExecuteText("System::Int32.MaxValue");
             
             Assert.IsNotNull(guid);
             Assert.IsNotNull(now);
@@ -106,7 +106,7 @@ namespace Embers.Tests
         public void StoreNetObjectInEmbersVariable()
         {
             // Store a .NET object in an Embers variable
-            machine.ExecuteText("guid = System.Guid.NewGuid()");
+            machine.ExecuteText("guid = System::Guid.NewGuid()");
             
             object result = machine.RootContext.GetLocalValue("guid");
             Assert.IsNotNull(result);
@@ -117,7 +117,7 @@ namespace Embers.Tests
         public void CallNetMethodOnEmbersVariable()
         {
             // Store .NET object and call methods on it
-            machine.ExecuteText("dt = System.DateTime.Now");
+            machine.ExecuteText("dt = System::DateTime.Now");
             object year = machine.ExecuteText("dt.Year");
             
             Assert.IsNotNull(year);
@@ -128,7 +128,7 @@ namespace Embers.Tests
         public void UseNetObjectInEmbersArray()
         {
             // Mix .NET objects with Embers arrays
-            machine.ExecuteText("arr = [System.Guid.NewGuid(), System.DateTime.Now, 42]");
+            machine.ExecuteText("arr = [System::Guid.NewGuid(), System::DateTime.Now, 42]");
             
             object result = machine.RootContext.GetLocalValue("arr");
             Assert.IsNotNull(result);
@@ -138,7 +138,7 @@ namespace Embers.Tests
         public void UseNetObjectInEmbersHash()
         {
             // Mix .NET objects in Embers hash
-            machine.ExecuteText("data = { 'id' => System.Guid.NewGuid(), 'time' => System.DateTime.Now }");
+            machine.ExecuteText("data = { 'id' => System::Guid.NewGuid(), 'time' => System::DateTime.Now }");
             
             object result = machine.RootContext.GetLocalValue("data");
             Assert.IsNotNull(result);
@@ -154,7 +154,7 @@ namespace Embers.Tests
                 end
             ");
             
-            object result = machine.ExecuteText("get_year(System.DateTime.Now)");
+            object result = machine.ExecuteText("get_year(System::DateTime.Now)");
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(int));
         }
@@ -164,7 +164,7 @@ namespace Embers.Tests
         {
             // Use .NET object in Embers if statement
             object result = machine.ExecuteText(@"
-                num = System.Math.Abs(-10)
+                num = System::Math.Abs(-10)
                 if num > 5
                     'big'
                 else
@@ -180,7 +180,7 @@ namespace Embers.Tests
         {
             // Use .NET object in Embers loop
             machine.ExecuteText(@"
-                max = System.Int32.MaxValue
+                max = System::Int32.MaxValue
                 count = 0
                 for i in 1..3
                     if i < max
@@ -200,7 +200,7 @@ namespace Embers.Tests
             machine.ExecuteText("values = [1, -2, 3, -4, 5]");
             object result = machine.ExecuteText(@"
                 values.map do |x|
-                    System.Math.Abs(x)
+                    System::Math.Abs(x)
                 end
             ");
             
@@ -212,8 +212,8 @@ namespace Embers.Tests
         {
             // Mix .NET Math methods with Embers arithmetic
             object result = machine.ExecuteText(@"
-                a = System.Math.Abs(-15)
-                b = System.Math.Sqrt(16)
+                a = System::Math.Abs(-15)
+                b = System::Math.Sqrt(16)
                 a + b
             ");
             
@@ -224,7 +224,7 @@ namespace Embers.Tests
         public void FormatNetDateTimeWithEmbersString()
         {
             // Get .NET DateTime and format with Embers string operations
-            machine.ExecuteText("dt = System.DateTime.Now");
+            machine.ExecuteText("dt = System::DateTime.Now");
             object year = machine.ExecuteText("dt.Year.ToString()");
             
             Assert.IsNotNull(year);
@@ -237,7 +237,7 @@ namespace Embers.Tests
         public void AccessEnumValue()
         {
             // Access .NET enum values using :: operator
-            object result = machine.ExecuteText("System.DayOfWeek::Monday");
+            object result = machine.ExecuteText("System::DayOfWeek::Monday");
             
             Assert.IsNotNull(result);
             Assert.AreEqual(DayOfWeek.Monday, result);
@@ -248,8 +248,8 @@ namespace Embers.Tests
         {
             // Use enum in Embers comparison
             object result = machine.ExecuteText(@"
-                today = System.DateTime.Now.DayOfWeek
-                if today == System.DayOfWeek::Saturday || today == System.DayOfWeek::Sunday
+                today = System::DateTime.Now.DayOfWeek
+                if today == System::DayOfWeek::Saturday || today == System::DayOfWeek::Sunday
                     'weekend'
                 else
                     'weekday'
@@ -260,13 +260,13 @@ namespace Embers.Tests
             Assert.IsTrue(result.Equals("weekend") || result.Equals("weekday"));
         }
 
-        // ==================== Ruby-Style :: Syntax for Types ====================
+        // ==================== Namespace Separator Syntax ====================
 
         [TestMethod]
         public void AccessTypeWithDoubleColon()
         {
-            // Ruby-style type access: System::DateTime::Now
-            object result = machine.ExecuteText("System::DateTime::Now");
+            // Namespace separation with :: and member access with .
+            object result = machine.ExecuteText("System::DateTime.Now");
             
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(DateTime));
@@ -275,8 +275,8 @@ namespace Embers.Tests
         [TestMethod]
         public void CallStaticMethodWithDoubleColon()
         {
-            // Ruby-style: System::String::Empty
-            object result = machine.ExecuteText("System::String::Empty");
+            // Namespace :: and static field access .
+            object result = machine.ExecuteText("System::String.Empty");
             
             Assert.IsNotNull(result);
             Assert.AreEqual(string.Empty, result);
@@ -285,8 +285,8 @@ namespace Embers.Tests
         [TestMethod]
         public void AccessStaticFieldWithDoubleColon()
         {
-            // Ruby-style: System::Int32::MaxValue
-            object result = machine.ExecuteText("System::Int32::MaxValue");
+            // Namespace :: and static field access .
+            object result = machine.ExecuteText("System::Int32.MaxValue");
             
             Assert.IsNotNull(result);
             Assert.AreEqual(int.MaxValue, result);
@@ -295,31 +295,18 @@ namespace Embers.Tests
         [TestMethod]
         public void CallMathMethodWithDoubleColon()
         {
-            // Ruby-style: System::Math::PI constant
-            object result = machine.ExecuteText("System::Math::PI");
+            // Namespace :: and constant access
+            object result = machine.ExecuteText("System::Math.PI");
             
             Assert.IsNotNull(result);
             Assert.AreEqual(Math.PI, result);
         }
 
         [TestMethod]
-        public void MixDotAndDoubleColonSyntax()
-        {
-            // Both styles should work interchangeably
-            object result1 = machine.ExecuteText("System.DateTime.Now");
-            object result2 = machine.ExecuteText("System::DateTime.Now");
-            
-            Assert.IsNotNull(result1);
-            Assert.IsNotNull(result2);
-            Assert.IsInstanceOfType(result1, typeof(DateTime));
-            Assert.IsInstanceOfType(result2, typeof(DateTime));
-        }
-
-        [TestMethod]
         public void StoreDoubleColonTypeInVariable()
         {
-            // Store type accessed with :: in variable, using Ruby-style method call
-            machine.ExecuteText("dt = System::DateTime::Now");
+            // Store type accessed with :: namespace separator
+            machine.ExecuteText("dt = System::DateTime.Now");
             
             object result = machine.RootContext.GetLocalValue("dt");
             Assert.IsNotNull(result);
@@ -329,8 +316,8 @@ namespace Embers.Tests
         [TestMethod]
         public void UseDoubleColonTypeInArray()
         {
-            // Use :: syntax in array
-            machine.ExecuteText("arr = [System::DateTime::Now, System::Int32::MaxValue]");
+            // Use :: namespace syntax in array
+            machine.ExecuteText("arr = [System::DateTime.Now, System::Int32.MaxValue]");
             
             object result = machine.RootContext.GetLocalValue("arr");
             Assert.IsNotNull(result);
@@ -344,7 +331,7 @@ namespace Embers.Tests
             // In unrestricted mode, all .NET types are accessible
             machine.SetTypeAccessPolicy([], SecurityMode.Unrestricted);
             
-            object result = machine.ExecuteText("System.DateTime.Now");
+            object result = machine.ExecuteText("System::DateTime.Now");
             Assert.IsNotNull(result);
         }
     }

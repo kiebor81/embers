@@ -354,7 +354,7 @@ namespace Embers.Tests
         [TestMethod]
         public void EvaluateQualifiedType()
         {
-            var result = EvaluateExpression("Embers.Tests.Classes.Person");
+            var result = EvaluateExpression("Embers::Tests::Classes::Person");
 
             Assert.IsNotNull(result);
             Assert.AreSame(typeof(Person), result);
@@ -363,7 +363,7 @@ namespace Embers.Tests
         [TestMethod]
         public void EvaluateQualifiedPersonNew()
         {
-            var result = EvaluateExpression("Embers.Tests.Classes.Person.new");
+            var result = EvaluateExpression("Embers::Tests::Classes::Person.new");
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(Person));
@@ -372,7 +372,7 @@ namespace Embers.Tests
         [TestMethod]
         public void EvaluateQualifiedPersonNewWithNames()
         {
-            var result = EvaluateExpression("Embers.Tests.Classes.Person.new('Kieran', 'Borsden')");
+            var result = EvaluateExpression("Embers::Tests::Classes::Person.new('Kieran', 'Borsden')");
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(Person));
@@ -390,7 +390,7 @@ namespace Embers.Tests
             try
             {
                 // Should not exist yet
-                var result = EvaluateExpression($"System.IO.File.Exists('{tempFile.Replace("\\", "\\\\")}')");
+                var result = EvaluateExpression($"System::IO::File.Exists('{tempFile.Replace("\\", "\\\\")}')");
                 Assert.IsNotNull(result);
                 Assert.IsInstanceOfType(result, typeof(bool));
                 Assert.IsFalse((bool)result);
@@ -409,7 +409,7 @@ namespace Embers.Tests
                 Assert.IsTrue(exists, "Temp file was not found after creation.");
 
                 // Now check via EvaluateExpression
-                result = EvaluateExpression($"System.IO.File.Exists('{tempFile.Replace("\\", "\\\\")}')");
+                result = EvaluateExpression($"System::IO::File.Exists('{tempFile.Replace("\\", "\\\\")}')");
                 Assert.IsNotNull(result);
                 Assert.IsInstanceOfType(result, typeof(bool));
                 Assert.IsTrue((bool)result);
@@ -465,7 +465,7 @@ namespace Embers.Tests
         [TestMethod]
         public void EvaluateCreateByteArray()
         {
-            var result = EvaluateExpression("System.Array.CreateInstance(System.Byte, 1024)");
+            var result = EvaluateExpression("System::Array.CreateInstance(System::Byte, 1024)");
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(byte[]));

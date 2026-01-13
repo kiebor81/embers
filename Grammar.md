@@ -219,7 +219,7 @@ Class variables begin with `@@` and are shared by all instances of a class:
 
 ```
 .       Method call / member access
-::      Namespace separator
+::      Namespace/Module separator
 =>      Hash literal mapping (key => value)
 ->      Lambda/proc literal
 ```
@@ -547,6 +547,33 @@ person = Person.new
 person.hello      # prints: Hello!
 ```
 
+### Access Qualified Names in Modules
+
+Use the double colon (`::`) operator to access constants, classes, and modules defined within other modules (or namespaces):
+
+```
+module Outer
+  module Inner
+    class MyClass
+      def greet
+        puts "Hello from Inner::MyClass"
+      end
+    end
+    
+    MY_CONSTANT = 42
+  end
+end
+
+# Access nested classes
+obj = Outer::Inner::MyClass.new
+obj.greet
+
+# Access constants
+value = Outer::Inner::MY_CONSTANT
+```
+
+This syntax works for both Embers modules and .NET namespaces, providing a consistent syntax to navigate hierarchical structures.
+
 ## Blocks and Iterators
 
 ### Block Syntax
@@ -624,44 +651,40 @@ puts 'Name: #{name}'     # prints literally: Name: #{name}
 
 ## C# Interoperability
 
-Embers runs on the .NET platform and provides seamless interoperability with C# and the .NET framework. You can access .NET types, call static methods, instantiate objects, and use .NET functionality directly from Embers code.
+Embers runs on the .NET platform and provides seamless interoperability with C# and .NET. You can access .NET types, call static methods, instantiate objects, and use .NET functionality directly from Embers code. Interop behaviour is defined by the host application and available bindings (see [Security Configuration](README.md#security-configuration)).
+
+### Syntax Rules
+
+Embers uses a clear separation between namespace/type access and member access:
+
+- **Double colon (`::`)**: Namespace and type separation
+- **Dot (`.`)**: Member access (properties, methods, fields)
 
 ### Accessing .NET Types
 
-Embers supports two syntaxes for accessing .NET types and their members:
+Use `::` to separate namespaces and type names:
 
-**Dot notation (`.`)** - Standard .NET style:
 ```
-System.DateTime.Now
-System.Guid.NewGuid()
-System.Math.Abs(-42)
+System::DateTime
+System::Guid
+System::Math
+System::Collections::Generic::List
 ```
-
-**Double colon notation (`::`)** - Ruby style:
-```
-System::DateTime::Now
-System::Guid::NewGuid()
-System::Math::Abs(-42)
-```
-
-Both syntaxes are equivalent and can be used interchangeably. Choose the style that fits your codebase.
 
 ### Static Members
 
-Access static properties, fields, and methods from .NET types:
+Access static properties, fields, and methods using `::` for namespaces and `.` for members:
 
 ```
 # Static properties
-now = System.DateTime.Now
-now = System::DateTime::Now
+now = System::DateTime.Now
 
-# Static fields
-max_int = System.Int32.MaxValue
-max_int = System::Int32::MaxValue
+# Static fields  
+max_int = System::Int32.MaxValue
 
 # Static methods
-guid = System.Guid.NewGuid()
-absolute = System.Math.Abs(-42)
+guid = System::Guid.NewGuid()
+absolute = System::Math.Abs(-42)
 ```
 
 ### Instance Members
@@ -669,7 +692,7 @@ absolute = System.Math.Abs(-42)
 Once you have a .NET object, access its instance members using dot notation:
 
 ```
-dt = System.DateTime.Now
+dt = System::DateTime.Now
 year = dt.Year
 month = dt.Month
 day_of_week = dt.DayOfWeek
@@ -684,12 +707,12 @@ Access .NET enum values using the `::` operator:
 
 ```
 # DayOfWeek enum
-monday = System.DayOfWeek::Monday
-sunday = System.DayOfWeek::Sunday
+monday = System::DayOfWeek::Monday
+sunday = System::DayOfWeek::Sunday
 
 # Use in comparisons
-today = System.DateTime.Now.DayOfWeek
-if today == System.DayOfWeek::Saturday
+today = System::DateTime.Now.DayOfWeek
+if today == System::DayOfWeek::Saturday
   puts "It's the weekend!"
 end
 ```
@@ -700,16 +723,16 @@ end
 
 ```
 # Store .NET objects in variables
-guid = System.Guid.NewGuid()
-time = System.DateTime.Now
+guid = System::Guid.NewGuid()
+time = System::DateTime.Now
 
 # Use in arrays
-data = [System.DateTime.Now, System.Guid.NewGuid(), 42]
+data = [System::DateTime.Now, System::Guid.NewGuid(), 42]
 
 # Use in hashes
 info = {
-  'id' => System.Guid.NewGuid(),
-  'timestamp' => System.DateTime.Now
+  'id' => System::Guid.NewGuid(),
+  'timestamp' => System::DateTime.Now
 }
 
 # Pass to Embers functions
@@ -717,16 +740,16 @@ def get_year(dt)
   dt.Year
 end
 
-year = get_year(System.DateTime.Now)
+year = get_year(System::DateTime.Now)
 
 # Use in conditionals
-num = System.Math.Abs(-10)
+num = System::Math.Abs(-10)
 if num > 5
   puts "Big number"
 end
 
 # Use in loops
-max = System.Int32.MaxValue
+max = System::Int32.MaxValue
 for i in 1..10
   if i < max
     puts i

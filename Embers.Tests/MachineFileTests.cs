@@ -121,7 +121,7 @@ namespace Embers.Tests
         {
             Assert.IsTrue(machine.RequireFile("MachineFiles\\MyLib"));
 
-            var result = machine.ExecuteText("MyLib.MyClass");
+            var result = machine.ExecuteText("MyLib::MyClass");
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(Type));
         }

@@ -9,6 +9,7 @@ namespace Embers.Expressions
     /// <summary>
     /// DotExpression represents a method or property access on an object.
     /// Together with AssignDotExpression, it allows for method calls and property access and enables dynamic invocation of methods and properties on objects.
+    /// The dot operator is used exclusively for member access, not for namespace/type resolution (use :: for that).
     /// </summary>
     /// <seealso cref="Embers.Expressions.BaseExpression" />
     /// <seealso cref="Embers.Expressions.INamedExpression" />
@@ -19,15 +20,12 @@ namespace Embers.Expressions
         private readonly IExpression expression;
         private readonly string name;
         private readonly IList<IExpression> arguments;
-        private readonly string qname;
 
         public DotExpression(IExpression expression, string name, IList<IExpression> arguments)
         {
             this.expression = expression;
             this.name = name;
             this.arguments = arguments;
-
-            qname = AsQualifiedName();
         }
 
         public IExpression TargetExpression { get { return expression; } }
@@ -38,21 +36,6 @@ namespace Embers.Expressions
 
         public override object Evaluate(Context context)
         {
-            if (qname != null)
-            {
-                try
-                {
-                    Type type = TypeUtilities.AsType(qname);
-
-                    if (type != null)
-                        return type;
-                }
-                catch (TypeAccessError)
-                {
-                    // Not a .NET type or access denied - fall through to regular evaluation
-                }
-            }
-
             IList<object> values = [];
             var result = expression.Evaluate(context);
 
@@ -196,34 +179,6 @@ namespace Embers.Expressions
 
             // Fallback to standard function call
             return method.Apply(obj, context, values);
-        }
-
-        public string? AsQualifiedName()
-        {
-            if (!char.IsUpper(name[0]))
-                return null;
-
-            if (expression is NameExpression)
-            {
-                string prefix = ((NameExpression)expression).AsQualifiedName();
-
-                if (prefix == null)
-                    return null;
-
-                return prefix + "." + name;
-            }
-
-            if (expression is DotExpression)
-            {
-                string prefix = ((DotExpression)expression).AsQualifiedName();
-
-                if (prefix == null)
-                    return null;
-
-                return prefix + "." + name;
-            }
-
-            return null;
         }
 
         public override bool Equals(object obj)
