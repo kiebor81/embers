@@ -149,7 +149,7 @@ def enemy_think(enemy)
     enemy.Velocity = direction * 50
   else
     # Patrol
-    enemy.Velocity = Godot::Vector2.new(0, 0)
+    enemy.Velocity = Godot.Vector2.new(0, 0)
   end
 end
 ```
@@ -433,7 +433,7 @@ internal class FileSizeMbFunction : HostFunction
 ```ruby
 # User-created automation rule
 def organize_downloads
-  downloads = "C:/Users/#{System::Environment.UserName}/Downloads"
+  downloads = "C:/Users/#{System.Environment.UserName}/Downloads"
   
   # Organize images
   files_matching('.*\.(jpg|png|gif)$', downloads).each do |file|

@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Embers.Compiler;
 using Embers.Exceptions;
+using Embers.Security;
 using Embers.Tests.Classes;
 using Embers.Utilities;
 
@@ -9,6 +10,16 @@ namespace Embers.Tests.Utilities
     [TestClass]
     public class TypeUtilitiesTests
     {
+        private Machine machine;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            machine = new Machine();
+            // Ensure unrestricted access for TypeUtilities tests
+            machine.ClearSecurityPolicy();
+        }
+
         [TestMethod]
         public void GetTypeByName()
         {

@@ -40,10 +40,17 @@ namespace Embers.Expressions
         {
             if (qname != null)
             {
-                Type type = TypeUtilities.AsType(qname);
+                try
+                {
+                    Type type = TypeUtilities.AsType(qname);
 
-                if (type != null)
-                    return type;
+                    if (type != null)
+                        return type;
+                }
+                catch (TypeAccessError)
+                {
+                    // Not a .NET type or access denied - fall through to regular evaluation
+                }
             }
 
             IList<object> values = [];

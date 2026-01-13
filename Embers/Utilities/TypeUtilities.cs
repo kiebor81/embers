@@ -24,27 +24,31 @@ namespace Embers.Utilities
 
         public static Type? AsType(string name)
         {
-            if (!Security.TypeAccessPolicy.IsAllowed(name))
+            // Normalize :: to . for .NET type resolution
+            // This allows both System.DateTime and System::DateTime syntax
+            string normalizedName = name.Replace("::", ".");
+            
+            if (!Security.TypeAccessPolicy.IsAllowed(normalizedName))
                 throw new TypeAccessError($"Access to type '{name}' is not permitted by the current type access policy.");
 
-            Type type = Type.GetType(name);
+            Type type = Type.GetType(normalizedName);
 
             if (type != null)
                 return type;
 
-            type = GetTypeFromLoadedAssemblies(name);
+            type = GetTypeFromLoadedAssemblies(normalizedName);
 
             if (type != null)
                 return type;
 
-            type = GetTypeFromPartialNamedAssembly(name);
+            type = GetTypeFromPartialNamedAssembly(normalizedName);
 
             if (type != null)
                 return type;
 
             LoadReferencedAssemblies();
 
-            type = GetTypeFromLoadedAssemblies(name);
+            type = GetTypeFromLoadedAssemblies(normalizedName);
 
             if (type != null)
                 return type;

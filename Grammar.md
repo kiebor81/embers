@@ -15,7 +15,8 @@ This guide is intended for users writing Embers scripts and does not describe in
 9. [Modules](#modules)
 10. [Blocks and Iterators](#blocks-and-iterators)
 11. [String Interpolation](#string-interpolation)
-12. [Notes on Ruby Compatibility](#notes-on-ruby-compatibility)
+12. [C# Interoperability](#c-interoperability)
+13. [Notes on Ruby Compatibility](#notes-on-ruby-compatibility)
 
 ## Basic Syntax
 
@@ -617,6 +618,120 @@ Single-quoted strings do not support interpolation:
 
 ```
 puts 'Name: #{name}'     # prints literally: Name: #{name}
+```
+
+---
+
+## C# Interoperability
+
+Embers runs on the .NET platform and provides seamless interoperability with C# and the .NET framework. You can access .NET types, call static methods, instantiate objects, and use .NET functionality directly from Embers code.
+
+### Accessing .NET Types
+
+Embers supports two syntaxes for accessing .NET types and their members:
+
+**Dot notation (`.`)** - Standard .NET style:
+```
+System.DateTime.Now
+System.Guid.NewGuid()
+System.Math.Abs(-42)
+```
+
+**Double colon notation (`::`)** - Ruby style:
+```
+System::DateTime::Now
+System::Guid::NewGuid()
+System::Math::Abs(-42)
+```
+
+Both syntaxes are equivalent and can be used interchangeably. Choose the style that fits your codebase.
+
+### Static Members
+
+Access static properties, fields, and methods from .NET types:
+
+```
+# Static properties
+now = System.DateTime.Now
+now = System::DateTime::Now
+
+# Static fields
+max_int = System.Int32.MaxValue
+max_int = System::Int32::MaxValue
+
+# Static methods
+guid = System.Guid.NewGuid()
+absolute = System.Math.Abs(-42)
+```
+
+### Instance Members
+
+Once you have a .NET object, access its instance members using dot notation:
+
+```
+dt = System.DateTime.Now
+year = dt.Year
+month = dt.Month
+day_of_week = dt.DayOfWeek
+
+# Method calls
+str = dt.ToString()
+```
+
+### Enum Values
+
+Access .NET enum values using the `::` operator:
+
+```
+# DayOfWeek enum
+monday = System.DayOfWeek::Monday
+sunday = System.DayOfWeek::Sunday
+
+# Use in comparisons
+today = System.DateTime.Now.DayOfWeek
+if today == System.DayOfWeek::Saturday
+  puts "It's the weekend!"
+end
+```
+
+### Mixed Embers and .NET Code
+
+.NET objects integrate seamlessly with Embers data structures and control flow:
+
+```
+# Store .NET objects in variables
+guid = System.Guid.NewGuid()
+time = System.DateTime.Now
+
+# Use in arrays
+data = [System.DateTime.Now, System.Guid.NewGuid(), 42]
+
+# Use in hashes
+info = {
+  'id' => System.Guid.NewGuid(),
+  'timestamp' => System.DateTime.Now
+}
+
+# Pass to Embers functions
+def get_year(dt)
+  dt.Year
+end
+
+year = get_year(System.DateTime.Now)
+
+# Use in conditionals
+num = System.Math.Abs(-10)
+if num > 5
+  puts "Big number"
+end
+
+# Use in loops
+max = System.Int32.MaxValue
+for i in 1..10
+  if i < max
+    puts i
+  end
+end
 ```
 
 ---
