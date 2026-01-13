@@ -375,7 +375,7 @@ This includes conditional and block expressions.
 
 ### Method Naming Conventions
 
-Methods can end with `?` or `!` to indicate their behavior:
+Methods may optionally end with `?` or `!` to indicate their behavior.
 
 - Methods ending in `?` typically return true/false (predicate methods):
   ```
@@ -384,7 +384,7 @@ Methods can end with `?` or `!` to indicate their behavior:
   end
   ```
 
-- Methods ending in `!` typically modify the object in-place or have significant side effects:
+- Methods ending in `!` typically modify the object in-place or have significant side effects (bang methods):
   ```
   def delete!
     # modifies the object or has side effects
