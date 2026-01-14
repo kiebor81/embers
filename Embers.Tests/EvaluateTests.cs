@@ -14,10 +14,7 @@ namespace Embers.Tests
         private Machine machine;
 
         [TestInitialize]
-        public void Setup()
-        {
-            machine = new Machine();
-        }
+        public void Setup() => machine = new Machine();
 
         [TestMethod]
         public void EvaluateSimpleArithmetic()
@@ -764,9 +761,7 @@ i
         }
 
         [TestMethod]
-        public void ElsifWorks()
-        {
-            Assert.AreEqual("middle", Execute(@"
+        public void ElsifWorks() => Assert.AreEqual("middle", Execute(@"
 if false
   'low'
 elsif true
@@ -775,7 +770,6 @@ else
   'high'
 end
 "));
-        }
 
         [TestMethod]
         public void DefinedKeywordDetectsLocals()
@@ -888,9 +882,6 @@ count
         //    return expression.Evaluate(machine.RootContext);
         //}
 
-        private object Execute(string text)
-        {
-            return machine.ExecuteText(text);
-        }
+        private object Execute(string text) => machine.ExecuteText(text);
     }
 }

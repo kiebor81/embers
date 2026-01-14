@@ -9,10 +9,8 @@ namespace Embers.StdLib.Ranges
         [Comments("Returns true if the range covers the given value.")]
         [Arguments(ParamNames = new[] { "range", "value" }, ParamTypes = new[] { typeof(Language.Range), typeof(object) })]
         [Returns(ReturnType = typeof(Boolean))]
-        public override object Apply(DynamicObject self, Context context, IList<object> values)
-        {
+        public override object Apply(DynamicObject self, Context context, IList<object> values) =>
             // cover? is an alias for include? in ranges
-            return new IncludeFunction().Apply(self, context, values);
-        }
+            new IncludeFunction().Apply(self, context, values);
     }
 }

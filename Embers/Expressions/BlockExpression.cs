@@ -15,10 +15,7 @@ namespace Embers.Expressions
         public IExpression Body => expression;
 
 
-        public override object Evaluate(Context context)
-        {
-            return new Block(paramnames, expression, context);
-        }
+        public override object Evaluate(Context context) => new Block(paramnames, expression, context);
 
         public override bool Equals(object obj)
         {

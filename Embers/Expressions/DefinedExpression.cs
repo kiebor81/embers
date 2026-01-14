@@ -23,15 +23,9 @@
             return null;
         }
 
-        public override bool Equals(object? obj)
-        {
-            return obj is DefinedExpression other &&
+        public override bool Equals(object? obj) => obj is DefinedExpression other &&
                    Equals(inner, other.inner);
-        }
 
-        public override int GetHashCode()
-        {
-            return inner.GetHashCode() ^ typeof(DefinedExpression).GetHashCode();
-        }
+        public override int GetHashCode() => inner.GetHashCode() ^ typeof(DefinedExpression).GetHashCode();
     }
 }

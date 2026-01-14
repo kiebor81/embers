@@ -8,10 +8,7 @@
     {
         public abstract object Evaluate(Context context);
 
-        public IList<string>? GetLocalVariables()
-        {
-            return null;
-        }
+        public IList<string>? GetLocalVariables() => null;
 
         internal static IList<string>? GetLocalVariables(IList<IExpression> expressions)
         {

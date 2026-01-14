@@ -9,10 +9,7 @@ namespace Embers.Tests.StdLib.Conversion
         private Machine machine;
 
         [TestInitialize]
-        public void Setup()
-        {
-            machine = new Machine();
-        }
+        public void Setup() => machine = new Machine();
 
         // to_i tests
         [TestMethod]

@@ -6,10 +6,7 @@ namespace Embers.Tests.Language
         private Machine machine;
 
         [TestInitialize]
-        public void Setup()
-        {
-            machine = new Machine();
-        }
+        public void Setup() => machine = new Machine();
 
         [TestMethod]
         public void ToJson_SimpleHash()

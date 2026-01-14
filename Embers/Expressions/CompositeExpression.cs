@@ -21,10 +21,7 @@
             return result;
         }
 
-        public IList<string> GetLocalVariables()
-        {
-            return BaseExpression.GetLocalVariables(commands);
-        }
+        public IList<string> GetLocalVariables() => BaseExpression.GetLocalVariables(commands);
 
         public override bool Equals(object obj)
         {

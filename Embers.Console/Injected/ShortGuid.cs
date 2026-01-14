@@ -19,9 +19,6 @@ namespace Embers.Console.Injected
     {
         [Comments("Generates a new short GUID.")]
         [Returns(ReturnType = typeof(string))]
-        public override object Apply(DynamicObject self, Context context, IList<object> values)
-        {
-            return ShortGuid.NewShortGuid();
-        }
+        public override object Apply(DynamicObject self, Context context, IList<object> values) => ShortGuid.NewShortGuid();
     }
 }

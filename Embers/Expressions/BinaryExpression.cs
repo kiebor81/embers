@@ -37,10 +37,7 @@
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            return LeftExpression.GetHashCode() + RightExpression.GetHashCode() + GetType().GetHashCode();
-        }
+        public override int GetHashCode() => LeftExpression.GetHashCode() + RightExpression.GetHashCode() + GetType().GetHashCode();
 
         public abstract object Apply(object leftvalue, object rightvalue);
     }

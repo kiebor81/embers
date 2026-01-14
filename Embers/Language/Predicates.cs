@@ -5,15 +5,9 @@
     /// </summary>
     public static class Predicates
     {
-        public static bool IsFalse(object obj)
-        {
-            return obj == null || false.Equals(obj);
-        }
+        public static bool IsFalse(object obj) => obj == null || false.Equals(obj);
 
-        public static bool IsTrue(object obj)
-        {
-            return !IsFalse(obj);
-        }
+        public static bool IsTrue(object obj) => !IsFalse(obj);
 
         public static bool IsConstantName(string name)
         {

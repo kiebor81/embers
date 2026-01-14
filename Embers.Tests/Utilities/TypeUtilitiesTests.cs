@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using Embers.Compiler;
 using Embers.Exceptions;
-using Embers.Security;
 using Embers.Tests.Classes;
 using Embers.Utilities;
 
@@ -53,10 +52,7 @@ namespace Embers.Tests.Utilities
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException), "Unknown Type 'Foo.Bar'")]
-        public void RaiseIfUnknownType()
-        {
-            TypeUtilities.GetType(new Context(), "Foo.Bar");
-        }
+        public void RaiseIfUnknownType() => TypeUtilities.GetType(new Context(), "Foo.Bar");
 
         [TestMethod]
         public void AsType()
@@ -97,25 +93,19 @@ namespace Embers.Tests.Utilities
         }
 
         [TestMethod]
-        public void GetValueFromType()
-        {
-            Assert.IsFalse((bool)TypeUtilities.InvokeTypeMember(typeof(System.IO.File), "Exists", ["unknown.txt"]));
-        }
+        public void GetValueFromType() => Assert.IsFalse((bool)TypeUtilities.InvokeTypeMember(typeof(System.IO.File), "Exists", ["unknown.txt"]));
 
         [TestMethod]
-        public void GetValueFromEnum()
-        {
-            Assert.AreEqual(System.UriKind.RelativeOrAbsolute, TypeUtilities.InvokeTypeMember(typeof(System.UriKind), "RelativeOrAbsolute", null));
-        }
+        public void GetValueFromEnum() => Assert.AreEqual(UriKind.RelativeOrAbsolute, TypeUtilities.InvokeTypeMember(typeof(System.UriKind), "RelativeOrAbsolute", null));
 
         [TestMethod]
         public void ParseTokenTypeValues()
         {
             Type type = typeof(Embers.Compiler.TokenType);
 
-            Assert.AreEqual(Embers.Compiler.TokenType.Name, TypeUtilities.ParseEnumValue(type, "Name"));
-            Assert.AreEqual(Embers.Compiler.TokenType.Integer, TypeUtilities.ParseEnumValue(type, "Integer"));
-            Assert.AreEqual(Embers.Compiler.TokenType.Separator, TypeUtilities.ParseEnumValue(type, "Separator"));
+            Assert.AreEqual(TokenType.Name, TypeUtilities.ParseEnumValue(type, "Name"));
+            Assert.AreEqual(TokenType.Integer, TypeUtilities.ParseEnumValue(type, "Integer"));
+            Assert.AreEqual(TokenType.Separator, TypeUtilities.ParseEnumValue(type, "Separator"));
         }
 
         [TestMethod]

@@ -42,9 +42,6 @@ namespace Embers.Expressions
             return fromexpression.Equals(rexpr.fromexpression) && toexpression.Equals(rexpr.toexpression);
         }
 
-        public override int GetHashCode()
-        {
-            return hashcode + fromexpression.GetHashCode() + 7 * toexpression.GetHashCode();
-        }
+        public override int GetHashCode() => hashcode + fromexpression.GetHashCode() + 7 * toexpression.GetHashCode();
     }
 }

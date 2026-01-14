@@ -8,9 +8,6 @@ namespace Embers.Expressions
     /// <seealso cref="Embers.Expressions.BaseExpression" />
     public class RedoExpression : BaseExpression
     {
-        public override object? Evaluate(Context context)
-        {
-            throw new RedoSignal();
-        }
+        public override object? Evaluate(Context context) => throw new RedoSignal();
     }
 }

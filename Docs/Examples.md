@@ -149,7 +149,7 @@ def enemy_think(enemy)
     enemy.Velocity = direction * 50
   else
     # Patrol
-    enemy.Velocity = Godot.Vector2.new(0, 0)
+    enemy.Velocity = Godot::Vector2.new(0, 0)
   end
 end
 ```

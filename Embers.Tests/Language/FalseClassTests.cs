@@ -8,10 +8,7 @@ namespace Embers.Tests.Language
         private FalseClass @class;
 
         [TestInitialize]
-        public void Setup()
-        {
-            @class = new FalseClass(null);
-        }
+        public void Setup() => @class = new FalseClass(null);
 
         [TestMethod]
         public void FalseClassInstance()
@@ -21,15 +18,9 @@ namespace Embers.Tests.Language
         }
 
         [TestMethod]
-        public void GetClassInstanceMethod()
-        {
-            Assert.IsNotNull(@class.GetInstanceMethod("class"));
-        }
+        public void GetClassInstanceMethod() => Assert.IsNotNull(@class.GetInstanceMethod("class"));
 
         [TestMethod]
-        public void GetUnknownInstanceMethod()
-        {
-            Assert.IsNull(@class.GetInstanceMethod("foo"));
-        }
+        public void GetUnknownInstanceMethod() => Assert.IsNull(@class.GetInstanceMethod("foo"));
     }
 }

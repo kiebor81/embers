@@ -11,10 +11,7 @@
 
         public string Name => name;
 
-        public override string ToString()
-        {
-            return ":" + name;
-        }
+        public override string ToString() => ":" + name;
 
         public override bool Equals(object obj)
         {
@@ -31,9 +28,6 @@
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            return name.GetHashCode() + hashcode;
-        }
+        public override int GetHashCode() => name.GetHashCode() + hashcode;
     }
 }

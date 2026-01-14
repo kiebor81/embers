@@ -9,9 +9,6 @@ namespace Embers.Expressions
     /// <seealso cref="Embers.Expressions.BaseExpression" />
     public class NextExpression : BaseExpression
     {
-        public override object? Evaluate(Context context)
-        {
-            throw new NextSignal();
-        }
+        public override object? Evaluate(Context context) => throw new NextSignal();
     }
 }

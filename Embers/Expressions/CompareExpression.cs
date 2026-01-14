@@ -21,10 +21,7 @@ namespace Embers.Expressions
             functions[CompareOperator.GreaterOrEqual] = (left, right) => Operators.CompareObjectGreaterEqual(left, right, false);
         }
 
-        public override object Apply(object leftvalue, object rightvalue)
-        {
-            return functions[@operator](leftvalue, rightvalue);
-        }
+        public override object Apply(object leftvalue, object rightvalue) => functions[@operator](leftvalue, rightvalue);
 
         public override bool Equals(object obj)
         {
@@ -34,9 +31,6 @@ namespace Embers.Expressions
             return @operator == ((CompareExpression)obj).@operator;
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() + (int)@operator;
-        }
+        public override int GetHashCode() => base.GetHashCode() + (int)@operator;
     }
 }

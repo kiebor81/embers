@@ -39,9 +39,6 @@ namespace Embers.Expressions
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            return leftexpression.GetHashCode() + expression.GetHashCode() + indexexpression.GetHashCode() + hashcode;
-        }
+        public override int GetHashCode() => leftexpression.GetHashCode() + expression.GetHashCode() + indexexpression.GetHashCode() + hashcode;
     }
 }

@@ -12,9 +12,6 @@ namespace Embers.Functions
     {
         private readonly Func<DynamicObject, Context, IList<object>, object> lambda = lambda;
 
-        public object Apply(DynamicObject self, Context context, IList<object> values)
-        {
-            return lambda(self, context, values);
-        }
+        public object Apply(DynamicObject self, Context context, IList<object> values) => lambda(self, context, values);
     }
 }

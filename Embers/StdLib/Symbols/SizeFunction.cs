@@ -9,9 +9,6 @@ namespace Embers.StdLib.Symbols
         [Comments("Returns the size of the symbol's name.")]
         [Arguments(ParamNames = new[] { "symbol" }, ParamTypes = new[] { typeof(Symbol) })]
         [Returns(ReturnType = typeof(Number))]
-        public override object Apply(DynamicObject self, Context context, IList<object> values)
-        {
-            return new LengthFunction().Apply(self, context, values);
-        }
+        public override object Apply(DynamicObject self, Context context, IList<object> values) => new LengthFunction().Apply(self, context, values);
     }
 }

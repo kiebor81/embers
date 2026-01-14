@@ -36,10 +36,7 @@ namespace Embers.Language
             }
         }
 
-        public void SetInstanceMethod(string name, IFunction method)
-        {
-            methods[name] = method;
-        }
+        public void SetInstanceMethod(string name, IFunction method) => methods[name] = method;
 
         public IFunction? GetInstanceMethod(string name)
         {
@@ -52,25 +49,13 @@ namespace Embers.Language
             return null;
         }
 
-        public DynamicObject CreateInstance()
-        {
-            return new DynamicObject(this);
-        }
+        public DynamicObject CreateInstance() => new DynamicObject(this);
 
-        public override IFunction GetMethod(string name)
-        {
-            return base.GetMethod(name);
-        }
+        public override IFunction GetMethod(string name) => base.GetMethod(name);
 
-        public IList<string> GetOwnInstanceMethodNames()
-        {
-            return [.. methods.Keys];
-        }
+        public IList<string> GetOwnInstanceMethodNames() => [.. methods.Keys];
 
-        public override string ToString()
-        {
-            return FullName;
-        }
+        public override string ToString() => FullName;
 
         public void AliasMethod(string newName, string oldName)
         {
@@ -82,9 +67,6 @@ namespace Embers.Language
             methods[newName] = method;
         }
 
-        internal void SetSuperClass(DynamicClass superclass)
-        {
-            this.superclass = superclass;
-        }
+        internal void SetSuperClass(DynamicClass superclass) => this.superclass = superclass;
     }
 }

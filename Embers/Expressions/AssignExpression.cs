@@ -28,10 +28,7 @@
             return value;
         }
 
-        public IList<string> GetLocalVariables()
-        {
-            return [name];
-        }
+        public IList<string> GetLocalVariables() => [name];
 
         public override bool Equals(object obj)
         {
@@ -48,9 +45,6 @@
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            return Name.GetHashCode() + Expression.GetHashCode() + hashtag;
-        }
+        public override int GetHashCode() => Name.GetHashCode() + Expression.GetHashCode() + hashtag;
     }
 }

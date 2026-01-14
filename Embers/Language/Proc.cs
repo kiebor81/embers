@@ -14,12 +14,12 @@ namespace Embers.Language
         public Proc(Block block)
         {
             this.block = block;
-            this.function = null;
+            function = null;
         }
 
         public Proc(IFunction function)
         {
-            this.block = null;
+            block = null;
             this.function = function;
         }
 

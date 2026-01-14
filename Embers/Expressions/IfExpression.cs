@@ -60,9 +60,6 @@
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            return condition.GetHashCode() + thencommand.GetHashCode() + hashcode;
-        }
+        public override int GetHashCode() => condition.GetHashCode() + thencommand.GetHashCode() + hashcode;
     }
 }

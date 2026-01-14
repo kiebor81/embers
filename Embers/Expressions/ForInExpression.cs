@@ -106,9 +106,6 @@ namespace Embers.Expressions
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            return hashcode + name.GetHashCode() + expression.GetHashCode() + command.GetHashCode();
-        }
+        public override int GetHashCode() => hashcode + name.GetHashCode() + expression.GetHashCode() + command.GetHashCode();
     }
 }

@@ -10,10 +10,7 @@ namespace Embers.StdLib.Time
     {
         [Comments("Returns the current date and time.")]
         [Returns(ReturnType = typeof(DateTime))]
-        public override object Apply(DynamicObject self, Context context, IList<object> values)
-        {
-            return DateTime.Now;
-        }
+        public override object Apply(DynamicObject self, Context context, IList<object> values) => DateTime.Now;
     }
 
     [StdLib("today")]
@@ -21,10 +18,7 @@ namespace Embers.StdLib.Time
     {
         [Comments("Returns the current date with the time set to midnight.")]
         [Returns(ReturnType = typeof(DateTime))]
-        public override object Apply(DynamicObject self, Context context, IList<object> values)
-        {
-            return DateTime.Today;
-        }
+        public override object Apply(DynamicObject self, Context context, IList<object> values) => DateTime.Today;
     }
 
     [StdLib("parse_date")]

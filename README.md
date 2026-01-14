@@ -6,7 +6,7 @@
 [![Release](https://github.com/kiebor81/embers/actions/workflows/release.yml/badge.svg)](https://github.com/kiebor81/embers/actions/workflows/release.yml)
 
 
-**Embers** (Embedded Ruby Script) is a compact, embeddable Ruby-inspired interpreter written in C# for .NET 9. It is designed for applications that need a lightweight, scriptable runtime (e.g. games, tools, or plugin systems) without the overhead of creating and maintaining a complex, custom implementation.
+**Embers** (Embedded Ruby Script) is a compact, embeddable Ruby-inspired interpreter written in C# for .NET. It is designed for applications that need a lightweight, scriptable runtime (e.g. games, tools, or plugin systems) without the overhead of creating and maintaining a complex, custom implementation.
 
 In a nutshell:
 > *Embers is intended for developers who want a structured scripting language integrated directly into their .NET applications, without outsourcing control to an external runtime.*
@@ -28,7 +28,7 @@ Embers is built around a clean, minimal core with the goal of executing Ruby-lik
 - A virtual execution engine (`Machine`)
 - Context-sensitive execution (`Context`, `BlockContext`)
 - Robust exception model mirroring Ruby's error semantics
-- Embeddability and interoperability within .NET 9 projects
+- Embeddability and interoperability within .NET 9+ projects
 
 ---
 
@@ -103,11 +103,12 @@ graph TD
 
 - `Embers`: Core interpreter (main focus)
 - `Embers.Console`: Example CLI host for executing embers (`.rb`, `.rs`, `.ers`, `.emb`) scripts or launching an interactive REPL
+- `Embers.ISE`: Rudimentary ISE for Embers, illustrating self documentation, host injection, and real-time policy change
 - `Embers.Tests`: Unit and integration tests covering Embers' functionality
 
 ## Design Goals
 
-- **Portability**: Target .NET 9 with minimal external dependencies
+- **Portability**: Target .NET with minimal external dependencies
 - **Embedding First**: Built to be embedded in other applications, not just run standalone
 - **Ruby-Inspired**: Implements a Ruby-like language subset with idiomatic constructs
 - **Simplicity**: Clear structure with low cognitive overhead for contributors
@@ -127,7 +128,7 @@ graph TD
 
 ### Embedding the Interpreter
 
-You can embed Embers in any .NET 9 project:
+You can embed Embers in any .NET project:
 
 ```csharp
 var machine = new Machine();
@@ -597,13 +598,13 @@ machine.ExecuteText("puts 5.abs");     // => 5
 machine.ExecuteText("puts (-10).abs"); // => 10
 ```
 
-For more details and if you would like to help build on Embers thorugh contributing StdLib functions, see [STDLIB.md](STDLIB.md).
+For more details and if you would like to help build on Embers thorugh contributing StdLib functions, see [STDLIB.md](/Docs/STDLIB.md).
 
 ---
 
 ## Practical Use Cases
 
-Embers is designed for embedding into diverse .NET applications. For in-depth examples, see [Examples](Examples.md)
+Embers is designed for embedding into diverse .NET applications. For in-depth examples, see [Examples](/Docs/Examples.md)
 
 ---
 

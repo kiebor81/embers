@@ -25,10 +25,7 @@ namespace Embers.Expressions
             return result;
         }
 
-        public IList<string> GetLocalVariables()
-        {
-            return BaseExpression.GetLocalVariables(valueexpressions);
-        }
+        public IList<string> GetLocalVariables() => BaseExpression.GetLocalVariables(valueexpressions);
 
         public override bool Equals(object obj)
         {

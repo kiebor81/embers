@@ -76,10 +76,7 @@ namespace Embers.Expressions
             return function.Apply(context.Self, context, values);
         }
 
-        public IList<string> GetLocalVariables()
-        {
-            return BaseExpression.GetLocalVariables(arguments);
-        }
+        public IList<string> GetLocalVariables() => BaseExpression.GetLocalVariables(arguments);
 
         public override bool Equals(object obj)
         {

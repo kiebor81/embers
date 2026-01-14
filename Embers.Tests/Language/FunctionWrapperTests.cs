@@ -140,10 +140,7 @@ namespace Embers.Tests.Language
 
         internal class Adder : IFunction
         {
-            public object Apply(DynamicObject self, Context context, IList<object> values)
-            {
-                return (int)values[0] + (int)values[1];
-            }
+            public object Apply(DynamicObject self, Context context, IList<object> values) => (int)values[0] + (int)values[1];
         }
 
         internal class Listener : IFunction

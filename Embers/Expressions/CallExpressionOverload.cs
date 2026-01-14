@@ -38,10 +38,7 @@ namespace Embers.Expressions
             throw new NoMethodError("Target is not callable");
         }
 
-        public IList<string> GetLocalVariables()
-        {
-            return BaseExpression.GetLocalVariables(arguments);
-        }
+        public IList<string> GetLocalVariables() => BaseExpression.GetLocalVariables(arguments);
 
         public override bool Equals(object obj)
         {

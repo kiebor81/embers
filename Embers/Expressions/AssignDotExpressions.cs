@@ -58,9 +58,6 @@ namespace Embers.Expressions
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            return LeftValue.GetHashCode() + Expression.GetHashCode() + hashtag;
-        }
+        public override int GetHashCode() => LeftValue.GetHashCode() + Expression.GetHashCode() + hashtag;
     }
 }

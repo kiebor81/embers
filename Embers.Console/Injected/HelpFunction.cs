@@ -37,16 +37,16 @@ internal class HelpFunction : HostFunction
         foreach (var key in keysToDisplay)
         {
             System.Console.WriteLine($"Method: {key}");
-            var doc = documentation_dict[key];
+            var (Comments, Arguments, Returns) = documentation_dict[key];
             
-            if (!string.IsNullOrEmpty(doc.Comments))
-                System.Console.WriteLine($"  Comments: {doc.Comments}");
+            if (!string.IsNullOrEmpty(Comments))
+                System.Console.WriteLine($"  Comments: {Comments}");
             
-            if (!string.IsNullOrEmpty(doc.Arguments))
-                System.Console.WriteLine($"  Arguments: {doc.Arguments}");
+            if (!string.IsNullOrEmpty(Arguments))
+                System.Console.WriteLine($"  Arguments: {Arguments}");
             
-            if (!string.IsNullOrEmpty(doc.Returns))
-                System.Console.WriteLine($"  Returns: {doc.Returns}");
+            if (!string.IsNullOrEmpty(Returns))
+                System.Console.WriteLine($"  Returns: {Returns}");
 
             System.Console.WriteLine("");
 

@@ -117,10 +117,7 @@ namespace Embers.Compiler
             throw new SyntaxError(string.Format("unexpected '{0}'", ch));
         }
 
-        public void PushToken(Token token)
-        {
-            tokens.Push(token);
-        }
+        public void PushToken(Token token) => tokens.Push(token);
 
         private Token NextName(char ch)
         {
@@ -366,15 +363,9 @@ namespace Embers.Compiler
             return ich;
         }
 
-        private int NextChar()
-        {
-            return stream.NextChar();
-        }
+        private int NextChar() => stream.NextChar();
 
-        private void BackChar()
-        {
-            stream.BackChar();
-        }
+        private void BackChar() => stream.BackChar();
 
         private int PeekChar()
         {

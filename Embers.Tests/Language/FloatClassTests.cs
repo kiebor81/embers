@@ -8,10 +8,7 @@ namespace Embers.Tests.Language
         private FloatClass @class;
 
         [TestInitialize]
-        public void Setup()
-        {
-            @class = new FloatClass(null);
-        }
+        public void Setup() => @class = new FloatClass(null);
 
         [TestMethod]
         public void FloatClassInstance()
@@ -22,15 +19,9 @@ namespace Embers.Tests.Language
         }
 
         [TestMethod]
-        public void GetClassInstanceMethod()
-        {
-            Assert.IsNotNull(@class.GetInstanceMethod("class"));
-        }
+        public void GetClassInstanceMethod() => Assert.IsNotNull(@class.GetInstanceMethod("class"));
 
         [TestMethod]
-        public void GetUnknownInstanceMethod()
-        {
-            Assert.IsNull(@class.GetInstanceMethod("foo"));
-        }
+        public void GetUnknownInstanceMethod() => Assert.IsNull(@class.GetInstanceMethod("foo"));
     }
 }

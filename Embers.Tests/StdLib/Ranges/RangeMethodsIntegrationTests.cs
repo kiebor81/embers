@@ -9,10 +9,7 @@ namespace Embers.Tests.StdLib.Ranges
         private Machine machine;
 
         [TestInitialize]
-        public void Setup()
-        {
-            machine = new Machine();
-        }
+        public void Setup() => machine = new Machine();
 
         [TestMethod]
         public void RangeToA()

@@ -1053,19 +1053,16 @@
             };
         }
 
-        private IExpression MakeBinaryExpression(string op, IExpression left, IExpression right)
+        private IExpression MakeBinaryExpression(string op, IExpression left, IExpression right) => op switch
         {
-            return op switch
-            {
-                "+" => new AddExpression(left, right),
-                "-" => new SubtractExpression(left, right),
-                "*" => new MultiplyExpression(left, right),
-                "/" => new DivideExpression(left, right),
-                "%" => new ModuloExpression(left, right),
-                "**" => new PowerExpression(left, right),
-                _ => throw new SyntaxError($"unsupported compound assignment operator: {op}")
-            };
-        }
+            "+" => new AddExpression(left, right),
+            "-" => new SubtractExpression(left, right),
+            "*" => new MultiplyExpression(left, right),
+            "/" => new DivideExpression(left, right),
+            "%" => new ModuloExpression(left, right),
+            "**" => new PowerExpression(left, right),
+            _ => throw new SyntaxError($"unsupported compound assignment operator: {op}")
+        };
 
         private HashExpression ParseHashExpression()
         {
@@ -1107,10 +1104,7 @@
             return new HashExpression(keyexpressions, valueexpressions);
         }
 
-        private void ParseName(string name)
-        {
-            ParseToken(TokenType.Name, name);
-        }
+        private void ParseName(string name) => ParseToken(TokenType.Name, name);
 
         private void ParseToken(TokenType type, string value)
         {
@@ -1130,10 +1124,7 @@
             return token.Value;
         }
 
-        private bool TryParseName(string name)
-        {
-            return TryParseToken(TokenType.Name, name);
-        }
+        private bool TryParseName(string name) => TryParseToken(TokenType.Name, name);
 
         private bool TryParseToken(TokenType type, string value)
         {
@@ -1171,9 +1162,6 @@
             return false;
         }
 
-        private bool IsBinaryOperator(int level, Token token)
-        {
-            return token.Type == TokenType.Operator && binaryoperators[level].Contains(token.Value);
-        }
+        private bool IsBinaryOperator(int level, Token token) => token.Type == TokenType.Operator && binaryoperators[level].Contains(token.Value);
     }
 }

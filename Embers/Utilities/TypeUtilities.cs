@@ -87,10 +87,7 @@ namespace Embers.Utilities
             return GetNamespaces().Any(n => n != null && n.StartsWith(name + "."));
         }
 
-        public static IList<string> GetNames(Type type)
-        {
-            return [.. type.GetMembers(BindingFlags.Public | BindingFlags.Instance).Select(m => m.Name)];
-        }
+        public static IList<string> GetNames(Type type) => [.. type.GetMembers(BindingFlags.Public | BindingFlags.Instance).Select(m => m.Name)];
 
         public static object GetValue(Type type, string name)
         {
@@ -104,10 +101,7 @@ namespace Embers.Utilities
             }
         }
 
-        public static object InvokeTypeMember(Type type, string name, IList<object> parameters)
-        {
-            return type.InvokeMember(name, BindingFlags.FlattenHierarchy | BindingFlags.GetProperty | BindingFlags.GetField | BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.Static, null, null, parameters?.ToArray());
-        }
+        public static object InvokeTypeMember(Type type, string name, IList<object> parameters) => type.InvokeMember(name, BindingFlags.FlattenHierarchy | BindingFlags.GetProperty | BindingFlags.GetField | BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.Static, null, null, parameters?.ToArray());
 
         public static object ParseEnumValue(Type type, string name)
         {

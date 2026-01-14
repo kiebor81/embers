@@ -35,10 +35,7 @@ namespace Embers.Language
 
         public string Name { get { return name; } }
 
-        public void SetInstanceMethod(string name, Func<object, IList<object>, object> method)
-        {
-            methods[name] = method;
-        }
+        public void SetInstanceMethod(string name, Func<object, IList<object>, object> method) => methods[name] = method;
 
         public Func<object, IList<object>, object>? GetInstanceMethod(string name)
         {
@@ -97,10 +94,7 @@ namespace Embers.Language
             return null;
         }
 
-        public override string ToString()
-        {            
-            return Name;
-        }
+        public override string ToString() => Name;
 
         public object? MethodClass(object self, IList<object> values)
         {

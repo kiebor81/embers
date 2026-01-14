@@ -47,10 +47,7 @@ namespace Embers.Functions
             return body.Evaluate(newcontext);
         }
 
-        public object Apply(DynamicObject self, Context context, IList<object> values)
-        {
-            return ApplyWithBlock(self, context, values, null);
-        }
+        public object Apply(DynamicObject self, Context context, IList<object> values) => ApplyWithBlock(self, context, values, null);
 
     }
 }

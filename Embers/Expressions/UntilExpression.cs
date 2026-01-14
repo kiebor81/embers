@@ -76,9 +76,6 @@ namespace Embers.Expressions
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            return condition.GetHashCode() + command.GetHashCode() + hashcode;
-        }
+        public override int GetHashCode() => condition.GetHashCode() + command.GetHashCode() + hashcode;
     }
 }

@@ -21,16 +21,10 @@ namespace Embers.Expressions
             return null;
         }
 
-        public override bool Equals(object? obj)
-        {
-            return obj is AliasExpression other &&
+        public override bool Equals(object? obj) => obj is AliasExpression other &&
                    newName == other.newName &&
                    oldName == other.oldName;
-        }
 
-        public override int GetHashCode()
-        {
-            return newName.GetHashCode() ^ oldName.GetHashCode();
-        }
+        public override int GetHashCode() => newName.GetHashCode() ^ oldName.GetHashCode();
     }
 }

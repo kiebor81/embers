@@ -29,9 +29,6 @@ namespace Embers.Expressions
                 && Equals(elseBlock, other.elseBlock);
         }
 
-        public override int GetHashCode()
-        {
-            return condition.GetHashCode() ^ thenBlock.GetHashCode() ^ (elseBlock?.GetHashCode() ?? 0);
-        }
+        public override int GetHashCode() => condition.GetHashCode() ^ thenBlock.GetHashCode() ^ (elseBlock?.GetHashCode() ?? 0);
     }
 }

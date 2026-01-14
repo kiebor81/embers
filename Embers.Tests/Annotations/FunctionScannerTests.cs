@@ -29,11 +29,11 @@ namespace Embers.Tests.Annotations
         public void ScanFunctionDocumentation_PutsFunctionHasComments()
         {
             var documentation = FunctionScanner.ScanFunctionDocumentation();
-            var putsDoc = documentation["puts, print"];
+            var (Comments, Arguments, Returns) = documentation["puts, print"];
             
-            Assert.IsFalse(string.IsNullOrEmpty(putsDoc.Comments), 
+            Assert.IsFalse(string.IsNullOrEmpty(Comments), 
                 "PutsFunction should have comments attribute");
-            Assert.IsTrue(putsDoc.Comments.Contains("Prints"), 
+            Assert.IsTrue(Comments.Contains("Prints"), 
                 "Comments should contain 'Prints'");
         }
 
@@ -41,11 +41,11 @@ namespace Embers.Tests.Annotations
         public void ScanFunctionDocumentation_PutsFunctionHasArguments()
         {
             var documentation = FunctionScanner.ScanFunctionDocumentation();
-            var putsDoc = documentation["puts, print"];
+            var (Comments, Arguments, Returns) = documentation["puts, print"];
             
-            Assert.IsFalse(string.IsNullOrEmpty(putsDoc.Arguments), 
+            Assert.IsFalse(string.IsNullOrEmpty(Arguments), 
                 "PutsFunction should have arguments attribute");
-            Assert.IsTrue(putsDoc.Arguments.Contains("input"), 
+            Assert.IsTrue(Arguments.Contains("input"), 
                 "Arguments should contain 'input' parameter");
         }
 
@@ -53,11 +53,11 @@ namespace Embers.Tests.Annotations
         public void ScanFunctionDocumentation_PutsFunctionHasReturnType()
         {
             var documentation = FunctionScanner.ScanFunctionDocumentation();
-            var putsDoc = documentation["puts, print"];
+            var (Comments, Arguments, Returns) = documentation["puts, print"];
             
-            Assert.IsFalse(string.IsNullOrEmpty(putsDoc.Returns), 
+            Assert.IsFalse(string.IsNullOrEmpty(Returns), 
                 "PutsFunction should have return type attribute");
-            Assert.AreEqual("Void", putsDoc.Returns, 
+            Assert.AreEqual("Void", Returns, 
                 "PutsFunction should return Void");
         }
 
@@ -132,9 +132,6 @@ namespace Embers.Tests.Annotations
         [Comments("This function should be ignored.")]
         [Arguments(ParamNames = new[] { "value" }, ParamTypes = new[] { typeof(object) })]
         [Returns(ReturnType = typeof(string))]
-        public override object Apply(DynamicObject self, Context context, IList<object> values)
-        {
-            return "ignored";
-        }
+        public override object Apply(DynamicObject self, Context context, IList<object> values) => "ignored";
     }
 }

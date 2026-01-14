@@ -9,10 +9,7 @@ namespace Embers.Tests.Compiler
         private Machine machine;
 
         [TestInitialize]
-        public void Setup()
-        {
-            machine = new Machine();
-        }
+        public void Setup() => machine = new Machine();
 
         [TestMethod]
         public void ModernHashSyntaxBasic()
@@ -60,13 +57,10 @@ namespace Embers.Tests.Compiler
         }
 
         [TestMethod]
-        public void ModernSyntaxWithNonNameKeyThrowsError()
-        {
-            Assert.ThrowsException<Embers.Exceptions.SyntaxError>(() => 
-            {
-                machine.ExecuteText("{\"name\": \"Alice\"}");
-            });
-        }
+        public void ModernSyntaxWithNonNameKeyThrowsError() => Assert.ThrowsException<Embers.Exceptions.SyntaxError>(() =>
+                                                                        {
+                                                                            machine.ExecuteText("{\"name\": \"Alice\"}");
+                                                                        });
 
         [TestMethod]
         public void ModernSyntaxEmptyHash()

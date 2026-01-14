@@ -23,7 +23,7 @@ namespace Embers.Expressions
         {
             this.expression = expression;
             this.name = name;
-            this.qname = AsQualifiedName();
+            qname = AsQualifiedName();
         }
 
         public IExpression TargetExpression { get { return expression; } }

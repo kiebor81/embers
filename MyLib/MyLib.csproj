@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Embers\Embers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DSL\" />
+  </ItemGroup>
+
+  <Target Name="CopyToEmbersTestsMachineFiles" AfterTargets="Build">
+    <PropertyGroup>
+      <_EmbersTestsMachineFilesDir>..\Embers.Tests\MachineFiles</_EmbersTestsMachineFilesDir>
+    </PropertyGroup>
+    <MakeDir Directories="$(_EmbersTestsMachineFilesDir)" />
+    <Copy SourceFiles="$(TargetPath)"
+          DestinationFolder="$(_EmbersTestsMachineFilesDir)"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

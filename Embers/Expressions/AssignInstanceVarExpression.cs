@@ -15,10 +15,7 @@
 
         public IExpression Expression { get { return expression; } }
 
-        public IList<string> GetLocalVariables()
-        {
-            return expression.GetLocalVariables();
-        }
+        public IList<string> GetLocalVariables() => expression.GetLocalVariables();
 
         public object Evaluate(Context context)
         {
@@ -42,9 +39,6 @@
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            return Name.GetHashCode() + Expression.GetHashCode() + hashtag;
-        }
+        public override int GetHashCode() => Name.GetHashCode() + Expression.GetHashCode() + hashtag;
     }
 }

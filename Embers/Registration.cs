@@ -1,6 +1,7 @@
 ﻿using Embers.Exceptions;
 using Embers.Security;
 using Embers.StdLib;
+using System.Reflection;
 
 namespace Embers
 {
@@ -38,6 +39,31 @@ namespace Embers
         internal static void RegisterAllStdLibFunctions(this Context context)
         {
             StdLibRegistry.RegisterGlobalFunctions(context);
+            RegisterAllStdLibFunctionsGlobally(context);
+        }
+
+        private static void RegisterAllStdLibFunctionsGlobally(Context context)
+        {
+            var baseType = typeof(StdFunction);
+            var assembly = baseType.Assembly;
+
+            foreach (var type in assembly.GetTypes())
+            {
+                if (!type.IsClass || type.IsAbstract || !baseType.IsAssignableFrom(type))
+                    continue;
+
+                var attr = type.GetCustomAttribute<StdLibAttribute>();
+                if (attr == null || attr.Names.Length == 0)
+                    continue;
+
+                TypeAccessPolicy.AddType(type.FullName);
+
+                var instance = (StdFunction)Activator.CreateInstance(type);
+                foreach (var name in attr.Names)
+                {
+                    context.Self.Class.SetInstanceMethod(name, instance);
+                }
+            }
         }
     }
 }

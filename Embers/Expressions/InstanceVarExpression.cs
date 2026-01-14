@@ -34,9 +34,6 @@
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            return name.GetHashCode() + hashcode;
-        }
+        public override int GetHashCode() => name.GetHashCode() + hashcode;
     }
 }

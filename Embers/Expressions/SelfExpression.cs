@@ -17,10 +17,7 @@
 
         public string Name { get { return "self"; } }
 
-        public override object Evaluate(Context context)
-        {
-            return context.Self;
-        }
+        public override object Evaluate(Context context) => context.Self;
 
         public override bool Equals(object obj)
         {
@@ -30,9 +27,6 @@
             return obj is SelfExpression;
         }
 
-        public override int GetHashCode()
-        {
-            return hashcode;
-        }
+        public override int GetHashCode() => hashcode;
     }
 }

@@ -27,10 +27,7 @@ namespace Embers.Language
             }
         }
 
-        public void SetValue(string name, object value)
-        {
-            values[name] = value;
-        }
+        public void SetValue(string name, object value) => values[name] = value;
 
         public object? GetValue(string name)
         {
@@ -51,14 +48,8 @@ namespace Embers.Language
             return null;
         }
 
-        public override string ToString()
-        {
-            return string.Format("#<{0}:0x{1}>", Class.Name, GetHashCode().ToString("x"));
-        }
+        public override string ToString() => string.Format("#<{0}:0x{1}>", Class.Name, GetHashCode().ToString("x"));
 
-        internal void SetClass(DynamicClass @class)
-        {
-            this.@class = @class;
-        }
+        internal void SetClass(DynamicClass @class) => this.@class = @class;
     }
 }

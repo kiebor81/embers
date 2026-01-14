@@ -9,15 +9,9 @@ namespace Embers.Tests.StdLib.Hashes
         private Machine machine;
 
         [TestInitialize]
-        public void Setup()
-        {
-            machine = new Machine();
-        }
+        public void Setup() => machine = new Machine();
 
-        private object Execute(string code)
-        {
-            return machine.ExecuteText(code);
-        }
+        private object Execute(string code) => machine.ExecuteText(code);
 
         [TestMethod]
         public void HashKeys()

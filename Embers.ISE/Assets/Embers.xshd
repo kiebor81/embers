@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SyntaxDefinition name="Embers" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" foreground="#6A9955" fontStyle="italic" />
+  <Color name="String" foreground="#CE9178" />
+  <Color name="Symbol" foreground="#4FC1FF" />
+  <Color name="Number" foreground="#B5CEA8" />
+  <Color name="Keyword" foreground="#C586C0" fontWeight="bold" />
+  <Color name="BuiltIn" foreground="#4EC9B0" />
+  <Color name="InstanceVar" foreground="#9CDCFE" />
+  <Color name="ClassVar" foreground="#4FC1FF" />
+  <Color name="Operator" foreground="#D4D4D4" />
+  <Color name="MethodName" foreground="#DCDCAA" />
+  <Color name="ModuleName" foreground="#4EC9B0" />
+  <Color name="SpecialFunction" foreground="#C8A2C8" />
+  <Color name="Constructor" foreground="#569CD6" />
+  <Color name="TypeName" foreground="#4FC1FF" />
+
+  <RuleSet ignoreCase="false">
+    <!-- Comments -->
+    <Span color="Comment" begin="#" />
+
+    <!-- Strings -->
+    <Span color="String" multiline="true">
+      <Begin>"</Begin>
+      <End>"</End>
+      <RuleSet>
+        <!-- String interpolation -->
+        <Span begin="#{" end="}" color="Operator">
+          <RuleSet>
+            <!-- Allow any Embers code inside string interpolation -->
+            <Keywords color="Keyword">
+              <Word>if</Word>
+              <Word>unless</Word>
+              <Word>def</Word>
+              <Word>class</Word>
+              <Word>self</Word>
+              <Word>true</Word>
+              <Word>false</Word>
+              <Word>nil</Word>
+            </Keywords>
+            <Rule color="InstanceVar">@[a-z_]\w*</Rule>
+            <Rule color="Number">\b\d+\.?\d*\b</Rule>
+          </RuleSet>
+        </Span>
+      </RuleSet>
+    </Span>
+    <Span color="String" begin="'" end="'" />
+
+    <!-- Module separator -->
+    <Rule color="Operator">
+      ::
+    </Rule>
+
+    <!-- Symbols -->
+    <Rule color="Symbol">
+      (?&lt;!:):[A-Za-z_]\w*[?!]?
+    </Rule>
+
+    <!-- Numbers -->
+    <Rule color="Number">
+      \b\d+\.?\d*([eE][+-]?\d+)?\b
+    </Rule>
+
+    <!-- Keywords -->
+    <Keywords color="Keyword">
+      <Word>if</Word>
+      <Word>unless</Word>
+      <Word>elsif</Word>
+      <Word>else</Word>
+      <Word>end</Word>
+      <Word>while</Word>
+      <Word>until</Word>
+      <Word>for</Word>
+      <Word>in</Word>
+      <Word>do</Word>
+      <Word>break</Word>
+      <Word>next</Word>
+      <Word>redo</Word>
+      <Word>retry</Word>
+      <Word>return</Word>
+      <Word>yield</Word>
+      <Word>def</Word>
+      <Word>class</Word>
+      <Word>module</Word>
+      <Word>alias</Word>
+      <Word>defined?</Word>
+      <Word>begin</Word>
+      <Word>rescue</Word>
+      <Word>ensure</Word>
+      <Word>raise</Word>
+      <Word>try</Word>
+      <Word>catch</Word>
+      <Word>throw</Word>
+      <Word>and</Word>
+      <Word>or</Word>
+      <Word>not</Word>
+    </Keywords>
+
+    <!-- Built-in values -->
+    <Keywords color="BuiltIn">
+      <Word>true</Word>
+      <Word>false</Word>
+      <Word>nil</Word>
+      <Word>self</Word>
+    </Keywords>
+
+    <!-- Instance and Class Variables -->
+    <Rule color="InstanceVar">
+      @[a-z_]\w*
+    </Rule>
+    <Rule color="ClassVar">
+      @@[a-z_]\w*
+    </Rule>
+
+    <!-- Method definitions -->
+    <Rule color="TypeName">
+      (?&lt;=\bclass\s+)[A-Z][A-Za-z0-9_]*
+    </Rule>
+    <Rule color="TypeName">
+      (?&lt;=\bmodule\s+)[A-Z][A-Za-z0-9_]*
+    </Rule>
+    <Rule color="TypeName">
+      (?&lt;!:)\b[A-Z][A-Za-z0-9_]*\b(?!\s*::)
+    </Rule>
+    <Rule color="Constructor">
+      (?&lt;=\.)new\b
+    </Rule>
+    <Rule color="Constructor">
+      (?&lt;=\.\s)new\b
+    </Rule>
+    <Rule color="Constructor">
+      (?&lt;=::)new\b
+    </Rule>
+    <Rule color="MethodName">
+      (?&lt;=(def\s+))[a-z_]\w*[?!]?
+    </Rule>
+    <Rule color="MethodName">
+      (?&lt;=\.)(?!puts\b|print\b|p\b)[A-Za-z_]\w*[?!]?
+    </Rule>
+    <Rule color="MethodName">
+      (?&lt;=\.\s)(?!puts\b|print\b|p\b)[A-Za-z_]\w*[?!]?
+    </Rule>
+    <Rule color="MethodName">
+      \b(?!puts\b|print\b|p\b)[a-z_]\w*[?!]?(?=\s*\()
+    </Rule>
+
+    <!-- Special functions -->
+    <Keywords color="SpecialFunction">
+      <Word>puts</Word>
+      <Word>p</Word>
+      <Word>print</Word>
+    </Keywords>
+
+    <!-- Module/constant names around :: -->
+    <Rule color="ModuleName">
+      (?&lt;![\w:])[A-Z][A-Za-z0-9_]*(?=::)
+    </Rule>
+    <Rule color="ModuleName">
+      (?&lt;=::)[A-Z][A-Za-z0-9_]*
+    </Rule>
+
+    <!-- Operators -->
+    <Rule color="Operator">
+      [+\-*/%&lt;&gt;=!&amp;|^~]
+    </Rule>
+  </RuleSet>
+</SyntaxDefinition>

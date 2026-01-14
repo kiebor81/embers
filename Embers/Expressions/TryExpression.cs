@@ -64,9 +64,6 @@ namespace Embers.Expressions
                 && RescueBlocks.Count == other.RescueBlocks.Count;
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(TryBlock, RescueBlocks, EnsureBlock);
-        }
+        public override int GetHashCode() => HashCode.Combine(TryBlock, RescueBlocks, EnsureBlock);
     }
 }

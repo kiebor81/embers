@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Embers.ISE.ViewModels"
+        x:Class="Embers.ISE.Views.FunctionHelpDialog"
+        x:DataType="vm:FunctionHelpViewModel"
+        Width="420" Height="320"
+        Title="Function Help"
+        Icon="avares://Embers.ISE/Assets/icon.ico"
+        WindowStartupLocation="CenterOwner"
+        Background="#1E1E1E"
+        mc:Ignorable="d">
+
+  <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="12" RowSpacing="8">
+    <TextBlock Grid.Row="0" Text="Function name" Foreground="#D0D0D0"/>
+    <TextBox Grid.Row="1" Text="{Binding FunctionName}" Watermark="e.g. puts"/>
+
+    <TextBox Grid.Row="2"
+             Text="{Binding Documentation}"
+             AcceptsReturn="True"
+             IsReadOnly="True"
+             TextWrapping="Wrap"
+             ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+
+    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+      <Button Command="{Binding LookupCommand}" Padding="10,4">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <TextBlock Text="🔍"/>
+          <TextBlock Text="Lookup"/>
+        </StackPanel>
+      </Button>
+      <Button Content="Close" Command="{Binding CloseCommand}" Padding="10,4"/>
+    </StackPanel>
+  </Grid>
+</Window>

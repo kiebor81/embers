@@ -19,17 +19,11 @@
             return rval is bool rb && rb;
         }
 
-        public override bool Equals(object? obj)
-        {
-            return obj is OrExpression other &&
+        public override bool Equals(object? obj) => obj is OrExpression other &&
                    Equals(left, other.left) &&
                    Equals(right, other.right);
-        }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(left, right);
-        }
+        public override int GetHashCode() => HashCode.Combine(left, right);
     }
 }
 

@@ -11,10 +11,7 @@
 
         public object Value { get { return value; } }
 
-        public override object Evaluate(Context context)
-        {
-            return value;
-        }
+        public override object Evaluate(Context context) => value;
 
         public override bool Equals(object obj)
         {

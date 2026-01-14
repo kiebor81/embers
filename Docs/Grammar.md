@@ -651,7 +651,7 @@ puts 'Name: #{name}'     # prints literally: Name: #{name}
 
 ## C# Interoperability
 
-Embers runs on the .NET platform and provides seamless interoperability with C# and .NET. You can access .NET types, call static methods, instantiate objects, and use .NET functionality directly from Embers code. Interop behaviour is defined by the host application and available bindings (see [Security Configuration](README.md#security-configuration)).
+Embers runs on the .NET platform and provides seamless interoperability with C# and .NET. You can access .NET types, call static methods, instantiate objects, and use .NET functionality directly from Embers code. Interop behaviour is defined by the host application and available bindings (see [Security Configuration](/README.md#security-configuration)).
 
 ### Syntax Rules
 

@@ -12,9 +12,6 @@ namespace Embers.Functions
     {
         private readonly Func<DynamicObject, Context, IList<object>, object> function = function ?? throw new ArgumentNullException(nameof(function));
 
-        public object Apply(DynamicObject self, Context context, IList<object> values)
-        {
-            return function(self, context, values);
-        }
+        public object Apply(DynamicObject self, Context context, IList<object> values) => function(self, context, values);
     }
 }

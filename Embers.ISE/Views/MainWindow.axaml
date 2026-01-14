@@ -1,0 +1,174 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Embers.ISE.ViewModels"
+        xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+        xmlns:controls="clr-namespace:Embers.ISE.Controls"
+        xmlns:conv="clr-namespace:Embers.ISE.Converters"
+        x:Class="Embers.ISE.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Width="1100" Height="750"
+        Title="Embers ISE"
+        Icon="avares://Embers.ISE/Assets/icon.ico"
+        Background="#1E1E1E"
+        mc:Ignorable="d">
+
+  <Window.DataContext>
+    <vm:MainWindowViewModel/>
+  </Window.DataContext>
+
+  <Window.Resources>
+    <conv:EmptyToNullConverter x:Key="EmptyToNullConverter"/>
+    <conv:PathToFileNameConverter x:Key="PathToFileNameConverter"/>
+    <conv:PanelToggleTextConverter x:Key="PanelToggleTextConverter"/>
+  </Window.Resources>
+
+  <DockPanel>
+    <!-- Toolbar -->
+    <Border DockPanel.Dock="Top" 
+            Background="#2D2D30"
+            Padding="8,4">
+      <StackPanel Orientation="Horizontal" Spacing="4">
+        <Button Content="New" Command="{Binding NewCommand}" Padding="8,4"/>
+        <Button Content="📂 Open" Command="{Binding OpenCommand}" Padding="8,4"/>
+        <Button Content="💾 Save" Command="{Binding SaveCommand}" Padding="8,4"/>
+        <Button Content="📦 Add DLL" Command="{Binding AddReferenceCommand}" Padding="8,4"/>
+        <Separator Width="1" Height="20" Background="#3E3E42"/>
+        <Button Content="▶ Run (F5)" Command="{Binding RunCommand}" Padding="8,4"/>
+        <Button Content="✂ Run Selection (F6)" Command="{Binding RunSelectionCommand}" Padding="8,4"/>
+        <Button Content="■ Stop" Command="{Binding StopCommand}" Padding="8,4"/>
+        <Separator Width="1" Height="20" Background="#3E3E42"/>
+        <Button Content="❓ Help" Command="{Binding HelpCommand}" Padding="8,4"/>
+      </StackPanel>
+    </Border>
+
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="22"/>
+        <ColumnDefinition Width="{Binding RightPanelWidth}"/>
+      </Grid.ColumnDefinitions>
+      <!-- Left: editor + console -->
+      <Grid Column="0" RowDefinitions="*,Auto,220">
+        <!-- Editor -->
+        <ae:TextEditor Grid.Row="0"
+                       Name="Editor"
+                       ShowLineNumbers="True"
+                       FontFamily="Consolas, Courier New, monospace"
+                       FontSize="14"
+                       WordWrap="False"
+                       IsReadOnly="False"
+                       HorizontalScrollBarVisibility="Auto"
+                       VerticalScrollBarVisibility="Auto"/>
+
+        <GridSplitter Grid.Row="1" 
+                      Height="6" 
+                      HorizontalAlignment="Stretch" 
+                      Background="#3E3E42"/>
+
+        <!-- Console -->
+      <ScrollViewer Grid.Row="2"
+                    Name="ConsoleScroll"
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Auto"
+                    Background="#1E1E1E">
+          <controls:ColorizedConsole Name="Console" />
+        </ScrollViewer>
+      </Grid>
+
+      <Button Grid.Column="1"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Stretch"
+              Width="22"
+              Padding="0"
+              Background="#2D2D30"
+              BorderBrush="#3E3E42"
+              BorderThickness="0,0,1,0"
+              HorizontalContentAlignment="Center"
+              VerticalContentAlignment="Center"
+              Command="{Binding ToggleRightPanelCommand}"
+              Content="{Binding IsRightPanelVisible, Converter={StaticResource PanelToggleTextConverter}}"/>
+
+      <!-- Right: function panel -->
+      <Border Grid.Column="2"
+              IsVisible="{Binding IsRightPanelVisible}"
+              Background="#252526"
+              BorderBrush="#3E3E42"
+              BorderThickness="1,0,0,0">
+        <DockPanel>
+          <StackPanel DockPanel.Dock="Top" Margin="8" Spacing="8">
+            <TextBlock Text="Security" Foreground="#D0D0D0"/>
+            <ComboBox ItemsSource="{Binding SecurityModes}"
+                      SelectedItem="{Binding SelectedSecurityMode}"/>
+            <Expander Header="Whitelist"
+                      IsExpanded="True"
+                      IsVisible="{Binding IsWhitelistMode}">
+              <StackPanel Spacing="6">
+                <TextBlock Text="Allow types or namespaces (use 'My.Namespace.*')."
+                           Foreground="#A0A0A0"
+                           FontSize="11"/>
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <TextBox Width="190"
+                           Text="{Binding NewWhitelistEntry}"
+                           Watermark="MyApp.Type or MyApp.Namespace.*"/>
+                  <Button Content="Add" Command="{Binding AddWhitelistEntryCommand}" Padding="10,4"/>
+                </StackPanel>
+                <ListBox ItemsSource="{Binding WhitelistEntries}"
+                         SelectedItem="{Binding SelectedWhitelistEntry}"
+                         Height="120"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="6">
+                  <Button Content="Remove" Command="{Binding RemoveWhitelistEntryCommand}" Padding="10,4"/>
+                  <Button Content="Clear" Command="{Binding ClearWhitelistCommand}" Padding="10,4"/>
+                </StackPanel>
+              </StackPanel>
+            </Expander>
+          </StackPanel>
+
+          <TabControl FontSize="12">
+            <TabItem Header="Std Lib" FontSize="12">
+              <ListBox Name="StdLibList" ItemsSource="{Binding StdLibFunctions}">
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <TextBlock Text="{Binding Name}"
+                               PointerPressed="OnFunctionItemPointerPressed"
+                               ToolTip.Tip="{Binding Comment, Converter={StaticResource EmptyToNullConverter}}"/>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </TabItem>
+            <TabItem Header="Host" FontSize="12">
+              <ListBox Name="HostList" ItemsSource="{Binding HostFunctions}">
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <TextBlock Text="{Binding Name}"
+                               PointerPressed="OnFunctionItemPointerPressed"
+                               ToolTip.Tip="{Binding Comment, Converter={StaticResource EmptyToNullConverter}}"/>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </TabItem>
+            <TabItem Header="References" FontSize="12">
+              <ListBox Name="ReferenceList" ItemsSource="{Binding ReferenceAssemblies}">
+                <ListBox.ItemTemplate>
+                  <DataTemplate x:DataType="{x:Null}">
+                    <TextBlock Text="{Binding Converter={StaticResource PathToFileNameConverter}}"
+                               ToolTip.Tip="{Binding}">
+                      <TextBlock.ContextMenu>
+                        <ContextMenu x:CompileBindings="False">
+                          <MenuItem Header="Remove"
+                                    Command="{Binding DataContext.RemoveReferenceCommand, ElementName=ReferenceList}"
+                                    CommandParameter="{Binding}"/>
+                        </ContextMenu>
+                      </TextBlock.ContextMenu>
+                    </TextBlock>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </TabItem>
+          </TabControl>
+        </DockPanel>
+      </Border>
+    </Grid>
+  </DockPanel>
+</Window>

@@ -1,12 +1,11 @@
 ﻿using Crayon;
 
-namespace Embers.Console
+namespace Embers.Console;
+internal static class Welcome
 {
-    internal static class Welcome
-    {
-        readonly static List<List<char>> logo =
-        [
-            [.. "...................................................................................................."],
+    readonly static List<List<char>> logo =
+    [
+        [.. "...................................................................................................."],
             [.. "...................................................................................................."],
             [.. "...................................................................................................."],
             [.. "..............................................:;xXXx;:.............................................."],
@@ -48,29 +47,29 @@ namespace Embers.Console
             [.. "...................................................................................................."],
             [.. "...................................................................................................."],
             [.. "...................................................................................................."]
-        ];
+    ];
 
-        public static void Print()
+    public static void Print()
+    {
+        foreach (var line in logo)
         {
-            foreach (var line in logo)
+            foreach (var ch in line)
             {
-                foreach (var ch in line)
-                {
-                    if (ch == '.')
-                        System.Console.Write(" ");
-                    else
-                        System.Console.Write(Output.Background.Red(" "));
-                }
-                System.Console.WriteLine(); // New line after each row
+                if (ch == '.')
+                    System.Console.Write(" ");
+                else
+                    System.Console.Write(Output.Background.Red(" "));
             }
-
-            System.Console.WriteLine(" ");
-            System.Console.WriteLine(Output.Yellow().Underline("Welcome to Embers"));
-            System.Console.WriteLine(" ");
-            System.Console.WriteLine(Output.Yellow().Dim("Please enter your code below:"));
-
-            System.Console.WriteLine(" ");
-            //System.Console.Write(Output.Magenta("> "));
+            System.Console.WriteLine(); // New line after each row
         }
+
+        System.Console.WriteLine(" ");
+        System.Console.WriteLine(Output.Yellow().Underline("Welcome to Embers"));
+        System.Console.WriteLine(" ");
+        System.Console.WriteLine(Output.Yellow().Dim("Please enter your code below:"));
+
+        System.Console.WriteLine(" ");
+        //System.Console.Write(Output.Magenta("> "));
     }
 }
+

@@ -24,9 +24,6 @@ namespace Embers.Expressions
                 && Equals(falseExpr, other.falseExpr);
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(condition, trueExpr, falseExpr);
-        }
+        public override int GetHashCode() => HashCode.Combine(condition, trueExpr, falseExpr);
     }
 }

@@ -1,4 +1,3 @@
-using Embers.Language;
 using Embers.Security;
 
 namespace Embers.Tests

@@ -8,10 +8,7 @@ namespace Embers.Tests.StdLib.Time
         private Machine machine;
 
         [TestInitialize]
-        public void Setup()
-        {
-            machine = new Machine();
-        }
+        public void Setup() => machine = new Machine();
 
         [TestMethod]
         public void Now_GlobalFunction_ReturnsDateTime()

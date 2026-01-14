@@ -36,10 +36,7 @@ namespace Embers.Host
         /// Injects all host functions from the calling assembly.
         /// </summary>
         /// <param name="machine">The machine.</param>
-        public static void InjectFromCallingAssembly(this Machine machine)
-        {
-            InjectFromAssembly(machine, Assembly.GetCallingAssembly());
-        }
+        public static void InjectFromCallingAssembly(this Machine machine) => InjectFromAssembly(machine, Assembly.GetCallingAssembly());
 
         /// <summary>
         /// Injects all host functions from referenced assemblies.

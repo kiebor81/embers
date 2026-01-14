@@ -9,9 +9,6 @@ namespace Embers.StdLib.Symbols
         [Comments("Converts a string to a symbol.")]
         [Arguments(ParamNames = new[] { "string" }, ParamTypes = new[] { typeof(string) })]
         [Returns(ReturnType = typeof(Symbol))]
-        public override object Apply(DynamicObject self, Context context, IList<object> values)
-        {
-            return new ToSymFunction().Apply(self, context, values);
-        }
+        public override object Apply(DynamicObject self, Context context, IList<object> values) => new ToSymFunction().Apply(self, context, values);
     }
 }

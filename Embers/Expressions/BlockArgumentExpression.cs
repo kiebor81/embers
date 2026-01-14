@@ -10,25 +10,14 @@ namespace Embers.Expressions
 
         public IExpression Expression => expression;
 
-        public override object Evaluate(Context context)
-        {
+        public override object Evaluate(Context context) =>
             // Evaluate the expression to get the value (should be a Proc)
-            return expression.Evaluate(context);
-        }
+            expression.Evaluate(context);
 
-        public override bool Equals(object? obj)
-        {
-            return obj is BlockArgumentExpression other && expression.Equals(other.expression);
-        }
+        public override bool Equals(object? obj) => obj is BlockArgumentExpression other && expression.Equals(other.expression);
 
-        public override int GetHashCode()
-        {
-            return expression.GetHashCode();
-        }
+        public override int GetHashCode() => expression.GetHashCode();
 
-        public override string ToString()
-        {
-            return $"&{expression}";
-        }
+        public override string ToString() => $"&{expression}";
     }
 }

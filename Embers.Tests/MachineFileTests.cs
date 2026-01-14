@@ -10,10 +10,7 @@ namespace Embers.Tests
         private Machine machine;
 
         [TestInitialize]
-        public void Setup()
-        {
-            machine = new Machine();
-        }
+        public void Setup() => machine = new Machine();
 
         [TestMethod]
         public void ExecuteSimpleAssignFile()
@@ -298,17 +295,13 @@ namespace Embers.Tests
         }
 
         [TestMethod]
-        public void Execute_WithNonExistentFilePath_ThrowsFileNotFoundException()
-        {
+        public void Execute_WithNonExistentFilePath_ThrowsFileNotFoundException() =>
             // If it looks like a file path but doesn't exist, throw FileNotFoundException
             Assert.ThrowsException<FileNotFoundException>(() => machine.Execute("path/to/nonexistent.rb"));
-        }
 
         [TestMethod]
-        public void Execute_WithNonExistentFilePathBackslash_ThrowsFileNotFoundException()
-        {
+        public void Execute_WithNonExistentFilePathBackslash_ThrowsFileNotFoundException() =>
             // Test with Windows-style path separator
             Assert.ThrowsException<FileNotFoundException>(() => machine.Execute("path\\to\\nonexistent.rb"));
-        }
     }
 }

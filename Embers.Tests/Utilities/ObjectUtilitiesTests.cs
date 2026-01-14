@@ -7,16 +7,10 @@ namespace Embers.Tests.Utilities
     public class ObjectUtilitiesTests
     {
         [TestMethod]
-        public void GetPropertyFromString()
-        {
-            Assert.AreEqual(3, ObjectUtilities.GetValue("foo", "Length"));
-        }
+        public void GetPropertyFromString() => Assert.AreEqual(3, ObjectUtilities.GetValue("foo", "Length"));
 
         [TestMethod]
-        public void GetValueUsingCall()
-        {
-            Assert.AreEqual("oo", ObjectUtilities.GetValue("foo", "Substring", [1]));
-        }
+        public void GetValueUsingCall() => Assert.AreEqual("oo", ObjectUtilities.GetValue("foo", "Substring", [1]));
 
         [TestMethod]
         public void IsNumber()
@@ -134,9 +128,6 @@ namespace Embers.Tests.Utilities
             Assert.IsTrue(names.Contains("NameEvent"));
         }
 
-        private object DummyFunction(object self, Context context, IList<object> arguments)
-        {
-            return null;
-        }
+        private object DummyFunction(object self, Context context, IList<object> arguments) => null;
     }
 }

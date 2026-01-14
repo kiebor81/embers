@@ -11,20 +11,11 @@ namespace Embers.Language
         private readonly int from = from;
         private readonly int to = to;
 
-        public IEnumerator<int> GetEnumerator()
-        {
-            return new RangeEnumerator(from, to);
-        }
+        public IEnumerator<int> GetEnumerator() => new RangeEnumerator(from, to);
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return new RangeEnumerator(from, to);
-        }
+        IEnumerator IEnumerable.GetEnumerator() => new RangeEnumerator(from, to);
 
-        public override string ToString()
-        {
-            return string.Format("{0}..{1}", from, to);
-        }
+        public override string ToString() => string.Format("{0}..{1}", from, to);
 
         private class RangeEnumerator(int from, int to) : IEnumerator<int>
         {
@@ -49,10 +40,7 @@ namespace Embers.Language
                 return current >= from && current <= to;
             }
 
-            public void Reset()
-            {
-                current = from - 1;
-            }
+            public void Reset() => current = from - 1;
 
             public void Dispose()
             {

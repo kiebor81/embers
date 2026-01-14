@@ -24,14 +24,8 @@ namespace Embers.Expressions
             return new Proc(blockObj);
         }
 
-        public override bool Equals(object? obj)
-        {
-            return obj is LambdaExpression other && block.Equals(other.block);
-        }
+        public override bool Equals(object? obj) => obj is LambdaExpression other && block.Equals(other.block);
 
-        public override int GetHashCode()
-        {
-            return typeof(LambdaExpression).GetHashCode() ^ block.GetHashCode();
-        }
+        public override int GetHashCode() => typeof(LambdaExpression).GetHashCode() ^ block.GetHashCode();
     }
 }
