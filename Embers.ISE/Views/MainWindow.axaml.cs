@@ -21,6 +21,7 @@ public partial class MainWindow : Window
     private CompletionWindow? _completionWindow;
     private FoldingManager? _foldingManager;
     private readonly EmbersFoldingStrategy _foldingStrategy = new();
+    private bool _pendingCtrlK;
 
     public MainWindow()
     {
@@ -49,6 +50,7 @@ public partial class MainWindow : Window
 
                 editor.TextArea.TextEntered += OnEditorTextEntered;
                 editor.TextArea.TextEntering += OnEditorTextEntering;
+                editor.TextArea.AddHandler(InputElement.KeyDownEvent, OnEditorKeyDown, RoutingStrategies.Tunnel);
 
                 editor.TextChanged += (s, args) =>
                 {
@@ -177,6 +179,127 @@ public partial class MainWindow : Window
         var dialog = new FunctionHelpDialog();
         dialog.DataContext = new FunctionHelpViewModel(() => dialog.Close(), functionName);
         await dialog.ShowDialog(this);
+    }
+
+    private void OnEditorKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (_editor?.Document == null) return;
+
+        if (e.Key == Key.Escape)
+        {
+            _pendingCtrlK = false;
+            return;
+        }
+
+        if (_pendingCtrlK)
+        {
+            if (e.Key == Key.C)
+            {
+                CommentSelection();
+                e.Handled = true;
+            }
+            else if (e.Key == Key.U)
+            {
+                UncommentSelection();
+                e.Handled = true;
+            }
+
+            _pendingCtrlK = false;
+            return;
+        }
+
+        if (e.Key == Key.K && e.KeyModifiers.HasFlag(KeyModifiers.Control))
+        {
+            _pendingCtrlK = true;
+            e.Handled = true;
+        }
+    }
+
+    private void CommentSelection()
+    {
+        if (_editor?.Document == null) return;
+
+        var document = _editor.Document;
+        var (startLine, endLine) = GetSelectedLineRange();
+
+        document.BeginUpdate();
+        try
+        {
+            for (var lineNumber = endLine; lineNumber >= startLine; lineNumber--)
+            {
+                var line = document.GetLineByNumber(lineNumber);
+                var lineText = document.GetText(line);
+                var insertOffset = line.Offset + CountLeadingWhitespace(lineText);
+                document.Insert(insertOffset, "#");
+            }
+        }
+        finally
+        {
+            document.EndUpdate();
+        }
+    }
+
+    private void UncommentSelection()
+    {
+        if (_editor?.Document == null) return;
+
+        var document = _editor.Document;
+        var (startLine, endLine) = GetSelectedLineRange();
+
+        document.BeginUpdate();
+        try
+        {
+            for (var lineNumber = endLine; lineNumber >= startLine; lineNumber--)
+            {
+                var line = document.GetLineByNumber(lineNumber);
+                var lineText = document.GetText(line);
+                var leading = CountLeadingWhitespace(lineText);
+                if (leading >= lineText.Length) continue;
+
+                if (lineText[leading] == '#')
+                {
+                    var removeOffset = line.Offset + leading;
+                    var removeLength = 1;
+                    if (leading + 1 < lineText.Length && lineText[leading + 1] == ' ')
+                        removeLength = 2;
+
+                    document.Remove(removeOffset, removeLength);
+                }
+            }
+        }
+        finally
+        {
+            document.EndUpdate();
+        }
+    }
+
+    private (int StartLine, int EndLine) GetSelectedLineRange()
+    {
+        if (_editor?.Document == null) return (1, 1);
+
+        var document = _editor.Document;
+        var selectionStart = _editor.SelectionStart;
+        var selectionLength = _editor.SelectionLength;
+        var selectionEnd = selectionStart + selectionLength;
+
+        var startLine = document.GetLineByOffset(selectionStart).LineNumber;
+        if (selectionLength == 0)
+            return (startLine, startLine);
+
+        var endLine = document.GetLineByOffset(selectionEnd).LineNumber;
+        var endLineOffset = document.GetLineByNumber(endLine).Offset;
+        if (selectionEnd == endLineOffset && selectionEnd > selectionStart)
+            endLine = document.GetLineByOffset(selectionEnd - 1).LineNumber;
+
+        return (startLine, endLine);
+    }
+
+    private static int CountLeadingWhitespace(string text)
+    {
+        var count = 0;
+        while (count < text.Length && char.IsWhiteSpace(text[count]))
+            count++;
+        return count;
     }
 
     private void OnEditorCut(object? sender, RoutedEventArgs e) => _editor?.Cut();

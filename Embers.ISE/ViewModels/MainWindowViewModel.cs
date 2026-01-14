@@ -128,6 +128,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     public ICommand OpenCommand { get; }
     public ICommand SaveCommand { get; }
     public ICommand NewCommand { get; }
+    public ICommand ClearEditorCommand { get; }
     public ICommand AddReferenceCommand { get; }
     public ICommand ToggleRightPanelCommand { get; }
     public ICommand RemoveReferenceCommand { get; }
@@ -148,6 +149,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         OpenCommand = new AsyncCommand(OpenAsync);
         SaveCommand = new AsyncCommand(SaveAsync);
         NewCommand = new Commands(NewScript);
+        ClearEditorCommand = new Commands(ClearEditor);
         AddReferenceCommand = new AsyncCommand(AddReferenceAsync);
         ToggleRightPanelCommand = new Commands(ToggleRightPanel);
         RemoveReferenceCommand = new ParameterCommand(RemoveReference);
@@ -169,6 +171,8 @@ public sealed class MainWindowViewModel : ViewModelBase
         EditorText = string.Empty;
         _console?.WriteInfo("[New] Ready for a new script.\n");
     }
+
+    private void ClearEditor() => EditorText = string.Empty;
 
     public void SetConsoleWriter(ConsoleWriter console) => _console = console;
 

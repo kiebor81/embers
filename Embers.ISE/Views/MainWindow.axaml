@@ -43,6 +43,11 @@
             <TextBlock Text="＋" Classes="ToolbarIcon" Foreground="#FFFFFF"/>
           </StackPanel>
         </Button>
+        <Button Command="{Binding ClearEditorCommand}" Padding="8,4" ToolTip.Tip="Clear editor">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="🗘" Classes="ToolbarIcon" Foreground="#98FB98"/>
+          </StackPanel>
+        </Button>
         <Button Command="{Binding OpenCommand}" Padding="8,4" ToolTip.Tip="Open script">
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Text="📂︎" Classes="ToolbarIcon" Foreground="#F2C94C"/>
