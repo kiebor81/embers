@@ -108,6 +108,7 @@ graph TD
 - `Embers.Console`: Example CLI host for executing embers (`.rb`, `.rs`, `.ers`, `.emb`) scripts or launching an interactive REPL
 - `Embers.ISE`: Rudimentary ISE for Embers, illustrating self documentation, host injection, and real-time policy change
 - `Embers.Tests`: Unit and integration tests covering Embers' functionality
+- `MyLib`: DSL playground and test library.
 
 ## Design Goals
 
