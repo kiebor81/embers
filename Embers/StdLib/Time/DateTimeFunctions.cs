@@ -32,7 +32,26 @@ namespace Embers.StdLib.Time
             if (values == null || values.Count == 0 || values[0] == null)
                 throw new ArgumentError("parse expects a string argument");
             if (values[0] is string s)
-                return DateTime.Parse(s, CultureInfo.InvariantCulture);
+            {
+                // Try common date formats
+                string[] formats = {
+                    "dd/MM/yyyy HH:mm:ss",
+                    "dd/MM/yyyy",
+                    "MM/dd/yyyy HH:mm:ss",
+                    "MM/dd/yyyy",
+                    "yyyy-MM-dd HH:mm:ss",
+                    "yyyy-MM-dd"
+                };
+                
+                if (DateTime.TryParseExact(s, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out var result))
+                    return result;
+                
+                // Fallback to general parsing
+                if (DateTime.TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                    return result;
+                
+                throw new ArgumentError($"Unable to parse '{s}' as a valid date/time");
+            }
             throw new TypeError("parse expects a string");
         }
     }

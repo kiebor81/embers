@@ -12,3 +12,4 @@ Thumbs.db
 TestResults/
 nuget/
 publish/
+Embers.Tests/MachineFiles/MyLib.dll

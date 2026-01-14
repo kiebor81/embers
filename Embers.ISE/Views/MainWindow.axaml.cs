@@ -4,6 +4,7 @@ using Embers.ISE.Controls;
 using Embers.ISE.Models;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using AvaloniaEdit;
 using AvaloniaEdit.CodeCompletion;
 using System;
@@ -176,5 +177,19 @@ public partial class MainWindow : Window
         var dialog = new FunctionHelpDialog();
         dialog.DataContext = new FunctionHelpViewModel(() => dialog.Close(), functionName);
         await dialog.ShowDialog(this);
+    }
+
+    private void OnEditorCut(object? sender, RoutedEventArgs e) => _editor?.Cut();
+
+    private void OnEditorCopy(object? sender, RoutedEventArgs e) => _editor?.Copy();
+
+    private void OnEditorPaste(object? sender, RoutedEventArgs e) => _editor?.Paste();
+
+    private void OnEditorSelectAll(object? sender, RoutedEventArgs e)
+    {
+        if (_editor?.Document == null) return;
+        _editor.Focus();
+        _editor.TextArea?.Focus();
+        _editor.SelectAll();
     }
 }

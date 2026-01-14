@@ -60,7 +60,16 @@
                        WordWrap="False"
                        IsReadOnly="False"
                        HorizontalScrollBarVisibility="Auto"
-                       VerticalScrollBarVisibility="Auto"/>
+                       VerticalScrollBarVisibility="Auto">
+          <ae:TextEditor.ContextMenu>
+            <ContextMenu>
+              <MenuItem Header="Cut" Click="OnEditorCut"/>
+              <MenuItem Header="Copy" Click="OnEditorCopy"/>
+              <MenuItem Header="Paste" Click="OnEditorPaste"/>
+              <MenuItem Header="Select All" Click="OnEditorSelectAll"/>
+            </ContextMenu>
+          </ae:TextEditor.ContextMenu>
+        </ae:TextEditor>
 
         <GridSplitter Grid.Row="1" 
                       Height="6" 
