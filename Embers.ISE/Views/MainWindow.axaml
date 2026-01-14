@@ -38,48 +38,53 @@
             Background="#2D2D30"
             Padding="8,4">
       <StackPanel Orientation="Horizontal" Spacing="4">
-        <Button Command="{Binding NewCommand}" Padding="8,4" Background="#2E7D32">
+        <Button Command="{Binding NewCommand}" Padding="8,4" Background="#2E7D32" ToolTip.Tip="New script">
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Text="＋" Classes="ToolbarIcon" Foreground="#FFFFFF"/>
           </StackPanel>
         </Button>
-        <Button Command="{Binding OpenCommand}" Padding="8,4">
+        <Button Command="{Binding OpenCommand}" Padding="8,4" ToolTip.Tip="Open script">
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Text="📂︎" Classes="ToolbarIcon" Foreground="#F2C94C"/>
           </StackPanel>
         </Button>
-        <Button Command="{Binding SaveCommand}" Padding="8,4">
+        <Button Command="{Binding SaveCommand}" Padding="8,4" ToolTip.Tip="Save script">
           <StackPanel Orientation="Horizontal" Spacing="6">
-            <TextBlock Text="💾︎" Classes="ToolbarIcon" Foreground="#2F6BFF"/>
+            <TextBlock Text="💾︎" Classes="ToolbarIcon" Foreground="#87CEEB"/>
           </StackPanel>
         </Button>
-        <Button Command="{Binding AddReferenceCommand}" Padding="8,4">
+        <Button Command="{Binding AddReferenceCommand}" Padding="8,4" ToolTip.Tip="Add DLL reference">
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Text="📦︎" Classes="ToolbarIcon" Foreground="#F2C94C"/>
           </StackPanel>
         </Button>
         <Separator Width="1" Height="20" Background="#3E3E42"/>
-        <Button Command="{Binding RunCommand}" Padding="8,4">
+        <Button Command="{Binding RunCommand}" Padding="8,4" ToolTip.Tip="Run (F5)">
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Text="▶" Classes="ToolbarIcon" Foreground="#55C65A"/>
             <TextBlock Text="(F5)"/>
           </StackPanel>
         </Button>
-        <Button Click="OnRunSelection" Padding="8,4">
+        <Button Click="OnRunSelection" Padding="8,4" ToolTip.Tip="Run selection (F6)">
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Text="▶" Classes="ToolbarIcon" Foreground="#55C65A"/>
             <TextBlock Text="(F6)"/>
           </StackPanel>
         </Button>
-        <Button Command="{Binding StopCommand}" Padding="8,4">
+        <Button Command="{Binding StopCommand}" Padding="8,4" ToolTip.Tip="Stop execution">
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Text="■" Classes="ToolbarIcon" Foreground="#E05A5A"/>
           </StackPanel>
         </Button>
         <Separator Width="1" Height="20" Background="#3E3E42"/>
-        <Button Command="{Binding HelpCommand}" Padding="8,4" Background="#2F6BFF">
+        <Button Command="{Binding HelpCommand}" Padding="8,4" Background="#2F6BFF" ToolTip.Tip="Help">
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Text="❓︎" Classes="ToolbarIcon" Foreground="#FFFFFF"/>
+          </StackPanel>
+        </Button>
+        <Button Click="OnOpenGitHub" Padding="8,4" Background="#2F6BFF" ToolTip.Tip="GitHub">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="🌐" Classes="ToolbarIcon" Foreground="#FFFFFF"/>
           </StackPanel>
         </Button>
       </StackPanel>
@@ -178,26 +183,38 @@
 
           <TabControl FontSize="12">
             <TabItem Header="Std Lib" FontSize="12">
-              <ListBox Name="StdLibList" ItemsSource="{Binding StdLibFunctions}">
-                <ListBox.ItemTemplate>
-                  <DataTemplate>
-                    <TextBlock Text="{Binding Name}"
-                               PointerPressed="OnFunctionItemPointerPressed"
-                               ToolTip.Tip="{Binding Comment, Converter={StaticResource EmptyToNullConverter}}"/>
-                  </DataTemplate>
-                </ListBox.ItemTemplate>
-              </ListBox>
+              <DockPanel>
+                <TextBox DockPanel.Dock="Top"
+                         Margin="8,8,8,4"
+                         Watermark="Search stdlib..."
+                         Text="{Binding StdLibFilterText, UpdateSourceTrigger=PropertyChanged}"/>
+                <ListBox Name="StdLibList" ItemsSource="{Binding StdLibFunctions}">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding Name}"
+                                 PointerPressed="OnFunctionItemPointerPressed"
+                                 ToolTip.Tip="{Binding Comment, Converter={StaticResource EmptyToNullConverter}}"/>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </DockPanel>
             </TabItem>
             <TabItem Header="Host" FontSize="12">
-              <ListBox Name="HostList" ItemsSource="{Binding HostFunctions}">
-                <ListBox.ItemTemplate>
-                  <DataTemplate>
-                    <TextBlock Text="{Binding Name}"
-                               PointerPressed="OnFunctionItemPointerPressed"
-                               ToolTip.Tip="{Binding Comment, Converter={StaticResource EmptyToNullConverter}}"/>
-                  </DataTemplate>
-                </ListBox.ItemTemplate>
-              </ListBox>
+              <DockPanel>
+                <TextBox DockPanel.Dock="Top"
+                         Margin="8,8,8,4"
+                         Watermark="Search host..."
+                         Text="{Binding HostFilterText, UpdateSourceTrigger=PropertyChanged}"/>
+                <ListBox Name="HostList" ItemsSource="{Binding HostFunctions}">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding Name}"
+                                 PointerPressed="OnFunctionItemPointerPressed"
+                                 ToolTip.Tip="{Binding Comment, Converter={StaticResource EmptyToNullConverter}}"/>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </DockPanel>
             </TabItem>
             <TabItem Header="References" FontSize="12">
               <ListBox Name="ReferenceList" ItemsSource="{Binding ReferenceAssemblies}">

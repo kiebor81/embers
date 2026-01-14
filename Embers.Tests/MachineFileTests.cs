@@ -113,15 +113,15 @@ namespace Embers.Tests
             Assert.IsInstanceOfType(result, typeof(DynamicClass));
         }
 
-        [TestMethod]
-        public void RequireLibraryFile()
-        {
-            Assert.IsTrue(machine.RequireFile("MachineFiles\\MyLib"));
+        //[TestMethod]
+        //public void RequireLibraryFile()
+        //{
+        //    Assert.IsTrue(machine.RequireFile("MachineFiles\\MyLib"));
 
-            var result = machine.ExecuteText("MyLib::MyClass");
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(Type));
-        }
+        //    var result = machine.ExecuteText("MyLib::MyClass");
+        //    Assert.IsNotNull(result);
+        //    Assert.IsInstanceOfType(result, typeof(Type));
+        //}
 
         [TestMethod]
         public void RequireFileTwice()

@@ -200,6 +200,23 @@ public partial class MainWindow : Window
         viewModel.RunSelectionCommand.Execute(selection);
     }
 
+    private void OnOpenGitHub(object? sender, RoutedEventArgs e)
+    {
+        const string url = "https://github.com/kiebor81/embers";
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to open GitHub URL: {ex.Message}");
+        }
+    }
+
     private void OnWindowKeyDown(object? sender, KeyEventArgs e)
     {
         if (DataContext is not MainWindowViewModel viewModel) return;

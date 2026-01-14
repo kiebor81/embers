@@ -36,6 +36,33 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     public ObservableCollection<string> WhitelistEntries { get; } = [];
 
+    private readonly List<FunctionListItem> _allStdLibFunctions = [];
+    private readonly List<FunctionListItem> _allHostFunctions = [];
+
+    private string _stdLibFilterText = "";
+    public string StdLibFilterText
+    {
+        get => _stdLibFilterText;
+        set
+        {
+            if (Equals(_stdLibFilterText, value)) return;
+            Set(ref _stdLibFilterText, value);
+            ApplyFunctionFilters();
+        }
+    }
+
+    private string _hostFilterText = "";
+    public string HostFilterText
+    {
+        get => _hostFilterText;
+        set
+        {
+            if (Equals(_hostFilterText, value)) return;
+            Set(ref _hostFilterText, value);
+            ApplyFunctionFilters();
+        }
+    }
+
     private string _newWhitelistEntry = "";
     public string NewWhitelistEntry
     {
@@ -281,16 +308,42 @@ public sealed class MainWindowViewModel : ViewModelBase
         hostAssemblies.AddRange(_host.GetReferenceAssembliesSnapshot());
         var host = FunctionScanner.ScanHostFunctionNames(hostAssemblies);
 
-        StdLibFunctions.Clear();
+        _allStdLibFunctions.Clear();
         foreach (var name in stdLib)
+            _allStdLibFunctions.Add(new FunctionListItem(name, LookupComment(name)));
+
+        _allHostFunctions.Clear();
+        foreach (var name in host)
+            _allHostFunctions.Add(new FunctionListItem(name, LookupComment(name)));
+
+        ApplyFunctionFilters();
+    }
+
+    private void ApplyFunctionFilters()
+    {
+        ApplyFunctionFilter(_allStdLibFunctions, StdLibFunctions, _stdLibFilterText);
+        ApplyFunctionFilter(_allHostFunctions, HostFunctions, _hostFilterText);
+    }
+
+    private static void ApplyFunctionFilter(
+        IReadOnlyList<FunctionListItem> source,
+        ObservableCollection<FunctionListItem> target,
+        string filter)
+    {
+        var needle = filter?.Trim();
+        target.Clear();
+
+        if (string.IsNullOrWhiteSpace(needle))
         {
-            StdLibFunctions.Add(new FunctionListItem(name, LookupComment(name)));
+            foreach (var item in source)
+                target.Add(item);
+            return;
         }
 
-        HostFunctions.Clear();
-        foreach (var name in host)
+        foreach (var item in source)
         {
-            HostFunctions.Add(new FunctionListItem(name, LookupComment(name)));
+            if (item.Name.Contains(needle, StringComparison.OrdinalIgnoreCase))
+                target.Add(item);
         }
     }
 
