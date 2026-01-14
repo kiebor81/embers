@@ -5,6 +5,9 @@
 [![Build](https://github.com/kiebor81/embers/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/kiebor81/embers/actions/workflows/build-and-test.yml)
 [![Release](https://github.com/kiebor81/embers/actions/workflows/release.yml/badge.svg)](https://github.com/kiebor81/embers/actions/workflows/release.yml)
 
+<p align="center">
+  <img src="Assets/icon-512.png" alt="Embers logo" width="256" />
+</p>
 
 **Embers** (Embedded Ruby Script) is a compact, embeddable Ruby-inspired interpreter written in C# for .NET. It is designed for applications that need a lightweight, scriptable runtime (e.g. games, tools, or plugin systems) without the overhead of creating and maintaining a complex, custom implementation.
 
@@ -598,7 +601,7 @@ machine.ExecuteText("puts 5.abs");     // => 5
 machine.ExecuteText("puts (-10).abs"); // => 10
 ```
 
-For more details and if you would like to help build on Embers thorugh contributing StdLib functions, see [STDLIB.md](/Docs/STDLIB.md).
+For more details and if you would like to help build on Embers through contributing StdLib functions, see [STDLIB.md](/Docs/STDLIB.md).
 
 ---
 
