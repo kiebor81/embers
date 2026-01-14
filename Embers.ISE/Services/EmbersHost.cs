@@ -56,6 +56,9 @@ public sealed class EmbersHost
         _machine = CreateMachine();
     }
 
+    public IReadOnlyList<Assembly> GetReferenceAssembliesSnapshot()
+        => GetReferenceAssemblies().ToList();
+
     public void SetSecurityPolicy(SecurityMode mode, IEnumerable<string> whitelistEntries)
     {
         _securityMode = mode;

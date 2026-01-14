@@ -45,3 +45,25 @@ public sealed class AsyncCommand(Func<Task> action) : ICommand
         }
     }
 }
+
+public sealed class AsyncParameterCommand(Func<object?, Task> action) : ICommand
+{
+    private readonly Func<object?, Task> _action = action;
+    private bool _running;
+
+    public event EventHandler? CanExecuteChanged;
+    public bool CanExecute(object? parameter) => !_running;
+
+    public async void Execute(object? parameter)
+    {
+        if (_running) return;
+        _running = true;
+        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        try { await _action(parameter); }
+        finally
+        {
+            _running = false;
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+}

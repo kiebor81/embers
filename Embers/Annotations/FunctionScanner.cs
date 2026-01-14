@@ -123,6 +123,43 @@ public static class FunctionScanner
     }
 
     /// <summary>
+    /// Scans the provided assemblies for Host functions and returns their names.
+    /// </summary>
+    public static IReadOnlyCollection<string> ScanHostFunctionNames(IEnumerable<Assembly> assemblies)
+    {
+        var host = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var assembly in assemblies)
+        {
+            try
+            {
+                var functionTypes = assembly.GetTypes()
+                    .Where(t => typeof(IFunction).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract && !HasScannerIgnoreAttribute(t));
+
+                foreach (var type in functionTypes)
+                {
+                    var hostAttr = type.GetCustomAttribute<HostFunctionAttribute>();
+                    if (hostAttr == null || hostAttr.Names.Length == 0)
+                        continue;
+
+                    foreach (var name in hostAttr.Names)
+                        host.Add(name);
+                }
+            }
+            catch (ReflectionTypeLoadException)
+            {
+                continue;
+            }
+            catch
+            {
+                continue;
+            }
+        }
+
+        return host.OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
+    /// <summary>
     /// Looks up documentation for a specific StdLib or Host function name.
     /// </summary>
     public static bool TryGetFunctionDocumentation(

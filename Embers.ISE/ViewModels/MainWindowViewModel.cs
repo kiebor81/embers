@@ -7,7 +7,9 @@ using Embers.ISE.Views;
 using Embers.Security;
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -124,7 +126,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         RemoveReferenceCommand = new ParameterCommand(RemoveReference);
         HelpCommand = new AsyncCommand(OpenHelpAsync);
         RunCommand = new AsyncCommand(RunAsync);
-        RunSelectionCommand = new AsyncCommand(RunSelectionAsync);
+        RunSelectionCommand = new AsyncParameterCommand(RunSelectionAsync);
         StopCommand = new Commands(Stop);
         AddWhitelistEntryCommand = new Commands(AddWhitelistEntry);
         RemoveWhitelistEntryCommand = new Commands(RemoveWhitelistEntry);
@@ -274,7 +276,10 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     private void RefreshFunctionLists()
     {
-        var (stdLib, host) = FunctionScanner.ScanFunctionNames();
+        var (stdLib, _) = FunctionScanner.ScanFunctionNames();
+        var hostAssemblies = new List<Assembly> { Assembly.GetExecutingAssembly() };
+        hostAssemblies.AddRange(_host.GetReferenceAssembliesSnapshot());
+        var host = FunctionScanner.ScanHostFunctionNames(hostAssemblies);
 
         StdLibFunctions.Clear();
         foreach (var name in stdLib)
@@ -341,16 +346,18 @@ public sealed class MainWindowViewModel : ViewModelBase
         _console?.WriteInfo($"[Security] Mode set to {SelectedSecurityMode}.\n");
     }
 
-    private async Task RunAsync()
+    private async Task RunAsync() => await RunTextAsync(EditorText, "Executing script...");
+
+    private async Task RunTextAsync(string source, string statusMessage)
     {
         _cts?.Cancel();
         _cts = new CancellationTokenSource();
 
         _console?.WritePrompt("[Run] ");
-        _console?.WriteLine("Executing script...", ConsoleColor.Yellow);
+        _console?.WriteLine(statusMessage, ConsoleColor.Yellow);
         try
         {
-            var result = await _host.ExecuteAsync(EditorText, _cts.Token);
+            var result = await _host.ExecuteAsync(source, _cts.Token);
             if (result is not null)
             {
                 _console?.WriteSuccess("=> ");
@@ -368,10 +375,17 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private async Task RunSelectionAsync() =>
-        // You’ll wire this from the view so you can read Editor.SelectedText.
-        // For MVP, just run full editor text.
-        await RunAsync();
+    private async Task RunSelectionAsync(object? parameter)
+    {
+        var selection = parameter as string;
+        if (string.IsNullOrWhiteSpace(selection))
+        {
+            _console?.WriteWarning("[Run] No selection to execute.\n");
+            return;
+        }
+
+        await RunTextAsync(selection, "Executing selection...");
+    }
 
     private void Stop()
     {

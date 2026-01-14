@@ -192,4 +192,30 @@ public partial class MainWindow : Window
         _editor.TextArea?.Focus();
         _editor.SelectAll();
     }
+
+    private void OnRunSelection(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel viewModel) return;
+        var selection = _editor?.SelectedText ?? string.Empty;
+        viewModel.RunSelectionCommand.Execute(selection);
+    }
+
+    private void OnWindowKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel viewModel) return;
+
+        if (e.Key == Key.F5)
+        {
+            viewModel.RunCommand.Execute(null);
+            e.Handled = true;
+            return;
+        }
+
+        if (e.Key == Key.F6)
+        {
+            var selection = _editor?.SelectedText ?? string.Empty;
+            viewModel.RunSelectionCommand.Execute(selection);
+            e.Handled = true;
+        }
+    }
 }

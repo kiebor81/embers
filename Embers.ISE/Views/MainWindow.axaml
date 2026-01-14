@@ -12,6 +12,7 @@
         Title="Embers ISE"
         Icon="avares://Embers.ISE/Assets/icon.ico"
         Background="#1E1E1E"
+        KeyDown="OnWindowKeyDown"
         mc:Ignorable="d">
 
   <Window.DataContext>
@@ -24,22 +25,63 @@
     <conv:PanelToggleTextConverter x:Key="PanelToggleTextConverter"/>
   </Window.Resources>
 
+  <Window.Styles>
+    <Style Selector="TextBlock.ToolbarIcon">
+      <Setter Property="Width" Value="18"/>
+      <Setter Property="TextAlignment" Value="Center"/>
+    </Style>
+  </Window.Styles>
+
   <DockPanel>
     <!-- Toolbar -->
     <Border DockPanel.Dock="Top" 
             Background="#2D2D30"
             Padding="8,4">
       <StackPanel Orientation="Horizontal" Spacing="4">
-        <Button Content="New" Command="{Binding NewCommand}" Padding="8,4"/>
-        <Button Content="📂 Open" Command="{Binding OpenCommand}" Padding="8,4"/>
-        <Button Content="💾 Save" Command="{Binding SaveCommand}" Padding="8,4"/>
-        <Button Content="📦 Add DLL" Command="{Binding AddReferenceCommand}" Padding="8,4"/>
+        <Button Command="{Binding NewCommand}" Padding="8,4" Background="#2E7D32">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="＋" Classes="ToolbarIcon" Foreground="#FFFFFF"/>
+          </StackPanel>
+        </Button>
+        <Button Command="{Binding OpenCommand}" Padding="8,4">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="📂︎" Classes="ToolbarIcon" Foreground="#F2C94C"/>
+          </StackPanel>
+        </Button>
+        <Button Command="{Binding SaveCommand}" Padding="8,4">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="💾︎" Classes="ToolbarIcon" Foreground="#2F6BFF"/>
+          </StackPanel>
+        </Button>
+        <Button Command="{Binding AddReferenceCommand}" Padding="8,4">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="📦︎" Classes="ToolbarIcon" Foreground="#F2C94C"/>
+          </StackPanel>
+        </Button>
         <Separator Width="1" Height="20" Background="#3E3E42"/>
-        <Button Content="▶ Run (F5)" Command="{Binding RunCommand}" Padding="8,4"/>
-        <Button Content="✂ Run Selection (F6)" Command="{Binding RunSelectionCommand}" Padding="8,4"/>
-        <Button Content="■ Stop" Command="{Binding StopCommand}" Padding="8,4"/>
+        <Button Command="{Binding RunCommand}" Padding="8,4">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="▶" Classes="ToolbarIcon" Foreground="#55C65A"/>
+            <TextBlock Text="(F5)"/>
+          </StackPanel>
+        </Button>
+        <Button Click="OnRunSelection" Padding="8,4">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="▶" Classes="ToolbarIcon" Foreground="#55C65A"/>
+            <TextBlock Text="(F6)"/>
+          </StackPanel>
+        </Button>
+        <Button Command="{Binding StopCommand}" Padding="8,4">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="■" Classes="ToolbarIcon" Foreground="#E05A5A"/>
+          </StackPanel>
+        </Button>
         <Separator Width="1" Height="20" Background="#3E3E42"/>
-        <Button Content="❓ Help" Command="{Binding HelpCommand}" Padding="8,4"/>
+        <Button Command="{Binding HelpCommand}" Padding="8,4" Background="#2F6BFF">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="❓︎" Classes="ToolbarIcon" Foreground="#FFFFFF"/>
+          </StackPanel>
+        </Button>
       </StackPanel>
     </Border>
 
