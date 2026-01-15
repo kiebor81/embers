@@ -286,6 +286,29 @@ namespace Embers.Tests
         }
 
         [TestMethod]
+        public void Execute_WithDivideExpression_ExecutesText()
+        {
+            var result = machine.Execute("f = 3/2");
+            Assert.AreEqual(1L, result);
+            Assert.AreEqual(1L, machine.RootContext.GetValue("f"));
+        }
+
+        [TestMethod]
+        public void Execute_WithMethodCallAndDivide_ExecutesText()
+        {
+            var result = machine.Execute(@"
+module Module1
+    def self.test_me
+        3/2
+    end
+end
+
+Module1.test_me
+");
+            Assert.AreEqual(1L, result);
+        }
+
+        [TestMethod]
         public void Execute_WithNonExistentPath_ExecutesAsText()
         {
             // If the path doesn't look like a file, it should execute as text

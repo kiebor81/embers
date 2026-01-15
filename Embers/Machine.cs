@@ -118,17 +118,6 @@ public class Machine
 
         var trimmed = argument.Trim();
 
-        // Check for path separators
-        if (trimmed.Contains('/') || trimmed.Contains('\\'))
-        {
-            // Avoid treating math like "3/2" as a path unless there's a real path-ish token.
-            foreach (var ch in trimmed)
-            {
-                if (char.IsLetter(ch) || ch == '.' || ch == '_' || ch == '-')
-                    return true;
-            }
-        }
-
         // Check for common file extensions
         if (HasSupportedExtension(trimmed))
             return true;
@@ -158,6 +147,7 @@ public class Machine
 
         return false;
     }
+
 
     /// <summary>
     /// Executes the text.
