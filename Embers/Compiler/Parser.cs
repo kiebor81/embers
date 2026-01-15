@@ -9,6 +9,9 @@ namespace Embers.Compiler;
 /// </summary>
 public class Parser
 {
+    /// <summary>
+    /// the binary operators by precedence level
+    /// </summary>
     private static string[][] binaryoperators = [
         ["&&", "||"],
             ["..", "==", "!=", "<", ">", "<=", ">="],
@@ -16,18 +19,35 @@ public class Parser
             ["*", "/", "%"],
             ["**"]
     ];
+
+    /// <summary>
+    /// the lexer for the Embers language
+    /// </summary>
     private readonly Lexer lexer;
 
+    /// <summary>
+    /// the parser for the Embers language
+    /// </summary>
+    /// <param name="text"></param>
     public Parser(string text)
     {
         lexer = new Lexer(text);
     }
 
+    /// <summary>
+    /// the parser for the Embers language
+    /// </summary>
+    /// <param name="reader"></param>
     public Parser(TextReader reader)
     {
         lexer = new Lexer(reader);
     }
 
+    /// <summary>
+    /// Parses an expression.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     public IExpression ParseExpression()
     {
         IExpression expr = ApplyPostfixConditional(ParseNoAssignExpression());
@@ -80,7 +100,10 @@ public class Parser
         return ApplyPostfixConditional(expr);
     }
 
-
+    /// <summary>
+    /// Parses a command.
+    /// </summary>
+    /// <returns></returns>
     public IExpression ParseCommand()
     {
         Token token = lexer.NextToken();
@@ -98,6 +121,10 @@ public class Parser
         return expr;
     }
 
+    /// <summary>
+    /// Parses an expression without assignment.
+    /// </summary>
+    /// <returns></returns>
     private IExpression ParseNoAssignExpression()
     {
         var result = ParseBinaryExpression(0);
@@ -122,6 +149,10 @@ public class Parser
         return ApplyPostfixChain(new CallExpression(((NameExpression)result).Name, ParseExpressionListWithBlockArgs()));
     }
 
+    /// <summary>
+    /// Parses an if expression.
+    /// </summary>
+    /// <returns></returns>
     private IfExpression ParseIfExpression()
     {
         IExpression condition = ParseExpression();
@@ -145,6 +176,10 @@ public class Parser
         return new IfExpression(condition, thencommand, elsecommand);
     }
 
+    /// <summary>
+    /// Parses a for-in expression.
+    /// </summary>
+    /// <returns></returns>
     private ForInExpression ParseForInExpression()
     {
         string name = ParseName();
@@ -158,6 +193,11 @@ public class Parser
         return new ForInExpression(name, expression, command);
     }
 
+    /// <summary>
+    /// Parses a while expression.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private WhileExpression ParseWhileExpression()
     {
         IExpression condition = ParseExpression();
@@ -169,6 +209,10 @@ public class Parser
         return new WhileExpression(condition, command);
     }
 
+    /// <summary>
+    /// Parses an until expression.
+    /// </summary>
+    /// <returns></returns>
     private UntilExpression ParseUntilExpression()
     {
         IExpression condition = ParseExpression();
@@ -180,6 +224,10 @@ public class Parser
         return new UntilExpression(condition, command);
     }
 
+    /// <summary>
+    /// Parses a def expression.
+    /// </summary>
+    /// <returns></returns>
     private IExpression ParseDefExpression()
     {
         string name = ParseName();
@@ -215,6 +263,11 @@ public class Parser
         return new DefExpression(named, parameters, body, blockParam);
     }
 
+    /// <summary>
+    /// Parses a class expression.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private ClassExpression ParseClassExpression()
     {
         string name = ParseName();
@@ -248,6 +301,11 @@ public class Parser
         return new ClassExpression(named, body);
     }
 
+    /// <summary>
+    /// Parses a module expression.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private ModuleExpression ParseModuleExpression()
     {
         string name = ParseName();
@@ -259,6 +317,11 @@ public class Parser
         return new ModuleExpression(name, body);
     }
 
+    /// <summary>
+    /// Parses a parameter list.
+    /// </summary>
+    /// <param name="canhaveparens"></param>
+    /// <returns></returns>
     private IList<string> ParseParameterList(bool canhaveparens = true)
     {
         IList<string> parameters = [];
@@ -281,6 +344,11 @@ public class Parser
         return parameters;
     }
 
+    /// <summary>
+    /// Parses a parameter list with possible block parameter (&param).
+    /// </summary>
+    /// <param name="canhaveparens"></param>
+    /// <returns></returns>
     private (IList<string> parameters, string? blockParam) ParseParameterListWithBlock(bool canhaveparens = true)
     {
         IList<string> parameters = [];
@@ -317,6 +385,10 @@ public class Parser
         return (parameters, blockParam);
     }
 
+    /// <summary>
+    /// Parses an expression list.
+    /// </summary>
+    /// <returns></returns>
     private IList<IExpression> ParseExpressionList()
     {
         IList<IExpression> expressions = [];
@@ -342,6 +414,11 @@ public class Parser
         return expressions;
     }
 
+    /// <summary>
+    /// Parses a single expression with possible block prefix (&).
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private IExpression? ParseSingleExpressionWithBlockPrefix()
     {
         // Check for &expression (block argument)
@@ -369,6 +446,10 @@ public class Parser
         return ParseExpression();
     }
 
+    /// <summary>
+    /// Parses an expression list with possible block arguments.
+    /// </summary>
+    /// <returns></returns>
     private IList<IExpression> ParseExpressionListWithBlockArgs()
     {
         IList<IExpression> expressions = [];
@@ -394,6 +475,11 @@ public class Parser
         return expressions;
     }
 
+    /// <summary>
+    /// Parses an expression list until the given separator is encountered.
+    /// </summary>
+    /// <param name="separator"></param>
+    /// <returns></returns>
     private IList<IExpression> ParseExpressionList(string separator)
     {
         IList<IExpression> expressions = [];
@@ -410,6 +496,11 @@ public class Parser
         return expressions;
     }
 
+    /// <summary>
+    /// Parses a block expression.
+    /// </summary>
+    /// <param name="usebraces"></param>
+    /// <returns></returns>
     private BlockExpression ParseBlockExpression(bool usebraces = false)
     {
         if (TryParseToken(TokenType.Separator, "|"))
@@ -422,6 +513,11 @@ public class Parser
         return new BlockExpression(null, ParseCommandList(usebraces));
     }
 
+    /// <summary>
+    /// Parses a command list until "end" or "}" is encountered.
+    /// </summary>
+    /// <param name="usebraces"></param>
+    /// <returns></returns>
     private IExpression ParseCommandList(bool usebraces = false)
     {
         Token token;
@@ -454,6 +550,11 @@ public class Parser
         return new CompositeExpression(commands);
     }
 
+    /// <summary>
+    /// Parses a command list until one of the given names is encountered.
+    /// </summary>
+    /// <param name="names"></param>
+    /// <returns></returns>
     private IExpression ParseCommandList(IList<string> names)
     {
         Token token;
@@ -476,6 +577,10 @@ public class Parser
         return new CompositeExpression(commands);
     }
 
+    /// <summary>
+    /// Parses the end of a command.
+    /// </summary>
+    /// <exception cref="SyntaxError"></exception>
     private void ParseEndOfCommand()
     {
         Token token = lexer.NextToken();
@@ -496,6 +601,10 @@ public class Parser
             throw new SyntaxError("end of command expected");
     }
 
+    /// <summary>
+    /// Determines if the next token starts an expression list.
+    /// </summary>
+    /// <returns></returns>
     private bool NextTokenStartsExpressionList()
     {
         Token token = lexer.NextToken();
@@ -519,6 +628,11 @@ public class Parser
         return true;
     }
 
+    /// <summary>
+    /// Determines if a token is an end of command.
+    /// </summary>
+    /// <param name="token"></param>
+    /// <returns></returns>
     private bool IsEndOfCommand(Token token)
     {
         if (token == null)
@@ -533,6 +647,11 @@ public class Parser
         return false;
     }
 
+    /// <summary>
+    /// Parses a binary expression at the given precedence level.
+    /// </summary>
+    /// <param name="level"></param>
+    /// <returns></returns>
     private IExpression ParseBinaryExpression(int level)
     {
         if (level >= binaryoperators.Length)
@@ -585,6 +704,10 @@ public class Parser
         return expr;
     }
 
+    /// <summary>
+    /// Determines if a token is a binary operator at the given precedence level.
+    /// </summary>
+    /// <returns></returns>
     private IExpression ParseTerm()
     {
         IExpression expression = null;
@@ -606,6 +729,11 @@ public class Parser
         return ApplyPostfixChain(expression);
     }
 
+    /// <summary>
+    /// Applies postfix chains (., ::, []) to an expression.
+    /// </summary>
+    /// <param name="expression"></param>
+    /// <returns></returns>
     private IExpression ApplyPostfixChain(IExpression expression)
     {
         while (true)
@@ -648,6 +776,11 @@ public class Parser
         return expression;
     }
 
+    /// <summary>
+    /// Parses a simple term.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private IExpression ParseSimpleTerm()
     {
         Token token = lexer.NextToken();
@@ -848,6 +981,10 @@ public class Parser
         return null;
     }
 
+    /// <summary>
+    /// Parses an unless expression.
+    /// </summary>
+    /// <returns></returns>
     private UnlessExpression ParseUnlessExpression()
     {
         IExpression condition = ParseExpression();
@@ -867,6 +1004,11 @@ public class Parser
         return new UnlessExpression(condition, thenBlock, elseBlock);
     }
 
+    /// <summary>
+    /// Parses an interpolated string.
+    /// </summary>
+    /// <param name="raw"></param>
+    /// <returns></returns>
     private IExpression ParseInterpolatedString(string raw)
     {
         var parts = new List<IExpression>();
@@ -907,6 +1049,10 @@ public class Parser
         return new InterpolatedStringExpression(parts);
     }
 
+    /// <summary>
+    /// Parses a try expression.
+    /// </summary>
+    /// <returns></returns>
     private IExpression ParseTryExpression()
     {
         // Parse the main try block
@@ -963,6 +1109,10 @@ public class Parser
 
     }
 
+    /// <summary>
+    /// Parses a raise expression.
+    /// </summary>
+    /// <returns></returns>
     private IExpression ParseRaiseExpression()
     {
         // Parse the first argument (exception type or message)
@@ -976,6 +1126,11 @@ public class Parser
         return new RaiseExpression(first, null);
     }
 
+    /// <summary>
+    /// Applies postfix conditional expressions (ternary, if, unless).
+    /// </summary>
+    /// <param name="expr"></param>
+    /// <returns></returns>
     private IExpression ApplyPostfixConditional(IExpression expr)
     {
         // --- Ternary Operator ---
@@ -1018,6 +1173,11 @@ public class Parser
         return expr;
     }
 
+    /// <summary>
+    /// Applies postfixes except for the ternary operator.
+    /// </summary>
+    /// <param name="expr"></param>
+    /// <returns></returns>
     private IExpression ApplyPostfixesButNotTernary(IExpression expr)
     {
         if (TryParseName("if"))
@@ -1034,6 +1194,13 @@ public class Parser
         return expr;
     }
 
+    /// <summary>
+    /// Parses a compound assignment expression.
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="op"></param>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private IExpression ParseCompoundAssignment(IExpression target, string op)
     {
         IExpression rhs = ParseExpression();
@@ -1062,6 +1229,14 @@ public class Parser
         };
     }
 
+    /// <summary>
+    /// Creates a binary expression for the given operator and operands.
+    /// </summary>
+    /// <param name="op"></param>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private IExpression MakeBinaryExpression(string op, IExpression left, IExpression right) => op switch
     {
         "+" => new AddExpression(left, right),
@@ -1073,6 +1248,11 @@ public class Parser
         _ => throw new SyntaxError($"unsupported compound assignment operator: {op}")
     };
 
+    /// <summary>
+    /// Parses a hash expression.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private HashExpression ParseHashExpression()
     {
         IList<IExpression> keyexpressions = [];
@@ -1113,8 +1293,18 @@ public class Parser
         return new HashExpression(keyexpressions, valueexpressions);
     }
 
+    /// <summary>
+    /// Parses a name token with the given value.
+    /// </summary>
+    /// <param name="name"></param>
     private void ParseName(string name) => ParseToken(TokenType.Name, name);
 
+    /// <summary>
+    /// Parses a token of the given type and value.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="value"></param>
+    /// <exception cref="SyntaxError"></exception>
     private void ParseToken(TokenType type, string value)
     {
         Token token = lexer.NextToken();
@@ -1123,6 +1313,11 @@ public class Parser
             throw new SyntaxError(string.Format("expected '{0}'", value));
     }
 
+    /// <summary>
+    /// Parses a name token.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private string ParseName()
     {
         Token token = lexer.NextToken();
@@ -1133,8 +1328,19 @@ public class Parser
         return token.Value;
     }
 
+    /// <summary>
+    /// Tries to parse a name token with the given value.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     private bool TryParseName(string name) => TryParseToken(TokenType.Name, name);
 
+    /// <summary>
+    /// Tries to parse a token of the given type and value.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
     private bool TryParseToken(TokenType type, string value)
     {
         Token token = lexer.NextToken();
@@ -1147,6 +1353,10 @@ public class Parser
         return false;
     }
 
+    /// <summary>
+    /// Tries to parse a name token.
+    /// </summary>
+    /// <returns></returns>
     private string TryParseName()
     {
         Token token = lexer.NextToken();
@@ -1159,6 +1369,10 @@ public class Parser
         return null;
     }
 
+    /// <summary>
+    /// Tries to parse an end-of-line token.
+    /// </summary>
+    /// <returns></returns>
     private bool TryParseEndOfLine()
     {
         Token token = lexer.NextToken();
@@ -1171,6 +1385,12 @@ public class Parser
         return false;
     }
 
+    /// <summary>
+    /// Determines if the given token is a binary operator at the specified precedence level.
+    /// </summary>
+    /// <param name="level"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
     private bool IsBinaryOperator(int level, Token token) => token.Type == TokenType.Operator && binaryoperators[level].Contains(token.Value);
 }
 

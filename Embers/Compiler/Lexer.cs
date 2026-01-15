@@ -13,24 +13,42 @@ public class Lexer
     private const char StartComment = '#';
     private const char EndOfLine = '\n';
     private const char Variable = '@';
-
     private const string Separators = ";()[],.|{}&";
-
     private static readonly string[] operators = ["?", ":", "+", "-", "*", "/", "%", "**", "=", "<", ">", "!", "==", "<=", ">=", "!=", "=>", "->", "..", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**="];
 
+    /// <summary>
+    /// the character stream
+    /// </summary>
     private readonly ICharStream stream;
+
+    /// <summary>
+    /// the pushed-back tokens stack
+    /// </summary>
     private readonly Stack<Token> tokens = new();
 
+    /// <summary>
+    /// the lexer for the Embers language
+    /// </summary>
+    /// <param name="text"></param>
     public Lexer(string text)
     {
         stream = new TextCharStream(text);
     }
 
+    /// <summary>
+    /// the lexer for the Embers language
+    /// </summary>
+    /// <param name="reader"></param>
     public Lexer(TextReader reader)
     {
         stream = new TextReaderCharStream(reader);
     }
 
+    /// <summary>
+    /// Gets the next token from the stream.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     public Token? NextToken()
     {
         if (tokens.Count > 0)
@@ -120,8 +138,17 @@ public class Lexer
         throw new SyntaxError(string.Format("unexpected '{0}'", ch));
     }
 
+    /// <summary>
+    /// Pushes a token back onto the stream.
+    /// </summary>
+    /// <param name="token"></param>
     public void PushToken(Token token) => tokens.Push(token);
 
+    /// <summary>
+    /// Gets the next name token from the stream.
+    /// </summary>
+    /// <param name="ch"></param>
+    /// <returns></returns>
     private Token NextName(char ch)
     {
         string value = ch.ToString();
@@ -146,6 +173,11 @@ public class Lexer
         return new Token(TokenType.Name, value);
     }
 
+    /// <summary>
+    /// Gets the next instance variable name token from the stream.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private Token NextInstanceVariableName()
     {
         string value = string.Empty;
@@ -168,6 +200,11 @@ public class Lexer
         return new Token(TokenType.InstanceVarName, value);
     }
 
+    /// <summary>
+    /// Gets the next class variable name token from the stream.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private Token NextClassVariableName()
     {
         string value = string.Empty;
@@ -185,6 +222,11 @@ public class Lexer
         return new Token(TokenType.ClassVarName, value);
     }
 
+    /// <summary>
+    /// Gets the next symbol token from the stream.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private Token NextSymbol()
     {
         string value = string.Empty;
@@ -213,6 +255,12 @@ public class Lexer
         return new Token(TokenType.Symbol, value);
     }
 
+    /// <summary>
+    /// Gets the next string token from the stream.
+    /// </summary>
+    /// <param name="init"></param>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private Token NextString(char init)
     {
         string value = string.Empty;
@@ -262,6 +310,11 @@ public class Lexer
         return new Token(TokenType.String, value);
     }
 
+    /// <summary>
+    /// Gets the next double-quoted string token from the stream.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private Token NextDoubleQuotedString()
     {
         string value = string.Empty;
@@ -303,6 +356,11 @@ public class Lexer
             return new Token(TokenType.String, value);
     }
 
+    /// <summary>
+    /// Gets the next integer token from the stream.
+    /// </summary>
+    /// <param name="ch"></param>
+    /// <returns></returns>
     private Token NextInteger(char ch)
     {
         string value = ch.ToString();
@@ -320,6 +378,11 @@ public class Lexer
         return new Token(TokenType.Integer, value);
     }
 
+    /// <summary>
+    /// Gets the next real (floating-point) number token from the stream.
+    /// </summary>
+    /// <param name="ivalue"></param>
+    /// <returns></returns>
     private Token NextReal(string ivalue)
     {
         string value = ivalue + ".";
@@ -340,6 +403,10 @@ public class Lexer
         return new Token(TokenType.Real, value);
     }
 
+    /// <summary>
+    /// Gets the next non-whitespace, non-comment character from the stream.
+    /// </summary>
+    /// <returns></returns>
     private int NextFirstChar()
     {
         int ich = NextChar();
@@ -366,10 +433,21 @@ public class Lexer
         return ich;
     }
 
+    /// <summary>
+    /// Gets the next character from the stream.
+    /// </summary>
+    /// <returns></returns>
     private int NextChar() => stream.NextChar();
 
+    /// <summary>
+    /// Moves back one character in the stream.
+    /// </summary>
     private void BackChar() => stream.BackChar();
 
+    /// <summary>
+    /// Peeks at the next character without consuming it.
+    /// </summary>
+    /// <returns></returns>
     private int PeekChar()
     {
         int ich = stream.NextChar();
