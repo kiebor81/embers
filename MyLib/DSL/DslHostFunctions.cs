@@ -78,22 +78,3 @@ internal class SlugFunction : HostFunction
         return builder.ToString();
     }
 }
-
-internal static class DslValue
-{
-    public static long ToLong(object value, string errorMessage)
-    {
-        if (value is long l) return l;
-        if (value is int i) return i;
-        if (value is double d) return (long)d;
-        throw new TypeError(errorMessage);
-    }
-
-    public static double ToDouble(object value, string errorMessage)
-    {
-        if (value is long l) return l;
-        if (value is int i) return i;
-        if (value is double d) return d;
-        throw new TypeError(errorMessage);
-    }
-}
