@@ -168,6 +168,13 @@ public partial class Parser
         return false;
     }
 
+    private void SkipEndOfLines()
+    {
+        while (TryParseEndOfLine())
+        {
+        }
+    }
+
     /// <summary>
     /// Determines if the given token is a binary operator at the specified precedence level.
     /// </summary>

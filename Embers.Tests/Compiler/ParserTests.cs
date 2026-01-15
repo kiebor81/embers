@@ -1152,6 +1152,22 @@ namespace Embers.Tests.Compiler
         }
 
         [TestMethod]
+        public void ParseMultilineHash()
+        {
+            Parser parser = new("{\n :id => 0,\n :when => '10pm'\n}");
+            var expected = new HashExpression(
+                [new ConstantExpression(new Symbol("id")), new ConstantExpression(new Symbol("when"))],
+                [new ConstantExpression(0L), new ConstantExpression("10pm")]
+            );
+            var result = parser.ParseExpression();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseCommand());
+        }
+
+        [TestMethod]
         public void ParseEmptyHash()
         {
             Parser parser = new("{  }");

@@ -517,12 +517,24 @@ public partial class Parser
         IList<IExpression> keyexpressions = [];
         IList<IExpression> valueexpressions = [];
 
-        while (!TryParseToken(TokenType.Separator, "}"))
+        while (true)
         {
+            SkipEndOfLines();
+
+            if (TryParseToken(TokenType.Separator, "}"))
+                break;
+
             if (keyexpressions.Count > 0)
+            {
                 ParseToken(TokenType.Separator, ",");
+                SkipEndOfLines();
+            }
 
             var keyexpression = ParseExpression();
+            if (keyexpression == null)
+                throw new SyntaxError("hash key expected");
+
+            SkipEndOfLines();
 
             // Check for modern syntax (name: value) or old syntax (key => value)
             if (TryParseToken(TokenType.Operator, ":"))
@@ -543,7 +555,11 @@ public partial class Parser
                 ParseToken(TokenType.Operator, "=>");
             }
 
+            SkipEndOfLines();
+
             var valueexpression = ParseExpression();
+            if (valueexpression == null)
+                throw new SyntaxError("hash value expected");
 
             keyexpressions.Add(keyexpression);
             valueexpressions.Add(valueexpression);

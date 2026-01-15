@@ -173,13 +173,17 @@ public partial class Parser
     {
         IList<IExpression> expressions = [];
 
+        SkipEndOfLines();
+
         for (IExpression expression = ParseExpression(); expression != null; expression = ParseExpression())
         {
             expressions.Add(expression);
             if (!TryParseToken(TokenType.Separator, ","))
                 break;
+            SkipEndOfLines();
         }
 
+        SkipEndOfLines();
         ParseToken(TokenType.Separator, separator);
 
         return expressions;
