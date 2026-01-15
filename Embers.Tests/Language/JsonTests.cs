@@ -132,7 +132,6 @@ namespace Embers.Tests.Language
         }
 
         [TestMethod]
-        [Ignore("Complex nested structures need additional work in JSON deserialization")]
         public void ToJson_ComplexNestedStructure()
         {
             var result = machine.ExecuteText(@"
@@ -145,6 +144,23 @@ namespace Embers.Tests.Language
                 parsed_users = parsed['users']
                 first = parsed_users[0]
                 first['name']
+            ");
+            Assert.AreEqual("Alice", result);
+        }
+
+        [TestMethod]
+        public void ToJson_DynamicObject_StripsAtPrefix()
+        {
+            var result = machine.ExecuteText(@"
+                class User
+                  def initialize(name)
+                    @name = name
+                  end
+                end
+                user = User.new('Alice')
+                json = user.to_json
+                parsed = JSON.parse(json)
+                parsed['name']
             ");
             Assert.AreEqual("Alice", result);
         }

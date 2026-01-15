@@ -2,6 +2,7 @@ using Embers.Exceptions;
 using Embers.Language;
 using Embers.Annotations;
 using System.Text.Json;
+using System.Collections;
 
 namespace Embers.StdLib.Conversion;
 
@@ -28,20 +29,22 @@ public class ToJsonFunction : StdFunction
             }
             
             // Handle Dictionary (Hash) - convert keys to strings for JSON compatibility
-            if (target is Dictionary<object, object> dict)
+            if (target is IDictionary dict)
             {
                 var stringDict = new Dictionary<string, object>();
-                foreach (var kvp in dict)
+                foreach (DictionaryEntry kvp in dict)
                 {
-                    stringDict[kvp.Key.ToString() ?? ""] = ConvertValue(kvp.Value);
+                    stringDict[kvp.Key?.ToString() ?? ""] = ConvertValue(kvp.Value);
                 }
                 return JsonSerializer.Serialize(stringDict);
             }
             
             // Handle List (Array)
-            if (target is List<object> list)
+            if (target is IList list)
             {
-                var converted = list.Select(ConvertValue).ToList();
+                var converted = new List<object>();
+                foreach (var item in list)
+                    converted.Add(ConvertValue(item));
                 return JsonSerializer.Serialize(converted);
             }
 
@@ -63,22 +66,38 @@ public class ToJsonFunction : StdFunction
             return value;
         }
         
-        if (value is Dictionary<object, object> dict)
+        if (value is IDictionary dict)
         {
             var stringDict = new Dictionary<string, object>();
-            foreach (var kvp in dict)
+            foreach (DictionaryEntry kvp in dict)
             {
-                stringDict[kvp.Key.ToString() ?? ""] = ConvertValue(kvp.Value);
+                stringDict[kvp.Key?.ToString() ?? ""] = ConvertValue(kvp.Value);
             }
             return stringDict;
         }
         
-        if (value is List<object> list)
+        if (value is IList list)
         {
-            return list.Select(ConvertValue).ToList();
+            var converted = new List<object>();
+            foreach (var item in list)
+                converted.Add(ConvertValue(item));
+            return converted;
         }
         
         // For DynamicObject or other complex types, return string representation
+        if (value is DynamicObject dyn)
+        {
+            var dynamicDict = new Dictionary<string, object>();
+            foreach (var kvp in dyn.GetValues())
+            {
+                var key = kvp.Key.StartsWith("@", StringComparison.Ordinal)
+                    ? kvp.Key[1..]
+                    : kvp.Key;
+                dynamicDict[key] = ConvertValue(kvp.Value);
+            }
+            return dynamicDict;
+        }
+
         return value.ToString() ?? "";
     }
 }

@@ -36,6 +36,8 @@ public class DynamicObject(DynamicClass @class)
         return null;
     }
 
+    public IReadOnlyDictionary<string, object> GetValues() => new Dictionary<string, object>(values);
+
     public virtual IFunction? GetMethod(string name)
     {
         if (singletonclass != null)
