@@ -1,6 +1,8 @@
 ﻿using Embers.Annotations;
 using Embers.Expressions;
+using Embers.Exceptions;
 using Embers.Language;
+using Embers.Signals;
 
 namespace Embers.Functions;
 /// <summary>
@@ -22,7 +24,14 @@ public class BlockFunction(BlockExpression block) : IFunction
         for (int i = 0; i < parameters.Count && i < values.Count; i++)
             context.SetLocalValue(parameters[i], values[i]);
 
-        return block.Body.Evaluate(context);
+        try
+        {
+            return block.Body.Evaluate(context);
+        }
+        catch (ReturnSignal)
+        {
+            throw new InvalidOperationError("return can only be used inside methods");
+        }
     }
 }
 

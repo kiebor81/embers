@@ -718,6 +718,13 @@ public class Parser
                 return new BreakExpression(null);
             }
 
+            if (token.Value == "return")
+            {
+                if (NextTokenStartsExpressionList())
+                    return new ReturnExpression(ParseExpression());
+                return new ReturnExpression(null);
+            }
+
             if (token.Value == "next")
                 return new NextExpression();
 

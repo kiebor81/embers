@@ -1,3 +1,5 @@
+using Embers.Signals;
+
 namespace Embers.Expressions;
 /// <summary>
 /// TryExpression represents a try-catch-finally block in the Embers language.
@@ -23,6 +25,9 @@ public class TryExpression(
         }
         catch (Exception ex)
         {
+            if (ex is BreakSignal || ex is NextSignal || ex is RedoSignal || ex is ReturnSignal)
+                throw;
+
             bool handled = false;
             foreach (var (exceptionType, varName, handler) in RescueBlocks)
             {

@@ -1,8 +1,10 @@
 ﻿using System.Reflection;
 using Embers.Compiler;
+using Embers.Exceptions;
 using Embers.Functions;
 using Embers.Language;
 using Embers.Security;
+using Embers.Signals;
 
 namespace Embers;
 
@@ -128,8 +130,15 @@ public class Machine
         Parser parser = new(text);
         object result = null;
 
-        for (var command = parser.ParseCommand(); command != null; command = parser.ParseCommand())
-            result = command.Evaluate(rootcontext);
+        try
+        {
+            for (var command = parser.ParseCommand(); command != null; command = parser.ParseCommand())
+                result = command.Evaluate(rootcontext);
+        }
+        catch (ReturnSignal)
+        {
+            throw new InvalidOperationError("return can only be used inside methods");
+        }
 
         return result;
     }
@@ -218,8 +227,15 @@ public class Machine
         Parser parser = new(reader);
         object result = null;
 
-        for (var command = parser.ParseCommand(); command != null; command = parser.ParseCommand())
-            result = command.Evaluate(rootcontext);
+        try
+        {
+            for (var command = parser.ParseCommand(); command != null; command = parser.ParseCommand())
+                result = command.Evaluate(rootcontext);
+        }
+        catch (ReturnSignal)
+        {
+            throw new InvalidOperationError("return can only be used inside methods");
+        }
 
         return result;
     }

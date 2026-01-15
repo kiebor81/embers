@@ -562,6 +562,32 @@ namespace Embers.Tests.Compiler
         }
 
         [TestMethod]
+        public void ParseReturnCommand()
+        {
+            Parser parser = new("return 42");
+            var expected = new ReturnExpression(new ConstantExpression(42L));
+            var result = parser.ParseCommand();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseCommand());
+        }
+
+        [TestMethod]
+        public void ParseReturnCommandWithoutValue()
+        {
+            Parser parser = new("return");
+            var expected = new ReturnExpression(null);
+            var result = parser.ParseCommand();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseCommand());
+        }
+
+        [TestMethod]
         public void ParseDefCommandWithParameters()
         {
             Parser parser = new("def foo a, b\na+b\nend");

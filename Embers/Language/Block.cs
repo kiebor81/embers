@@ -1,4 +1,6 @@
-﻿using Embers.Expressions;
+﻿using Embers.Exceptions;
+using Embers.Expressions;
+using Embers.Signals;
 
 namespace Embers.Language;
 /// <summary>
@@ -13,7 +15,16 @@ public class Block(IList<string> argumentnames, IExpression expression, Context 
     public object Apply(IList<object> arguments)
     {
         if (argumentnames == null || argumentnames.Count == 0)
-            return expression.Evaluate(context);
+        {
+            try
+            {
+                return expression.Evaluate(context);
+            }
+            catch (ReturnSignal)
+            {
+                throw new InvalidOperationError("return can only be used inside methods");
+            }
+        }
 
         BlockContext newcontext = new(context);
 
@@ -23,7 +34,13 @@ public class Block(IList<string> argumentnames, IExpression expression, Context 
             else
                 newcontext.SetLocalValue(argumentnames[k], null);
 
-        return expression.Evaluate(newcontext);
+        try
+        {
+            return expression.Evaluate(newcontext);
+        }
+        catch (ReturnSignal)
+        {
+            throw new InvalidOperationError("return can only be used inside methods");
+        }
     }
 }
-

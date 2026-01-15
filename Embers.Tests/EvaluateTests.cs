@@ -742,6 +742,70 @@ i
         }
 
         [TestMethod]
+        public void ReturnExitsMethodEarly()
+        {
+            var result = Execute(@"
+def foo
+  return 1
+  2
+end
+foo
+");
+
+            Assert.AreEqual(1L, result);
+        }
+
+        [TestMethod]
+        public void ReturnWithoutValueReturnsNil()
+        {
+            var result = Execute(@"
+def foo
+  return
+  2
+end
+foo
+");
+
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void ReturnAtTopLevelRaises()
+        {
+            try
+            {
+                Execute("return 1");
+                Assert.Fail("Expected InvalidOperationError");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(InvalidOperationError));
+            }
+        }
+
+        [TestMethod]
+        public void ReturnInsideBlockRaises()
+        {
+            try
+            {
+                Execute(@"
+def foo
+  [1].each do |x|
+    return x
+  end
+  2
+end
+foo
+");
+                Assert.Fail("Expected InvalidOperationError");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(InvalidOperationError));
+            }
+        }
+
+        [TestMethod]
         public void ModuloAndPowerOperators()
         {
             Assert.AreEqual(1L, EvaluateExpression("5 % 2"));

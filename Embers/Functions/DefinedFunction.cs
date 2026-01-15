@@ -1,6 +1,7 @@
 ﻿using Embers.Annotations;
 using Embers.Expressions;
 using Embers.Language;
+using Embers.Signals;
 
 namespace Embers.Functions;
 /// <summary>
@@ -43,7 +44,14 @@ public class DefinedFunction(IExpression body, IList<string> parameters, Context
             }
         }
 
-        return body.Evaluate(newcontext);
+        try
+        {
+            return body.Evaluate(newcontext);
+        }
+        catch (ReturnSignal ret)
+        {
+            return ret.Value;
+        }
     }
 
     public object Apply(DynamicObject self, Context context, IList<object> values) => ApplyWithBlock(self, context, values, null);

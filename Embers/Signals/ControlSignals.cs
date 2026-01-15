@@ -34,4 +34,14 @@ public class RedoSignal : Exception
     public RedoSignal() { }
 }
 
+/// <summary>
+/// ReturnSignal is used to return from a method with an optional value.
+/// It represents the keyword "return" in the language.
+/// </summary>
+/// <seealso cref="Exception" />
+public class ReturnSignal(object? value) : Exception
+{
+    public object? Value { get; } = value;
+}
+
 
