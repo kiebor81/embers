@@ -29,6 +29,24 @@ namespace Embers.Tests.StdLib.Time
         }
 
         [TestMethod]
+        public void Epoch_GlobalFunction_ReturnsNumber()
+        {
+            var result = machine.ExecuteText("epoch");
+            Assert.IsInstanceOfType(result, typeof(long));
+        }
+
+        [TestMethod]
+        public void FromEpoch_GlobalFunction_ReturnsDateTime()
+        {
+            var result = machine.ExecuteText("from_epoch(0)");
+            Assert.IsInstanceOfType(result, typeof(DateTime));
+            var dt = (DateTime)result;
+            Assert.AreEqual(1970, dt.Year);
+            Assert.AreEqual(1, dt.Month);
+            Assert.AreEqual(1, dt.Day);
+        }
+
+        [TestMethod]
         public void ParseDate_GlobalFunction_ParsesString()
         {
             var result = machine.ExecuteText("parse_date('2026-01-10')");
@@ -68,6 +86,13 @@ namespace Embers.Tests.StdLib.Time
         }
 
         [TestMethod]
+        public void DateTime_MinMethod_ReturnsMinute()
+        {
+            var result = machine.ExecuteText("dt = parse_date('2026-01-10 14:30:45'); dt.min");
+            Assert.AreEqual(30, result);
+        }
+
+        [TestMethod]
         public void DateTime_SecMethod_ReturnsSecond()
         {
             var result = machine.ExecuteText("dt = parse_date('2026-01-10 14:30:45'); dt.sec");
@@ -75,10 +100,33 @@ namespace Embers.Tests.StdLib.Time
         }
 
         [TestMethod]
+        public void DateTime_UtcMethod_ReturnsDateTime()
+        {
+            var result = machine.ExecuteText("dt = parse_date('2026-01-10 14:30:45'); dt.utc");
+            Assert.IsInstanceOfType(result, typeof(DateTime));
+            var dt = (DateTime)result;
+            Assert.AreEqual(2026, dt.Year);
+        }
+
+        [TestMethod]
         public void DateTime_StrftimeMethod_FormatsDate()
         {
             var result = machine.ExecuteText("dt = parse_date('2026-01-10'); dt.strftime('yyyy-MM-dd')");
             Assert.AreEqual("2026-01-10", result);
+        }
+
+        [TestMethod]
+        public void DateTime_ToEpochMethod_ReturnsSeconds()
+        {
+            var result = machine.ExecuteText("dt = parse_date('1970-01-01 00:00:00'); dt.utc.to_epoch");
+            Assert.AreEqual(0L, result);
+        }
+
+        [TestMethod]
+        public void DateTime_FromEpochToEpoch_RoundTrip()
+        {
+            var result = machine.ExecuteText("from_epoch(10).to_epoch");
+            Assert.AreEqual(10L, result);
         }
 
         [TestMethod]

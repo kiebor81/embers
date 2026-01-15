@@ -64,6 +64,55 @@ namespace Embers.Tests.StdLib.Strings
         }
 
         [TestMethod]
+        public void String_EmptyMethod_ReturnsTrueForEmpty()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText("''.empty?");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void String_EmptyMethod_ReturnsFalseForNonEmpty()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText("'a'.empty?");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
+        }
+
+        [TestMethod]
+        public void String_CasecmpMethod_IgnoresCase()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText("'abc'.casecmp('ABC')");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(0, result);
+        }
+
+        [TestMethod]
+        public void String_MatchMethod_ReturnsMatch()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText("'abc123'.match('\\\\d+')");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("123", result);
+        }
+
+        [TestMethod]
+        public void String_MatchMethod_ReturnsNilWhenNoMatch()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText("'abc'.match('\\\\d+')");
+
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
         public void String_StripMethod_RemovesWhitespace()
         {
             Machine machine = new();

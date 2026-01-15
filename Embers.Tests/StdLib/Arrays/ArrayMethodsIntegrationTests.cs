@@ -523,6 +523,203 @@ namespace Embers.Tests.StdLib.Arrays
             Assert.AreEqual(0, list.Count);
         }
 
+        // ==================== SIZE/LENGTH METHOD TESTS ====================
+
+        [TestMethod]
+        public void Array_SizeMethod_ReturnsCount()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText(@"
+                arr = [1, 2, 3]
+                arr.size
+            ");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result);
+        }
+
+        [TestMethod]
+        public void Array_LengthMethod_ReturnsCount()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText(@"
+                arr = [1, 2, 3]
+                arr.length
+            ");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result);
+        }
+
+        // ==================== EMPTY? METHOD TESTS ====================
+
+        [TestMethod]
+        public void Array_EmptyMethod_EmptyArray_ReturnsTrue()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText(@"
+                arr = []
+                arr.empty?
+            ");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void Array_EmptyMethod_NonEmptyArray_ReturnsFalse()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText(@"
+                arr = [1]
+                arr.empty?
+            ");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
+        }
+
+        // ==================== INCLUDE? METHOD TESTS ====================
+
+        [TestMethod]
+        public void Array_IncludeMethod_ReturnsTrueWhenFound()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText(@"
+                arr = [1, 2, 3]
+                arr.include?(2)
+            ");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void Array_IncludeMethod_ReturnsFalseWhenMissing()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText(@"
+                arr = [1, 2, 3]
+                arr.include?(5)
+            ");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
+        }
+
+        // ==================== INDEX METHOD TESTS ====================
+
+        [TestMethod]
+        public void Array_IndexMethod_ReturnsIndex()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText(@"
+                arr = [1, 2, 3]
+                arr.index(2)
+            ");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1L, result);
+        }
+
+        [TestMethod]
+        public void Array_IndexMethod_MissingReturnsNil()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText(@"
+                arr = [1, 2, 3]
+                arr.index(9)
+            ");
+
+            Assert.IsNull(result);
+        }
+
+        // ==================== EACH_WITH_INDEX METHOD TESTS ====================
+
+        [TestMethod]
+        public void Array_EachWithIndex_YieldsIndices()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText(@"
+                arr = [10, 20, 30]
+                indices = []
+                arr.each_with_index { |v, i| indices.push(i) }
+                indices
+            ");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("[0, 1, 2]", result.ToString());
+        }
+
+        // ==================== REDUCE METHOD TESTS ====================
+
+        [TestMethod]
+        public void Array_ReduceMethod_SumsValues()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText(@"
+                arr = [1, 2, 3]
+                arr.reduce { |acc, n| acc + n }
+            ");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(6L, result);
+        }
+
+        [TestMethod]
+        public void Array_ReduceMethod_WithInitialValue()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText(@"
+                arr = [1, 2, 3]
+                arr.reduce(10) { |acc, n| acc + n }
+            ");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(16L, result);
+        }
+
+        // ==================== ANY?/ALL?/FIND METHOD TESTS ====================
+
+        [TestMethod]
+        public void Array_AnyMethod_WithBlock()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText(@"
+                arr = [1, 2, 3]
+                arr.any? { |n| n > 2 }
+            ");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void Array_AllMethod_WithBlock()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText(@"
+                arr = [1, 2, 3]
+                arr.all? { |n| n > 0 }
+            ");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void Array_FindMethod_WithBlock()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText(@"
+                arr = [1, 2, 3, 4]
+                arr.find { |n| n > 2 }
+            ");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3L, result);
+        }
+
         // ==================== CHAINING TESTS ====================
 
         [TestMethod]

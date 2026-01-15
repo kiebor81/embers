@@ -5,6 +5,38 @@ using System.Globalization;
 
 namespace Embers.StdLib.Time;
 
+[StdLib("epoch")]
+public class EpochFunction : StdFunction
+{
+    [Comments("Returns the current Unix epoch time in seconds (UTC).")]
+    [Returns(ReturnType = typeof(Number))]
+    public override object Apply(DynamicObject self, Context context, IList<object> values)
+        => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+}
+
+[StdLib("from_epoch")]
+public class FromEpochFunction : StdFunction
+{
+    [Comments("Creates a DateTime from a Unix epoch time in seconds (UTC).")]
+    [Arguments(ParamNames = new[] { "seconds" }, ParamTypes = new[] { typeof(Number) })]
+    [Returns(ReturnType = typeof(DateTime))]
+    public override object Apply(DynamicObject self, Context context, IList<object> values)
+    {
+        if (values == null || values.Count == 0 || values[0] == null)
+            throw new ArgumentError("from_epoch expects a numeric argument");
+
+        long seconds = values[0] switch
+        {
+            int i => i,
+            long l => l,
+            double d => (long)d,
+            _ => throw new TypeError("from_epoch expects a numeric argument")
+        };
+
+        return DateTimeOffset.FromUnixTimeSeconds(seconds).UtcDateTime;
+    }
+}
+
 [StdLib("now")]
 public class NowFunction : StdFunction
 {
@@ -69,6 +101,26 @@ public class StrftimeFunction : StdFunction
         if (values[0] is DateTime dt && values[1] is string fmt)
             return dt.ToString(fmt, CultureInfo.InvariantCulture);
         throw new TypeError("strftime expects a DateTime and a format string");
+    }
+}
+
+[StdLib("to_epoch", TargetTypes = new[] { "DateTime" })]
+public class ToEpochFunction : StdFunction
+{
+    [Comments("Returns the Unix epoch time in seconds for the DateTime.")]
+    [Arguments(ParamNames = new[] { "date_time" }, ParamTypes = new[] { typeof(DateTime) })]
+    [Returns(ReturnType = typeof(Number))]
+    public override object Apply(DynamicObject self, Context context, IList<object> values)
+    {
+        if (values == null || values.Count == 0 || values[0] == null)
+            throw new ArgumentError("to_epoch expects a DateTime argument");
+        if (values[0] is DateTime dt)
+        {
+            if (dt.Kind == DateTimeKind.Unspecified)
+                dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+            return new DateTimeOffset(dt).ToUnixTimeSeconds();
+        }
+        throw new TypeError("to_epoch expects a DateTime");
     }
 }
 

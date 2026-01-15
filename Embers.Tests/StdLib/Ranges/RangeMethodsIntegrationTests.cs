@@ -176,6 +176,52 @@ namespace Embers.Tests.StdLib.Ranges
         }
 
         [TestMethod]
+        public void RangeEachWithIndex()
+        {
+            var result = machine.ExecuteText(@"
+                sum = 0
+                (3..5).each_with_index { |n, i| sum = sum + i }
+                sum
+            ");
+            Assert.AreEqual(3L, result);
+        }
+
+        [TestMethod]
+        public void RangeReduce()
+        {
+            var result = machine.ExecuteText("(1..4).reduce { |acc, n| acc + n }");
+            Assert.AreEqual(10, result);
+        }
+
+        [TestMethod]
+        public void RangeReduceWithInitial()
+        {
+            var result = machine.ExecuteText("(1..4).reduce(10) { |acc, n| acc + n }");
+            Assert.AreEqual(20L, result);
+        }
+
+        [TestMethod]
+        public void RangeAny()
+        {
+            var result = machine.ExecuteText("(1..5).any? { |n| n == 3 }");
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void RangeAll()
+        {
+            var result = machine.ExecuteText("(1..5).all? { |n| n > 0 }");
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void RangeFind()
+        {
+            var result = machine.ExecuteText("(1..5).find { |n| n > 3 }");
+            Assert.AreEqual(4, result);
+        }
+
+        [TestMethod]
         public void RangeChainedOperations()
         {
             var result = machine.ExecuteText("(1..10).select { |n| n % 2 == 0 }.map { |n| n * 3 }");
