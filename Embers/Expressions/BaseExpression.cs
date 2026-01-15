@@ -1,38 +1,36 @@
-﻿namespace Embers.Expressions
+namespace Embers.Expressions;
+/// <summary>
+/// A primitive base class for all expressions in the Embers language.
+/// </summary>
+/// <seealso cref="IExpression" />
+public abstract class BaseExpression : IExpression
 {
-    /// <summary>
-    /// A primitive base class for all expressions in the Embers language.
-    /// </summary>
-    /// <seealso cref="Embers.Expressions.IExpression" />
-    public abstract class BaseExpression : IExpression
+    public abstract object Evaluate(Context context);
+
+    public IList<string>? GetLocalVariables() => null;
+
+    internal static IList<string>? GetLocalVariables(IList<IExpression> expressions)
     {
-        public abstract object Evaluate(Context context);
+        IList<string> varnames = [];
 
-        public IList<string>? GetLocalVariables() => null;
-
-        internal static IList<string>? GetLocalVariables(IList<IExpression> expressions)
+        foreach (var expression in expressions)
         {
-            IList<string> varnames = [];
+            if (expression == null)
+                continue;
 
-            foreach (var expression in expressions)
-            {
-                if (expression == null)
-                    continue;
+            var vars = expression.GetLocalVariables();
 
-                var vars = expression.GetLocalVariables();
+            if (vars == null || vars.Count == 0)
+                continue;
 
-                if (vars == null || vars.Count == 0)
-                    continue;
-
-                foreach (var name in vars)
-                    if (!varnames.Contains(name))
-                        varnames.Add(name);
-            }
-
-            if (varnames.Count == 0)
-                return null;
-
-            return varnames;
+            foreach (var name in vars)
+                if (!varnames.Contains(name))
+                    varnames.Add(name);
         }
+
+        if (varnames.Count == 0)
+            return null;
+
+        return varnames;
     }
 }

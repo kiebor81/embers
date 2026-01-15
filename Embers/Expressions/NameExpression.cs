@@ -1,74 +1,72 @@
-﻿using Embers.Exceptions;
+using Embers.Exceptions;
 
-namespace Embers.Expressions
+namespace Embers.Expressions;
+/// <summary>
+/// NameExpression represents a named expression in the Embers language.
+/// </summary>
+/// <seealso cref="BaseExpression" />
+/// <seealso cref="INamedExpression" />
+public class NameExpression(string name) : BaseExpression, INamedExpression
 {
-    /// <summary>
-    /// NameExpression represents a named expression in the Embers language.
-    /// </summary>
-    /// <seealso cref="Embers.Expressions.BaseExpression" />
-    /// <seealso cref="Embers.Expressions.INamedExpression" />
-    public class NameExpression(string name) : BaseExpression, INamedExpression
+    private static readonly int hashcode = typeof(NameExpression).GetHashCode();
+    private static readonly IList<object> emptyvalues = [];
+    private readonly string name = name;
+
+    public IExpression? TargetExpression { get { return null; } }
+
+    public string Name { get { return name; } }
+
+    public override object Evaluate(Context context)
     {
-        private static readonly int hashcode = typeof(NameExpression).GetHashCode();
-        private static readonly IList<object> emptyvalues = [];
-        private readonly string name = name;
+        bool isglobal = char.IsUpper(name[0]);
 
-        public IExpression? TargetExpression { get { return null; } }
-
-        public string Name { get { return name; } }
-
-        public override object Evaluate(Context context)
+        if (!isglobal)
         {
-            bool isglobal = char.IsUpper(name[0]);
-
-            if (!isglobal)
-            {
-                if (context.HasLocalValue(name))
-                    return context.GetLocalValue(name);
-
-                if (context.HasValue(name))
-                    return context.GetValue(name);
-
-                if (context.Self != null)
-                {
-                    var method = context.Self.GetMethod(name);
-
-                    if (method != null)
-                        return method.Apply(context.Self, context, emptyvalues);
-                }
-
-                throw new NameError(string.Format("undefined local variable or method '{0}'", name));
-            }
+            if (context.HasLocalValue(name))
+                return context.GetLocalValue(name);
 
             if (context.HasValue(name))
                 return context.GetValue(name);
-            
-            throw new NameError(string.Format("unitialized constant {0}", name));
-        }
 
-        public string? AsQualifiedName()
-        {
-            if (!char.IsUpper(name[0]))
-                return null;
-
-            return name;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-                return false;
-
-            if (obj is NameExpression) 
+            if (context.Self != null)
             {
-                var expr = (NameExpression)obj;
+                var method = context.Self.GetMethod(name);
 
-                return Name.Equals(expr.Name);
+                if (method != null)
+                    return method.Apply(context.Self, context, emptyvalues);
             }
 
-            return false;
+            throw new NameError(string.Format("undefined local variable or method '{0}'", name));
         }
 
-        public override int GetHashCode() => name.GetHashCode() + hashcode;
+        if (context.HasValue(name))
+            return context.GetValue(name);
+        
+        throw new NameError(string.Format("unitialized constant {0}", name));
     }
+
+    public string? AsQualifiedName()
+    {
+        if (!char.IsUpper(name[0]))
+            return null;
+
+        return name;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null)
+            return false;
+
+        if (obj is NameExpression) 
+        {
+            var expr = (NameExpression)obj;
+
+            return Name.Equals(expr.Name);
+        }
+
+        return false;
+    }
+
+    public override int GetHashCode() => name.GetHashCode() + hashcode;
 }

@@ -1,59 +1,58 @@
 ﻿using Embers.StdLib;
 using System.Collections;
 
-namespace Embers.Language
+namespace Embers.Language;
+/// <summary>
+/// DynamicArray represents a dynamic array in the Embers language.
+/// </summary>
+public class DynamicArray : ArrayList
 {
-    /// <summary>
-    /// DynamicArray represents a dynamic array in the Embers language.
-    /// </summary>
-    public class DynamicArray : ArrayList
+    public override object this[int index]
     {
-        public override object this[int index]
+        get
         {
-            get
-            {
-                if (index < 0 || index >= Count)
-                    return null;
+            if (index < 0 || index >= Count)
+                return null;
 
-                return base[index];
-            }
-
-            set
-            {
-                while (index >= Count)
-                    Add(null);
-
-                base[index] = value;
-            }
+            return base[index];
         }
 
-        public override string ToString()
+        set
         {
-            var result = "[";
+            while (index >= Count)
+                Add(null);
 
-            foreach (var value in this)
-            {
-                if (result.Length > 1)
-                    result += ", ";
-
-                if (value == null)
-                    result += "nil";
-                else
-                    result += value.ToString();
-            }
-
-            result += "]";
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gets a method for this array by name.
-        /// Uses StdLibRegistry for automatic discovery of array-specific methods.
-        /// </summary>
-        public object? GetMethod(string name)
-        {
-            return StdLibRegistry.GetMethod("Array", name);
+            base[index] = value;
         }
     }
+
+    public override string ToString()
+    {
+        var result = "[";
+
+        foreach (var value in this)
+        {
+            if (result.Length > 1)
+                result += ", ";
+
+            if (value == null)
+                result += "nil";
+            else
+                result += value.ToString();
+        }
+
+        result += "]";
+
+        return result;
+    }
+
+    /// <summary>
+    /// Gets a method for this array by name.
+    /// Uses StdLibRegistry for automatic discovery of array-specific methods.
+    /// </summary>
+    public object? GetMethod(string name)
+    {
+        return StdLibRegistry.GetMethod("Array", name);
+    }
 }
+

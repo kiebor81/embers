@@ -1,22 +1,26 @@
-﻿namespace Embers.Compiler
+﻿namespace Embers.Compiler;
+
+/// <summary>
+/// text-based implementation of <see cref="ICharStream"/>.
+/// </summary>
+/// <seealso cref="ICharStream" />
+public class TextCharStream(string text) : ICharStream
 {
-    public class TextCharStream(string text) : ICharStream
+    private readonly string text = text;
+    private int position = 0;
+
+    public int NextChar()
     {
-        private readonly string text = text;
-        private int position = 0;
+        if (position >= text.Length)
+            return -1;
 
-        public int NextChar()
-        {
-            if (position >= text.Length)
-                return -1;
+        return text[position++];
+    }
 
-            return text[position++];
-        }
-
-        public void BackChar()
-        {
-            if (position > 0 && position <= text.Length)
-                position--;
-        }
+    public void BackChar()
+    {
+        if (position > 0 && position <= text.Length)
+            position--;
     }
 }
+

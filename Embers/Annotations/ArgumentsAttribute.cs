@@ -5,7 +5,7 @@ namespace Embers.Annotations;
 /// Attribute to specify parameter names and types for an IFunction method.
 /// This will be used for documentation generation
 /// </summary>
-/// <seealso cref="System.Attribute" />
+/// <seealso cref="Attribute" />
 [AttributeUsage(AttributeTargets.Method, Inherited = false)]
 public sealed class ArgumentsAttribute : Attribute
 {

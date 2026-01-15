@@ -1,17 +1,16 @@
 ﻿using Embers.Annotations;
 using Embers.Language;
 
-namespace Embers.Functions
+namespace Embers.Functions;
+/// <summary>
+/// LambdaFunction is a function that is defined by a lambda expression.
+/// </summary>
+/// <seealso cref="IFunction" />
+[ScannerIgnore]
+public class LambdaFunction(Func<DynamicObject, Context, IList<object>, object> lambda) : IFunction
 {
-    /// <summary>
-    /// LambdaFunction is a function that is defined by a lambda expression.
-    /// </summary>
-    /// <seealso cref="Embers.Functions.IFunction" />
-    [ScannerIgnore]
-    public class LambdaFunction(Func<DynamicObject, Context, IList<object>, object> lambda) : IFunction
-    {
-        private readonly Func<DynamicObject, Context, IList<object>, object> lambda = lambda;
+    private readonly Func<DynamicObject, Context, IList<object>, object> lambda = lambda;
 
-        public object Apply(DynamicObject self, Context context, IList<object> values) => lambda(self, context, values);
-    }
+    public object Apply(DynamicObject self, Context context, IList<object> values) => lambda(self, context, values);
 }
+

@@ -3,7 +3,7 @@ namespace Embers.Annotations;
 /// Attribute to specify return type for an IFunction method.
 /// This will be used for documentation generation
 /// </summary>
-/// <seealso cref="System.Attribute" />
+/// <seealso cref="Attribute" />
 [AttributeUsage(AttributeTargets.Method, Inherited = false)]
 public sealed class ReturnsAttribute : Attribute
 {

@@ -3,7 +3,7 @@
 /// Attribute to provide top-level comments for an IFunction method.
 /// This will be used for documentation generation
 /// </summary>
-/// <seealso cref="System.Attribute" />
+/// <seealso cref="Attribute" />
 /// <remarks>
 /// Initializes a new instance of the <see cref="CommentsAttribute"/> class.
 /// </remarks>

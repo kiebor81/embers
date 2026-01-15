@@ -83,25 +83,25 @@ namespace Embers.Tests.Utilities
 
             Assert.IsNotNull(types);
 
-            Assert.IsTrue(types.Contains(typeof(System.IO.File)));
-            Assert.IsTrue(types.Contains(typeof(System.IO.Directory)));
-            Assert.IsTrue(types.Contains(typeof(System.IO.FileInfo)));
-            Assert.IsTrue(types.Contains(typeof(System.IO.DirectoryInfo)));
+            Assert.IsTrue(types.Contains(typeof(File)));
+            Assert.IsTrue(types.Contains(typeof(Directory)));
+            Assert.IsTrue(types.Contains(typeof(FileInfo)));
+            Assert.IsTrue(types.Contains(typeof(DirectoryInfo)));
 
             Assert.IsFalse(types.Contains(typeof(string)));
             Assert.IsFalse(types.Contains(typeof(System.Data.DataSet)));
         }
 
         [TestMethod]
-        public void GetValueFromType() => Assert.IsFalse((bool)TypeUtilities.InvokeTypeMember(typeof(System.IO.File), "Exists", ["unknown.txt"]));
+        public void GetValueFromType() => Assert.IsFalse((bool)TypeUtilities.InvokeTypeMember(typeof(File), "Exists", ["unknown.txt"]));
 
         [TestMethod]
-        public void GetValueFromEnum() => Assert.AreEqual(UriKind.RelativeOrAbsolute, TypeUtilities.InvokeTypeMember(typeof(System.UriKind), "RelativeOrAbsolute", null));
+        public void GetValueFromEnum() => Assert.AreEqual(UriKind.RelativeOrAbsolute, TypeUtilities.InvokeTypeMember(typeof(UriKind), "RelativeOrAbsolute", null));
 
         [TestMethod]
         public void ParseTokenTypeValues()
         {
-            Type type = typeof(Embers.Compiler.TokenType);
+            Type type = typeof(TokenType);
 
             Assert.AreEqual(TokenType.Name, TypeUtilities.ParseEnumValue(type, "Name"));
             Assert.AreEqual(TokenType.Integer, TypeUtilities.ParseEnumValue(type, "Integer"));
@@ -111,7 +111,7 @@ namespace Embers.Tests.Utilities
         [TestMethod]
         public void RaiseWhenUnknownEnumValue()
         {
-            Type type = typeof(Embers.Compiler.TokenType);
+            Type type = typeof(TokenType);
 
             try
             {
@@ -138,7 +138,7 @@ namespace Embers.Tests.Utilities
         [TestMethod]
         public void GetTypeStaticMethod()
         {
-            Type type = typeof(System.IO.File);
+            Type type = typeof(File);
             var result = TypeUtilities.GetValue(type, "Exists");
 
             Assert.IsNotNull(result);

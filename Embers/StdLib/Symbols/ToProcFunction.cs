@@ -77,7 +77,7 @@ namespace Embers.StdLib.Symbols
                     }
                 }
                 
-                throw new Exceptions.NoMethodError($"undefined method '{methodName}' for {obj.GetType().Name}");
+                throw new NoMethodError($"undefined method '{methodName}' for {obj.GetType().Name}");
             }
         }
     }

@@ -1,36 +1,27 @@
-﻿namespace Embers.Expressions
+namespace Embers.Expressions;
+/// <summary>
+/// AddExpression represents an addition operation between two expressions.
+/// </summary>
+/// <seealso cref="BinaryExpression" />
+public class AddExpression(IExpression left, IExpression right) : BinaryExpression(left, right)
 {
-    /// <summary>
-    /// AddExpression represents an addition operation between two expressions.
-    /// </summary>
-    /// <seealso cref="Embers.Expressions.BinaryExpression" />
-    public class AddExpression(IExpression left, IExpression right) : BinaryExpression(left, right)
+    public override object Apply(object leftvalue, object rightvalue)
     {
-        public override object Apply(object leftvalue, object rightvalue)
-        {
-            if (leftvalue is string || rightvalue is string)
-                return leftvalue.ToString() + rightvalue.ToString();
+        if (leftvalue is string || rightvalue is string)
+            return leftvalue.ToString() + rightvalue.ToString();
 
-            if (leftvalue is long v)
-                if (rightvalue is long)
-                    return v + (long)rightvalue;
-                else if (rightvalue is int)
-                    return v + (int)rightvalue;
-                else
-                    return v + (double)rightvalue;
-            else if (leftvalue is int)
-                if (rightvalue is long)
-                    return (int)leftvalue + (long)rightvalue;
-                else if (rightvalue is int)
-                    return (int)leftvalue + (int)rightvalue;
-                else
-                    return (int)leftvalue + (double)rightvalue;
-            else if (rightvalue is long)
-                return (double)leftvalue + (long)rightvalue;
-            else if (rightvalue is int)
-                return (double)leftvalue + (int)rightvalue;
-            else
-                return (double)leftvalue + (double)rightvalue;
-        }
+        return (leftvalue, rightvalue) switch
+        {
+            (long l, long r) => l + r,
+            (long l, int r) => l + r,
+            (long l, double r) => l + r,
+            (int l, long r) => l + r,
+            (int l, int r) => (object)(l + r),
+            (int l, double r) => l + r,
+            (double l, long r) => l + r,
+            (double l, int r) => l + r,
+            (double l, double r) => l + r,
+            _ => (double)leftvalue + (double)rightvalue
+        };
     }
 }

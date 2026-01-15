@@ -1,68 +1,68 @@
+using Embers.Exceptions;
 using Embers.Functions;
 
-namespace Embers.Language
+namespace Embers.Language;
+/// <summary>
+/// Proc represents a first-class procedure/lambda object in Embers.
+/// It can wrap either a Block (from lambdas) or an IFunction (from block parameters).
+/// </summary>
+public class Proc
 {
-    /// <summary>
-    /// Proc represents a first-class procedure/lambda object in Embers.
-    /// It can wrap either a Block (from lambdas) or an IFunction (from block parameters).
-    /// </summary>
-    public class Proc
+    private readonly Block? block;
+    private readonly IFunction? function;
+
+    public Proc(Block block)
     {
-        private readonly Block? block;
-        private readonly IFunction? function;
+        this.block = block;
+        function = null;
+    }
 
-        public Proc(Block block)
+    public Proc(IFunction function)
+    {
+        block = null;
+        this.function = function;
+    }
+
+    /// <summary>
+    /// Call the proc with the given arguments
+    /// </summary>
+    public object Call(IList<object> arguments)
+    {
+        if (block != null)
         {
-            this.block = block;
-            function = null;
+            return block.Apply(arguments);
         }
-
-        public Proc(IFunction function)
+        else if (function is BlockFunction blockFunc)
         {
-            block = null;
-            this.function = function;
+            // BlockFunction needs self and context - use null self and empty context
+            return blockFunc.Apply(null!, new Context(), arguments);
         }
-
-        /// <summary>
-        /// Call the proc with the given arguments
-        /// </summary>
-        public object Call(IList<object> arguments)
+        else if (function != null)
         {
-            if (block != null)
-            {
-                return block.Apply(arguments);
-            }
-            else if (function is BlockFunction blockFunc)
-            {
-                // BlockFunction needs self and context - use null self and empty context
-                return blockFunc.Apply(null!, new Context(), arguments);
-            }
-            else if (function != null)
-            {
-                throw new System.NotSupportedException($"Proc does not support function type {function.GetType().Name}");
-            }
-            else
-            {
-                throw new System.InvalidOperationException("Proc has neither block nor function");
-            }
+            throw new NotSupportedError($"Proc does not support function type {function.GetType().Name}");
         }
-
-        /// <summary>
-        /// Get the underlying IFunction to pass as a block parameter.
-        /// This is used when passing a proc to another method using &proc syntax.
-        /// </summary>
-        public IFunction? GetFunction()
+        else
         {
-            if (function != null)
-            {
-                return function;
-            }
-            else if (block != null)
-            {
-                // Wrap the block in a BlockAdapter so it can be passed as an IFunction
-                return new BlockAdapter(block);
-            }
-            return null;
+            throw new InvalidOperationError("Proc has neither block nor function");
         }
     }
+
+    /// <summary>
+    /// Get the underlying IFunction to pass as a block parameter.
+    /// This is used when passing a proc to another method using &proc syntax.
+    /// </summary>
+    public IFunction? GetFunction()
+    {
+        if (function != null)
+        {
+            return function;
+        }
+        else if (block != null)
+        {
+            // Wrap the block in a BlockAdapter so it can be passed as an IFunction
+            return new BlockAdapter(block);
+        }
+        return null;
+    }
 }
+

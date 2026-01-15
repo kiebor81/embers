@@ -1,20 +1,19 @@
-﻿namespace Embers.Language
+﻿namespace Embers.Language;
+/// <summary>
+/// Predicates for evaluating conditions in the runtime interpreter.
+/// </summary>
+public static class Predicates
 {
-    /// <summary>
-    /// Predicates for evaluating conditions in the runtime interpreter.
-    /// </summary>
-    public static class Predicates
+    public static bool IsFalse(object obj) => obj == null || false.Equals(obj);
+
+    public static bool IsTrue(object obj) => !IsFalse(obj);
+
+    public static bool IsConstantName(string name)
     {
-        public static bool IsFalse(object obj) => obj == null || false.Equals(obj);
+        if (string.IsNullOrEmpty(name))
+            return false;
 
-        public static bool IsTrue(object obj) => !IsFalse(obj);
-
-        public static bool IsConstantName(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-                return false;
-
-            return char.IsUpper(name[0]);
-        }
+        return char.IsUpper(name[0]);
     }
 }
+

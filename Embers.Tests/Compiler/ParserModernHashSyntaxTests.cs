@@ -57,7 +57,7 @@ namespace Embers.Tests.Compiler
         }
 
         [TestMethod]
-        public void ModernSyntaxWithNonNameKeyThrowsError() => Assert.ThrowsException<Embers.Exceptions.SyntaxError>(() =>
+        public void ModernSyntaxWithNonNameKeyThrowsError() => Assert.ThrowsException<Exceptions.SyntaxError>(() =>
                                                                         {
                                                                             machine.ExecuteText("{\"name\": \"Alice\"}");
                                                                         });
