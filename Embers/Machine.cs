@@ -16,6 +16,7 @@ namespace Embers;
 /// </summary>
 public class Machine
 {
+    private static readonly string[] SupportedExtensions = [".ers", ".emb", ".rb", ".rs", ".txt"];
     /// <summary>
     /// The rootcontext
     /// </summary>
@@ -90,11 +91,19 @@ public class Machine
     public object Execute(string argument)
     {
         if (File.Exists(argument))
+        {
+            if (!HasSupportedExtension(argument))
+                throw new UnsupportedFileError($"Unsupported file type: {Path.GetExtension(argument)}");
             return ExecuteFile(argument);
+        }
 
         // Check if it looks like a file path but doesn't exist
         if (LooksLikeFilePath(argument))
+        {
+            if (Path.HasExtension(argument) && !HasSupportedExtension(argument))
+                throw new UnsupportedFileError($"Unsupported file type: {Path.GetExtension(argument)}");
             throw new FileNotFoundException($"File not found: {argument}");
+        }
 
         return ExecuteText(argument);
     }
@@ -104,18 +113,48 @@ public class Machine
     /// </summary>
     private static bool LooksLikeFilePath(string argument)
     {
+        if (string.IsNullOrWhiteSpace(argument))
+            return false;
+
+        var trimmed = argument.Trim();
+
         // Check for path separators
-        if (argument.Contains('/') || argument.Contains('\\'))
-            return true;
+        if (trimmed.Contains('/') || trimmed.Contains('\\'))
+        {
+            // Avoid treating math like "3/2" as a path unless there's a real path-ish token.
+            foreach (var ch in trimmed)
+            {
+                if (char.IsLetter(ch) || ch == '.' || ch == '_' || ch == '-')
+                    return true;
+            }
+        }
 
         // Check for common file extensions
-        if (argument.EndsWith(".rb", StringComparison.OrdinalIgnoreCase) ||
-            argument.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+        if (HasSupportedExtension(trimmed))
             return true;
 
         // Check if it's an absolute path (Windows: C:, D:, etc. or Unix: starts with /)
-        if (Path.IsPathRooted(argument))
+        if (Path.IsPathRooted(trimmed))
             return true;
+
+        return false;
+    }
+
+    /// <summary>
+    /// Determines if the file has a supported extension.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    private static bool HasSupportedExtension(string path)
+    {
+        var ext = Path.GetExtension(path);
+        if (string.IsNullOrEmpty(ext)) return false;
+
+        foreach (var supported in SupportedExtensions)
+        {
+            if (ext.Equals(supported, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
 
         return false;
     }
@@ -177,10 +216,7 @@ public class Machine
             {
                 string newfilename = Path.Combine(path, filename);
                 if (!File.Exists(newfilename))
-                    if (File.Exists(newfilename + ".rb"))
-                        newfilename += ".rb";
-                    else if (File.Exists(newfilename + ".dll"))
-                        newfilename += ".dll";
+                    newfilename = AppendFirstExistingExtension(newfilename);
 
                 if (File.Exists(newfilename))
                 {
@@ -194,10 +230,7 @@ public class Machine
             string newfilename = Path.GetFullPath(filename);
 
             if (!File.Exists(newfilename))
-                if (File.Exists(newfilename + ".rb"))
-                    newfilename += ".rb";
-                else if (File.Exists(newfilename + ".dll"))
-                    newfilename += ".dll";
+                newfilename = AppendFirstExistingExtension(newfilename);
 
             filename = newfilename;
         }
@@ -205,16 +238,37 @@ public class Machine
         if (required.Contains(filename))
             return false;
 
-        if (filename.EndsWith(".dll"))
+        if (filename.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
         {
             Assembly.LoadFrom(filename);
             return true;
         }
 
+        if (!HasSupportedExtension(filename))
+            throw new UnsupportedFileError($"Unsupported file type: {Path.GetExtension(filename)}");
+
         ExecuteFile(filename);
         required.Add(filename);
 
         return true;
+    }
+
+    /// <summary>
+    /// Appends the first existing permitted extension.
+    /// </summary>
+    /// <param name="basePath"></param>
+    /// <returns></returns>
+    private static string AppendFirstExistingExtension(string basePath)
+    {
+        foreach (var extension in SupportedExtensions)
+        {
+            var candidate = basePath + extension;
+            if (File.Exists(candidate))
+                return candidate;
+        }
+
+        var dllCandidate = basePath + ".dll";
+        return File.Exists(dllCandidate) ? dllCandidate : basePath;
     }
 
     /// <summary>
@@ -265,6 +319,13 @@ public class Machine
     /// </summary>
     public void ClearSecurityPolicy() => TypeAccessPolicy.Clear();
 
+    /// <summary>
+    /// Creates a new instance of the class.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
     private static object NewInstance(DynamicObject obj, Context context, IList<object> values)
     {
         var newobj = ((DynamicClass)obj).CreateInstance();
@@ -276,12 +337,40 @@ public class Machine
         return newobj;
     }
 
+    /// <summary>
+    /// Gets the name of the class.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
     private static object GetName(DynamicObject obj, Context context, IList<object> values) => ((DynamicClass)obj).Name;
 
+    /// <summary>
+    /// Gets the super class.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
     private static object GetSuperClass(DynamicObject obj, Context context, IList<object> values) => ((DynamicClass)obj).SuperClass;
 
+    /// <summary>
+    /// Gets the class.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
     private static object GetClass(DynamicObject obj, Context context, IList<object> values) => obj.Class;
 
+    /// <summary>
+    /// Gets the methods.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
     private static object GetMethods(DynamicObject obj, Context context, IList<object> values)
     {
         var result = new DynamicArray();
@@ -302,6 +391,13 @@ public class Machine
         return result;
     }
 
+    /// <summary>
+    /// Gets the singleton methods.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
     private static object GetSingletonMethods(DynamicObject obj, Context context, IList<object> values)
     {
         var result = new DynamicArray();
