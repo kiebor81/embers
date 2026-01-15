@@ -12,7 +12,7 @@ public class UpcaseFunction : StdFunction
     [Comments("Returns the string in uppercase.")]
     [Arguments(ParamNames = new[] { "string" }, ParamTypes = new[] { typeof(string) })]
     [Returns(ReturnType = typeof(string))]
-    public override object Apply(DynamicObject self, Context context, IList<object> values)
+    public override object? Apply(DynamicObject self, Context context, IList<object> values)
     {
         if (values == null || values.Count == 0 || values[0] == null)
             return null;

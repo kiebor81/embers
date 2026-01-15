@@ -14,7 +14,7 @@ internal class NoteFunction : HostFunction
     [Comments("Writes a tagged message to the host console.")]
     [Arguments(ParamNames = new[] { "message" }, ParamTypes = new[] { typeof(string) })]
     [Returns(ReturnType = typeof(void))]
-    public override object Apply(DynamicObject self, Context context, IList<object> values)
+    public override object? Apply(DynamicObject self, Context context, IList<object> values)
     {
         var message = values != null && values.Count > 0 ? values[0]?.ToString() ?? string.Empty : string.Empty;
         Console.WriteLine($"[DSL] {message}");

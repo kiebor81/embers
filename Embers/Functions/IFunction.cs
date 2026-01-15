@@ -13,6 +13,6 @@ public interface IFunction
     /// <param name="context">The context.</param>
     /// <param name="values">The values.</param>
     /// <returns></returns>
-    object Apply(DynamicObject self, Context context, IList<object> values);
+    object? Apply(DynamicObject self, Context context, IList<object> values);
 }
 

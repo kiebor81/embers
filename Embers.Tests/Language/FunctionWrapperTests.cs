@@ -131,7 +131,7 @@ namespace Embers.Tests.Language
         {
             public bool WasInvoked { get; set; }
 
-            public object Apply(DynamicObject self, Context context, IList<object> values)
+            public object? Apply(DynamicObject self, Context context, IList<object> values)
             {
                 WasInvoked = true;
                 return null;
@@ -149,7 +149,7 @@ namespace Embers.Tests.Language
 
             public int Y { get; set; }
 
-            public object Apply(DynamicObject self, Context context, IList<object> arguments)
+            public object? Apply(DynamicObject self, Context context, IList<object> arguments)
             {
                 X = (int)arguments[0];
                 Y = (int)arguments[1];

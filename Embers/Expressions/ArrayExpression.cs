@@ -22,7 +22,7 @@ public class ArrayExpression(IList<IExpression> expressions) : BaseExpression
         return result;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

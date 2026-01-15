@@ -10,7 +10,7 @@ internal class HelpFunction : HostFunction
     [Comments("Displays help information for available functions.")]
     [Arguments(ParamNames = new[] { "functionName" }, ParamTypes = new[] { typeof(string) })]
     [Returns(ReturnType = typeof(void))]
-    public override object Apply(DynamicObject self, Context context, IList<object> values)
+    public override object? Apply(DynamicObject self, Context context, IList<object> values)
     {
 
         System.Console.WriteLine("--- Start of Help ---");

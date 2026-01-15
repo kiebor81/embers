@@ -21,9 +21,9 @@ public class AssignDotExpressions(DotExpression leftvalue, IExpression expressio
 
     public IExpression Expression { get { return expression; } }
 
-    public override object Evaluate(Context context)
+    public override object? Evaluate(Context context)
     {
-        object target = leftvalue.TargetExpression.Evaluate(context);
+        object? target = leftvalue.TargetExpression.Evaluate(context);
 
         if (target is DynamicObject)
         {
@@ -42,7 +42,7 @@ public class AssignDotExpressions(DotExpression leftvalue, IExpression expressio
         return newvalue;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

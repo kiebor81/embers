@@ -9,11 +9,11 @@ public interface IExpression
     /// </summary>
     /// <param name="context">The context.</param>
     /// <returns></returns>
-    object Evaluate(Context context);
+    object? Evaluate(Context context);
 
     /// <summary>
     /// Gets the local variables.
     /// </summary>
     /// <returns></returns>
-    IList<string> GetLocalVariables();
+    IList<string>? GetLocalVariables();
 }

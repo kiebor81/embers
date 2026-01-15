@@ -14,9 +14,9 @@ public class AssignExpression(string name, IExpression expression) : IExpression
 
     public IExpression Expression { get { return expression; } }
 
-    public object Evaluate(Context context)
+    public object? Evaluate(Context context)
     {
-        object value = expression.Evaluate(context);
+        object? value = expression.Evaluate(context);
         
         context.SetValue(name, value);
         context.SetLocalValue(name, value);
@@ -29,7 +29,7 @@ public class AssignExpression(string name, IExpression expression) : IExpression
 
     public IList<string> GetLocalVariables() => [name];
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

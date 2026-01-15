@@ -60,7 +60,7 @@ public class UntilExpression(IExpression condition, IExpression command) : IExpr
         return BaseExpression.GetLocalVariables(list);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

@@ -13,7 +13,7 @@ public class RandomSeedFunction : StdFunction
     [Comments("Sets the seed for the random number generator.")]
     [Arguments(ParamNames = new[] { "seed" }, ParamTypes = new[] { typeof(Number) })]
     [Returns(ReturnType = typeof(void))]
-    public override object Apply(DynamicObject self, Context context, IList<object> values)
+    public override object? Apply(DynamicObject self, Context context, IList<object> values)
     {
         if (values == null || values.Count == 0 || values[0] == null)
             throw new ArgumentError("random_seed expects a numeric argument");

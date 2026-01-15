@@ -9,7 +9,7 @@ public class FirstFunction : StdFunction
     [Comments("Returns the first element of the range.")]
     [Arguments(ParamNames = new[] { "range" }, ParamTypes = new[] { typeof(Language.Range) })]
     [Returns(ReturnType = typeof(object))]
-    public override object Apply(DynamicObject self, Context context, IList<object> values)
+    public override object? Apply(DynamicObject self, Context context, IList<object> values)
     {
         if (values.Count != 1)
             throw new Exceptions.ArgumentError($"wrong number of arguments (given {values.Count - 1}, expected 0)");

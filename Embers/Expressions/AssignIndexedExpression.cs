@@ -12,7 +12,7 @@ public class AssignIndexedExpression(IExpression leftexpression, IExpression ind
     private readonly IExpression indexexpression = indexexpression;
     private readonly IExpression expression = expression;
 
-    public override object Evaluate(Context context)
+    public override object? Evaluate(Context context)
     {
         var leftvalue = (IList)leftexpression.Evaluate(context);
         int index = (int)indexexpression.Evaluate(context);
@@ -23,7 +23,7 @@ public class AssignIndexedExpression(IExpression leftexpression, IExpression ind
         return newvalue;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

@@ -5,7 +5,7 @@ namespace Embers.Expressions;
 /// <seealso cref="IExpression" />
 public abstract class BaseExpression : IExpression
 {
-    public abstract object Evaluate(Context context);
+    public abstract object? Evaluate(Context context);
 
     public IList<string>? GetLocalVariables() => null;
 

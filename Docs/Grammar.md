@@ -178,6 +178,8 @@ Class variables begin with `@@` and are shared by all instances of a class:
 **      Exponentiation
 ```
 
+Note: `/` performs integer division when both operands are integers. Use a float on either side (e.g. `1.0 / 2`) to get a fractional result. This is intentional, mirroring Ruby semantics for type stability.
+
 ### Comparison Operators
 
 ```

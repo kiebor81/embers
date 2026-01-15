@@ -13,7 +13,7 @@ public abstract class BinaryExpression(IExpression left, IExpression right) : Ba
 
     public IExpression RightExpression { get { return right; } }
 
-    public override object Evaluate(Context context)
+    public override object? Evaluate(Context context)
     {
         var lvalue = left.Evaluate(context);
         var rvalue = right.Evaluate(context);
@@ -21,7 +21,7 @@ public abstract class BinaryExpression(IExpression left, IExpression right) : Ba
         return Apply(lvalue, rvalue);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;
@@ -38,5 +38,5 @@ public abstract class BinaryExpression(IExpression left, IExpression right) : Ba
 
     public override int GetHashCode() => LeftExpression.GetHashCode() + RightExpression.GetHashCode() + GetType().GetHashCode();
 
-    public abstract object Apply(object leftvalue, object rightvalue);
+    public abstract object? Apply(object leftvalue, object rightvalue);
 }

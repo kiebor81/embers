@@ -14,16 +14,16 @@ public class AssignClassVarExpression(string name, IExpression expression) : IEx
 
     public IExpression Expression { get { return expression; } }
 
-    public IList<string> GetLocalVariables() => expression.GetLocalVariables();
+    public IList<string>? GetLocalVariables() => expression.GetLocalVariables();
 
-    public object Evaluate(Context context)
+    public object? Evaluate(Context context)
     {
-        object value = expression.Evaluate(context);
+        object? value = expression.Evaluate(context);
         context.Self.Class.SetValue(name, value);
         return value;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

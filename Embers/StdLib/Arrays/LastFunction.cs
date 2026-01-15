@@ -11,7 +11,7 @@ public class LastFunction : StdFunction
     [Comments("Returns the last element of an array.")]
     [Arguments(ParamNames = new[] { "array_data" }, ParamTypes = new[] { typeof(Array) })]
     [Returns(ReturnType = typeof(object))]
-    public override object Apply(DynamicObject self, Context context, IList<object> values)
+    public override object? Apply(DynamicObject self, Context context, IList<object> values)
     {
         if (values == null || values.Count == 0 || values[0] == null)
             throw new ArgumentError("last expects an array argument");

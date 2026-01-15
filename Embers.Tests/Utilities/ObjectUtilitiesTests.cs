@@ -128,6 +128,6 @@ namespace Embers.Tests.Utilities
             Assert.IsTrue(names.Contains("NameEvent"));
         }
 
-        private object DummyFunction(object self, Context context, IList<object> arguments) => null;
+        private object? DummyFunction(object self, Context context, IList<object> arguments) => null;
     }
 }

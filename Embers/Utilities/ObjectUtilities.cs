@@ -17,7 +17,7 @@ public class ObjectUtilities
         type.InvokeMember(name, System.Reflection.BindingFlags.SetProperty | System.Reflection.BindingFlags.SetField | System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, null, obj, [value]);
     }
 
-    public static object GetValue(object obj, string name)
+    public static object? GetValue(object obj, string name)
     {
         Type type = obj.GetType();
 
@@ -46,7 +46,7 @@ public class ObjectUtilities
 
     public static IList<string> GetNames(object obj) => TypeUtilities.GetNames(obj.GetType());
 
-    public static object GetNativeValue(object obj, string name, IList<object> arguments)
+    public static object? GetNativeValue(object obj, string name, IList<object> arguments)
     {
         Type type = obj.GetType();
 

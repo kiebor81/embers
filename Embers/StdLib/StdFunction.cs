@@ -12,9 +12,9 @@ namespace Embers.StdLib;
 [ScannerIgnore]
 public abstract class StdFunction : IFunction
 {
-    public abstract object Apply(DynamicObject self, Context context, IList<object> values);
+    public abstract object? Apply(DynamicObject self, Context context, IList<object> values);
 
-    public virtual object ApplyWithBlock(DynamicObject self, Context context, IList<object> values, IFunction block)
+    public virtual object? ApplyWithBlock(DynamicObject self, Context context, IList<object> values, IFunction block)
     {
         var previous = context.Block;
 
