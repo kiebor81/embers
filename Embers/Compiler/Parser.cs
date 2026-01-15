@@ -102,21 +102,24 @@ public class Parser
     {
         var result = ParseBinaryExpression(0);
 
+        if (result == null)
+            return null;
+
         if (result is not NameExpression)
-            return result;
+            return ApplyPostfixChain(result);
 
         var nexpr = (NameExpression)result;
 
         if (TryParseToken(TokenType.Separator, "{"))
-            return new CallExpression(nexpr.Name, [ParseBlockExpression(true)]);
+            return ApplyPostfixChain(new CallExpression(nexpr.Name, [ParseBlockExpression(true)]));
 
         if (TryParseName("do"))
-            return new CallExpression(nexpr.Name, [ParseBlockExpression()]);
+            return ApplyPostfixChain(new CallExpression(nexpr.Name, [ParseBlockExpression()]));
 
         if (!NextTokenStartsExpressionList())
-            return result;
+            return ApplyPostfixChain(result);
 
-        return new CallExpression(((NameExpression)result).Name, ParseExpressionListWithBlockArgs());
+        return ApplyPostfixChain(new CallExpression(((NameExpression)result).Name, ParseExpressionListWithBlockArgs()));
     }
 
     private IfExpression ParseIfExpression()
@@ -600,16 +603,16 @@ public class Parser
         if (expression == null)
             return null;
 
+        return ApplyPostfixChain(expression);
+    }
+
+    private IExpression ApplyPostfixChain(IExpression expression)
+    {
         while (true)
         {
             if (TryParseToken(TokenType.Separator, "."))
             {
                 string name = ParseName();
-
-                //IList<IExpression> args = [];
-
-                //if (NextTokenStartsExpressionList())
-                //    args = ParseExpressionList();
 
                 if (TryParseToken(TokenType.Separator, "{"))
                     expression = new DotExpression(expression, name, [ParseBlockExpression(true)]);

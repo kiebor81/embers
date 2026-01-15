@@ -286,6 +286,50 @@ namespace Embers.Tests
         }
 
         [TestMethod]
+        public void Execute_PutsWithParenDotExpression_Parses()
+        {
+            StringWriter writer = new();
+            machine.RootContext.Self.Class.SetInstanceMethod("puts", new PutsFunction(writer));
+
+            var result = machine.ExecuteText("puts (3/1).to_s");
+
+            Assert.AreEqual("3" + Environment.NewLine, writer.ToString());
+        }
+
+        [TestMethod]
+        public void Execute_PutsWithNegativeParenDotExpression_Parses()
+        {
+            StringWriter writer = new();
+            machine.RootContext.Self.Class.SetInstanceMethod("puts", new PutsFunction(writer));
+
+            var result = machine.ExecuteText("puts (-1).to_s");
+
+            Assert.AreEqual("-1" + Environment.NewLine, writer.ToString());
+        }
+
+        [TestMethod]
+        public void Execute_PutsWithDateParenDotExpression_Parses()
+        {
+            StringWriter writer = new();
+            machine.RootContext.Self.Class.SetInstanceMethod("puts", new PutsFunction(writer));
+
+            var result = machine.ExecuteText("puts (parse_date('2026-01-10')).to_s");
+
+            StringAssert.Contains(writer.ToString(), "2026");
+        }
+
+        [TestMethod]
+        public void Execute_PutsWithBlockThenDotExpression_Parses()
+        {
+            StringWriter writer = new();
+            machine.RootContext.Self.Class.SetInstanceMethod("puts", new PutsFunction(writer));
+
+            var result = machine.ExecuteText("puts ([1, 2].map { |x| x }).inspect");
+
+            Assert.AreEqual("[1, 2]" + Environment.NewLine, writer.ToString());
+        }
+
+        [TestMethod]
         public void Execute_WithDivideExpression_ExecutesText()
         {
             var result = machine.Execute("f = 3/2");
