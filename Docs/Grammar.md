@@ -270,6 +270,26 @@ if x > 0 then
 end
 ```
 
+### Unless
+
+Execute code when a condition is false:
+
+```
+unless logged_in
+  puts "Please sign in"
+end
+```
+
+An `else` clause can be used to run code when the condition is true:
+
+```
+unless enabled
+  puts "Disabled"
+else
+  puts "Enabled"
+end
+```
+
 ### While Loops
 
 Execute a block repeatedly `while` a condition is true:
@@ -342,6 +362,20 @@ def find_value
   return 42 if condition
   return -1
 end
+```
+
+### Ternary Expressions
+
+Use `?:` for inline conditional expressions:
+
+```
+label = age >= 18 ? "adult" : "minor"
+```
+
+Ternary expressions return a value and can be nested with parentheses for clarity:
+
+```
+status = ok ? "ok" : (warning ? "warning" : "error")
 ```
 
 ## Methods and Functions
