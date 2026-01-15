@@ -46,10 +46,7 @@ public class PFunction(TextWriter writer) : StdFunction
                 return null;
 
             foreach (var value in values)
-            {
-                var s = Inspect(value);
-                writer.WriteLine(s);
-            }
+                writer.WriteLine(InspectUtils.Inspect(value));
 
             return (values.Count == 1 ? values[0] : new List<object>(values)).ToString();
         }
@@ -60,27 +57,6 @@ public class PFunction(TextWriter writer) : StdFunction
         }
     }
 
-    private static string Inspect(object? value)
-    {
-        if (value == null) return "nil";
-
-        // Strings: quote like Ruby
-        if (value is string str)
-            return $"\"{Escape(str)}\"";
-
-        // Lists: [a, b]
-        if (value is IEnumerable<object> list && value is not string)
-            return "[" + string.Join(", ", list.Select(Inspect)) + "]";
-
-        // Dictionaries: {k=>v}
-        if (value is IDictionary<object, object> dict)
-            return "{" + string.Join(", ", dict.Select(kv => $"{Inspect(kv.Key)}=>{Inspect(kv.Value)}")) + "}";
-
-        // Fallback
-        return value.ToString() ?? value.GetType().Name;
-    }
-
-    private static string Escape(string s) =>
-        s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t");
+    
 }
 

@@ -5,6 +5,7 @@ using Embers.Functions;
 using Embers.Language;
 using Embers.Security;
 using Embers.Signals;
+using Embers.StdLib.Conversion;
 
 namespace Embers;
 
@@ -48,6 +49,8 @@ public class Machine
         basicobjectclass.SetInstanceMethod("class", new LambdaFunction(GetClass));
         basicobjectclass.SetInstanceMethod("methods", new LambdaFunction(GetMethods));
         basicobjectclass.SetInstanceMethod("singleton_methods", new LambdaFunction(GetSingletonMethods));
+
+        objectclass.SetInstanceMethod("inspect", new InspectFunction());
 
         moduleclass.SetInstanceMethod("superclass", new LambdaFunction(GetSuperClass));
         moduleclass.SetInstanceMethod("name", new LambdaFunction(GetName));

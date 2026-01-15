@@ -206,5 +206,49 @@ namespace Embers.Tests.StdLib.Conversion
             var result = machine.ExecuteText("42.to_string");
             Assert.AreEqual("42", result);
         }
+
+        // inspect tests
+        [TestMethod]
+        public void Fixnum_InspectMethod_ReturnsNumberString()
+        {
+            var result = machine.ExecuteText("42.inspect");
+            Assert.AreEqual("42", result);
+        }
+
+        [TestMethod]
+        public void String_InspectMethod_ReturnsQuotedString()
+        {
+            var result = machine.ExecuteText("'hello'.inspect");
+            Assert.AreEqual("\"hello\"", result);
+        }
+
+        [TestMethod]
+        public void Array_InspectMethod_ReturnsBracketedList()
+        {
+            var result = machine.ExecuteText("[1, 2].inspect");
+            Assert.AreEqual("[1, 2]", result);
+        }
+
+        [TestMethod]
+        public void Hash_InspectMethod_ReturnsKeyValuePairs()
+        {
+            var result = machine.ExecuteText("{:a => 1}.inspect");
+            Assert.AreEqual("{:a=>1}", result);
+        }
+
+        [TestMethod]
+        public void Nil_InspectMethod_ReturnsNilLiteral()
+        {
+            var result = machine.ExecuteText("nil.inspect");
+            Assert.AreEqual("nil", result);
+        }
+
+        [TestMethod]
+        public void Object_InspectMethod_ReturnsObjectTag()
+        {
+            var result = machine.ExecuteText("class Foo; end; Foo.new.inspect");
+            Assert.IsInstanceOfType(result, typeof(string));
+            StringAssert.Contains((string)result, "Foo");
+        }
     }
 }

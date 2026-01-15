@@ -36,7 +36,7 @@ public sealed class EmbersHost
         => Task.Run(() =>
         {
             ct.ThrowIfCancellationRequested();
-            return _machine.Execute(code);
+            return _machine.ExecuteText(code);
         }, ct);
 
     public void AddReferenceAssembly(string path)
