@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Embers.Annotations;
+using Embers.Exceptions;
 using Embers.ISE.Services;
 using Embers.ISE.Models;
 using Embers.ISE.Views;
@@ -427,7 +428,8 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            _console?.WriteError("[Error] ");
+            var errorLabel = ex is BaseError ? ex.GetType().Name : "Error";
+            _console?.WriteError($"[{errorLabel}] ");
             _console?.WriteLine(ex.Message, ConsoleColor.Red);
         }
     }

@@ -168,9 +168,10 @@
               <StackPanel Spacing="6">
                 <TextBlock Text="Allow types or namespaces (use 'My.Namespace.*')."
                            Foreground="#A0A0A0"
-                           FontSize="11"/>
+                           FontSize="10"/>
                 <StackPanel Orientation="Horizontal" Spacing="6">
                   <TextBox Width="190"
+                           FontSize="10"
                            Text="{Binding NewWhitelistEntry}"
                            Watermark="MyApp.Type or MyApp.Namespace.*"/>
                   <Button Content="Add" Command="{Binding AddWhitelistEntryCommand}" Padding="10,4"/>
