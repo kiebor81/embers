@@ -1,6 +1,5 @@
 using Embers.Language;
 using System.Collections;
-using System.Linq;
 
 namespace Embers.Tests.StdLib.Hashes
 {

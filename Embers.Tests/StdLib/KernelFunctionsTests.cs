@@ -1,5 +1,4 @@
 using Embers.Exceptions;
-using System.IO;
 
 namespace Embers.Tests.StdLib
 {

@@ -1,4 +1,3 @@
-using System;
 using Embers.Exceptions;
 using Embers.Functions;
 

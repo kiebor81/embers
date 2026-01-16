@@ -135,9 +135,9 @@ public partial class MainWindow : Window
         await dialog.ShowDialog(this);
     }
 
-    private void OnEditorKeyDown(object? sender, KeyEventArgs e)
+    private void OnEditorKeyDown(TextEditor editor, KeyEventArgs e)
     {
-        if (sender is not TextEditor editor || editor.Document == null) return;
+        if (editor.Document == null) return;
 
         if (e.Key == Key.Escape)
         {
@@ -155,6 +155,11 @@ public partial class MainWindow : Window
             else if (e.Key == Key.U)
             {
                 UncommentSelection(editor);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.F)
+            {
+                FormatSelection(editor);
                 e.Handled = true;
             }
 
@@ -248,6 +253,36 @@ public partial class MainWindow : Window
         return (startLine, endLine);
     }
 
+    private void FormatSelection(TextEditor editor)
+    {
+        if (editor.Document == null) return;
+        if (editor.SelectionLength == 0) return;
+
+        var document = editor.Document;
+        var (startLineNumber, endLineNumber) = GetSelectedLineRange(editor);
+        var startLine = document.GetLineByNumber(startLineNumber);
+        var endLine = document.GetLineByNumber(endLineNumber);
+
+        var startOffset = startLine.Offset;
+        var endOffset = endLine.EndOffset;
+        var length = endOffset - startOffset;
+        if (length <= 0) return;
+
+        var selectedText = document.GetText(startOffset, length);
+        var baseIndent = CountLeadingWhitespace(document.GetText(startLine));
+        var formatted = EmbersFormatter.FormatText(selectedText, baseIndent);
+
+        document.BeginUpdate();
+        try
+        {
+            document.Replace(startOffset, length, formatted);
+        }
+        finally
+        {
+            document.EndUpdate();
+        }
+    }
+
     private static int CountLeadingWhitespace(string text)
     {
         var count = 0;
@@ -268,6 +303,26 @@ public partial class MainWindow : Window
         _activeEditor.Focus();
         _activeEditor.TextArea?.Focus();
         _activeEditor.SelectAll();
+    }
+
+    private void OnFormatDocument(object? sender, RoutedEventArgs e)
+    {
+        _ = sender;
+        _ = e;
+        if (_activeEditor?.Document == null) return;
+
+        var document = _activeEditor.Document;
+        var formatted = EmbersFormatter.FormatText(document.Text);
+
+        document.BeginUpdate();
+        try
+        {
+            document.Replace(0, document.TextLength, formatted);
+        }
+        finally
+        {
+            document.EndUpdate();
+        }
     }
 
     private void OnRunSelection(object? sender, RoutedEventArgs e)
@@ -364,7 +419,7 @@ public partial class MainWindow : Window
 
         editor.TextArea.TextEntered += (_, args) => OnEditorTextEntered(editor, args);
         editor.TextArea.TextEntering += (_, args) => OnEditorTextEntering(editor, args);
-        editor.TextArea.AddHandler(InputElement.KeyDownEvent, OnEditorKeyDown, RoutingStrategies.Tunnel);
+        editor.TextArea.AddHandler(InputElement.KeyDownEvent, (_, args) => OnEditorKeyDown(editor, args), RoutingStrategies.Tunnel);
         editor.TextChanged += OnEditorTextChanged;
 
         _configuredEditors.Add(editor);
