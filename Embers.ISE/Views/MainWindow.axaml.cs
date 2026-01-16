@@ -2,12 +2,14 @@ using Embers.ISE.Services;
 using Embers.ISE.ViewModels;
 using Embers.ISE.Controls;
 using Embers.ISE.Models;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using AvaloniaEdit;
 using AvaloniaEdit.CodeCompletion;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using AvaloniaEdit.Document;
 using AvaloniaEdit.Folding;
@@ -16,10 +18,10 @@ namespace Embers.ISE.Views;
 
 public partial class MainWindow : Window
 {
-    private bool _isUpdating;
-    private TextEditor? _editor;
+    private TextEditor? _activeEditor;
     private CompletionWindow? _completionWindow;
-    private FoldingManager? _foldingManager;
+    private readonly Dictionary<TextEditor, FoldingManager> _foldingManagers = new();
+    private readonly HashSet<TextEditor> _configuredEditors = new();
     private readonly EmbersFoldingStrategy _foldingStrategy = new();
     private bool _pendingCtrlK;
 
@@ -31,55 +33,6 @@ public partial class MainWindow : Window
 
     private void OnWindowOpened(object? sender, EventArgs e)
     {
-        var editor = this.FindControl<TextEditor>("Editor");
-        _editor = editor;
-        
-        if (editor != null)
-        {
-            Debug.WriteLine("Applying editor configuration...");
-            EditorConfiguration.ApplyEmbersHighlighting(editor);
-            EditorConfiguration.ApplyDarkTheme(editor);
-            Debug.WriteLine("Editor configuration applied");
-
-            if (DataContext is MainWindowViewModel vm)
-            {
-                editor.Document ??= new TextDocument();
-                editor.Document.Text = vm.EditorText ?? string.Empty;
-                _foldingManager = FoldingManager.Install(editor.TextArea);
-                _foldingStrategy.UpdateFoldings(_foldingManager, editor.Document);
-
-                editor.TextArea.TextEntered += OnEditorTextEntered;
-                editor.TextArea.TextEntering += OnEditorTextEntering;
-                editor.TextArea.AddHandler(InputElement.KeyDownEvent, OnEditorKeyDown, RoutingStrategies.Tunnel);
-
-                editor.TextChanged += (s, args) =>
-                {
-                    if (_isUpdating) return;
-                    _isUpdating = true;
-                    vm.EditorText = editor.Document?.Text ?? string.Empty;
-                    if (_foldingManager != null && editor.Document != null)
-                        _foldingStrategy.UpdateFoldings(_foldingManager, editor.Document);
-                    _isUpdating = false;
-                };
-
-                vm.PropertyChanged += (s, args) =>
-                {
-                    if (args.PropertyName != nameof(vm.EditorText)) return;
-                    if (_isUpdating) return;
-
-                    var newText = vm.EditorText ?? string.Empty;
-                    if (editor.Document?.Text == newText) return;
-
-                    _isUpdating = true;
-                    editor.Document ??= new TextDocument();
-                    editor.Document.Text = newText;
-                    if (_foldingManager != null)
-                        _foldingStrategy.UpdateFoldings(_foldingManager, editor.Document);
-                    _isUpdating = false;
-                };
-            }
-        }
-
         if (DataContext is MainWindowViewModel viewModel)
         {
             var console = this.FindControl<ColorizedConsole>("Console");
@@ -94,11 +47,11 @@ public partial class MainWindow : Window
 
     private void InsertFunctionName(string name)
     {
-        if (_editor?.Document == null) return;
+        if (_activeEditor?.Document == null) return;
 
-        var offset = _editor.CaretOffset;
-        _editor.Document.Insert(offset, name);
-        _editor.CaretOffset = offset + name.Length;
+        var offset = _activeEditor.CaretOffset;
+        _activeEditor.Document.Insert(offset, name);
+        _activeEditor.CaretOffset = offset + name.Length;
     }
 
     private void OnFunctionItemPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -121,28 +74,29 @@ public partial class MainWindow : Window
         }
     }
 
-    private void OnEditorTextEntered(object? sender, TextInputEventArgs e)
+    private void OnEditorTextEntered(TextEditor editor, TextInputEventArgs e)
     {
-        if (_editor?.Document == null) return;
+        if (editor.Document == null) return;
 
         if (e.Text == ".")
         {
-            ShowCompletion();
+            ShowCompletion(editor);
             return;
         }
 
         if (e.Text == ":")
         {
-            var offset = _editor.CaretOffset;
-            if (offset >= 2 && _editor.Document.GetText(offset - 2, 2) == "::")
+            var offset = editor.CaretOffset;
+            if (offset >= 2 && editor.Document.GetText(offset - 2, 2) == "::")
             {
-                ShowCompletion();
+                ShowCompletion(editor);
             }
         }
     }
 
-    private void OnEditorTextEntering(object? sender, TextInputEventArgs e)
+    private void OnEditorTextEntering(TextEditor editor, TextInputEventArgs e)
     {
+        _ = editor;
         if (_completionWindow == null) return;
         if (string.IsNullOrEmpty(e.Text)) return;
 
@@ -153,16 +107,16 @@ public partial class MainWindow : Window
         }
     }
 
-    private void ShowCompletion()
+    private void ShowCompletion(TextEditor editor)
     {
-        if (_editor?.Document == null) return;
+        if (editor.Document == null) return;
 
         _completionWindow?.Close();
-        _completionWindow = new CompletionWindow(_editor.TextArea);
+        _completionWindow = new CompletionWindow(editor.TextArea);
         _completionWindow.Closed += (_, _) => _completionWindow = null;
 
         var data = _completionWindow.CompletionList.CompletionData;
-        var completions = CompletionService.GetCompletions(_editor.Document.Text, _editor.CaretOffset);
+        var completions = CompletionService.GetCompletions(editor.Document.Text, editor.CaretOffset);
         if (completions.Count == 0)
             return;
 
@@ -183,7 +137,7 @@ public partial class MainWindow : Window
 
     private void OnEditorKeyDown(object? sender, KeyEventArgs e)
     {
-        if (_editor?.Document == null) return;
+        if (sender is not TextEditor editor || editor.Document == null) return;
 
         if (e.Key == Key.Escape)
         {
@@ -195,12 +149,12 @@ public partial class MainWindow : Window
         {
             if (e.Key == Key.C)
             {
-                CommentSelection();
+                CommentSelection(editor);
                 e.Handled = true;
             }
             else if (e.Key == Key.U)
             {
-                UncommentSelection();
+                UncommentSelection(editor);
                 e.Handled = true;
             }
 
@@ -215,12 +169,12 @@ public partial class MainWindow : Window
         }
     }
 
-    private void CommentSelection()
+    private void CommentSelection(TextEditor editor)
     {
-        if (_editor?.Document == null) return;
+        if (editor.Document == null) return;
 
-        var document = _editor.Document;
-        var (startLine, endLine) = GetSelectedLineRange();
+        var document = editor.Document;
+        var (startLine, endLine) = GetSelectedLineRange(editor);
 
         document.BeginUpdate();
         try
@@ -239,12 +193,12 @@ public partial class MainWindow : Window
         }
     }
 
-    private void UncommentSelection()
+    private void UncommentSelection(TextEditor editor)
     {
-        if (_editor?.Document == null) return;
+        if (editor.Document == null) return;
 
-        var document = _editor.Document;
-        var (startLine, endLine) = GetSelectedLineRange();
+        var document = editor.Document;
+        var (startLine, endLine) = GetSelectedLineRange(editor);
 
         document.BeginUpdate();
         try
@@ -273,13 +227,13 @@ public partial class MainWindow : Window
         }
     }
 
-    private (int StartLine, int EndLine) GetSelectedLineRange()
+    private (int StartLine, int EndLine) GetSelectedLineRange(TextEditor editor)
     {
-        if (_editor?.Document == null) return (1, 1);
+        if (editor.Document == null) return (1, 1);
 
-        var document = _editor.Document;
-        var selectionStart = _editor.SelectionStart;
-        var selectionLength = _editor.SelectionLength;
+        var document = editor.Document;
+        var selectionStart = editor.SelectionStart;
+        var selectionLength = editor.SelectionLength;
         var selectionEnd = selectionStart + selectionLength;
 
         var startLine = document.GetLineByOffset(selectionStart).LineNumber;
@@ -302,24 +256,24 @@ public partial class MainWindow : Window
         return count;
     }
 
-    private void OnEditorCut(object? sender, RoutedEventArgs e) => _editor?.Cut();
+    private void OnEditorCut(object? sender, RoutedEventArgs e) => _activeEditor?.Cut();
 
-    private void OnEditorCopy(object? sender, RoutedEventArgs e) => _editor?.Copy();
+    private void OnEditorCopy(object? sender, RoutedEventArgs e) => _activeEditor?.Copy();
 
-    private void OnEditorPaste(object? sender, RoutedEventArgs e) => _editor?.Paste();
+    private void OnEditorPaste(object? sender, RoutedEventArgs e) => _activeEditor?.Paste();
 
     private void OnEditorSelectAll(object? sender, RoutedEventArgs e)
     {
-        if (_editor?.Document == null) return;
-        _editor.Focus();
-        _editor.TextArea?.Focus();
-        _editor.SelectAll();
+        if (_activeEditor?.Document == null) return;
+        _activeEditor.Focus();
+        _activeEditor.TextArea?.Focus();
+        _activeEditor.SelectAll();
     }
 
     private void OnRunSelection(object? sender, RoutedEventArgs e)
     {
         if (DataContext is not MainWindowViewModel viewModel) return;
-        var selection = _editor?.SelectedText ?? string.Empty;
+        var selection = _activeEditor?.SelectedText ?? string.Empty;
         viewModel.RunSelectionCommand.Execute(selection);
     }
 
@@ -353,9 +307,97 @@ public partial class MainWindow : Window
 
         if (e.Key == Key.F6)
         {
-            var selection = _editor?.SelectedText ?? string.Empty;
+            var selection = _activeEditor?.SelectedText ?? string.Empty;
             viewModel.RunSelectionCommand.Execute(selection);
             e.Handled = true;
         }
+    }
+
+    private void OnTabHeaderPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel viewModel) return;
+        if (sender is not Control control) return;
+        if (control.DataContext is not DocumentTab tab) return;
+
+        var properties = e.GetCurrentPoint(control).Properties;
+        if (properties.IsRightButtonPressed) return;
+
+        viewModel.SelectedTab = tab;
+        e.Handled = true;
+    }
+
+    private void OnScrollTabsLeft(object? sender, RoutedEventArgs e)
+    {
+        _ = sender;
+        _ = e;
+        var scroll = this.FindControl<ScrollViewer>("TabScroll");
+        if (scroll == null) return;
+
+        var next = Math.Max(0, scroll.Offset.X - 200);
+        scroll.Offset = new Vector(next, scroll.Offset.Y);
+    }
+
+    private void OnScrollTabsRight(object? sender, RoutedEventArgs e)
+    {
+        _ = sender;
+        _ = e;
+        var scroll = this.FindControl<ScrollViewer>("TabScroll");
+        if (scroll == null) return;
+
+        scroll.Offset = new Vector(scroll.Offset.X + 200, scroll.Offset.Y);
+    }
+
+    private void OnEditorLoaded(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not TextEditor editor) return;
+        if (_configuredEditors.Contains(editor)) return;
+
+        Debug.WriteLine("Applying editor configuration...");
+        EditorConfiguration.ApplyEmbersHighlighting(editor);
+        EditorConfiguration.ApplyDarkTheme(editor);
+        Debug.WriteLine("Editor configuration applied");
+
+        editor.Document ??= new TextDocument();
+        var foldingManager = FoldingManager.Install(editor.TextArea);
+        _foldingManagers[editor] = foldingManager;
+        _foldingStrategy.UpdateFoldings(foldingManager, editor.Document);
+
+        editor.TextArea.TextEntered += (_, args) => OnEditorTextEntered(editor, args);
+        editor.TextArea.TextEntering += (_, args) => OnEditorTextEntering(editor, args);
+        editor.TextArea.AddHandler(InputElement.KeyDownEvent, OnEditorKeyDown, RoutingStrategies.Tunnel);
+        editor.TextChanged += OnEditorTextChanged;
+
+        _configuredEditors.Add(editor);
+
+        if (_activeEditor == null)
+            _activeEditor = editor;
+    }
+
+    private void OnEditorUnloaded(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not TextEditor editor) return;
+
+        if (_foldingManagers.TryGetValue(editor, out var foldingManager))
+        {
+            FoldingManager.Uninstall(foldingManager);
+            _foldingManagers.Remove(editor);
+        }
+
+        _configuredEditors.Remove(editor);
+        if (ReferenceEquals(_activeEditor, editor))
+            _activeEditor = null;
+    }
+
+    private void OnEditorTextChanged(object? sender, EventArgs e)
+    {
+        if (sender is not TextEditor editor || editor.Document == null) return;
+        if (_foldingManagers.TryGetValue(editor, out var foldingManager))
+            _foldingStrategy.UpdateFoldings(foldingManager, editor.Document);
+    }
+
+    private void OnEditorGotFocus(object? sender, GotFocusEventArgs e)
+    {
+        if (sender is TextEditor editor)
+            _activeEditor = editor;
     }
 }

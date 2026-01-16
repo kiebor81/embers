@@ -21,14 +21,26 @@ public sealed class MainWindowViewModel : ViewModelBase
 {
     private readonly EmbersHost _host = new();
     private CancellationTokenSource? _cts;
-    private string? _currentFile;
     private ConsoleWriter? _console;
+    private int _untitledCounter = 1;
 
-    private string _editorText = "";
-    public string EditorText
+    public ObservableCollection<DocumentTab> Tabs { get; } = [];
+
+    private DocumentTab? _selectedTab;
+    public DocumentTab? SelectedTab
     {
-        get => _editorText;
-        set => Set(ref _editorText, value);
+        get => _selectedTab;
+        set
+        {
+            if (ReferenceEquals(_selectedTab, value)) return;
+            if (_selectedTab != null)
+                _selectedTab.IsSelected = false;
+
+            Set(ref _selectedTab, value);
+
+            if (_selectedTab != null)
+                _selectedTab.IsSelected = true;
+        }
     }
 
     public ObservableCollection<FunctionListItem> StdLibFunctions { get; } = [];
@@ -130,6 +142,8 @@ public sealed class MainWindowViewModel : ViewModelBase
     public ICommand SaveCommand { get; }
     public ICommand NewCommand { get; }
     public ICommand ClearEditorCommand { get; }
+    public ICommand CloseTabCommand { get; }
+    public ICommand CloseAllTabsCommand { get; }
     public ICommand AddReferenceCommand { get; }
     public ICommand ToggleRightPanelCommand { get; }
     public ICommand RemoveReferenceCommand { get; }
@@ -151,6 +165,8 @@ public sealed class MainWindowViewModel : ViewModelBase
         SaveCommand = new AsyncCommand(SaveAsync);
         NewCommand = new Commands(NewScript);
         ClearEditorCommand = new Commands(ClearEditor);
+        CloseTabCommand = new ParameterCommand(CloseTab);
+        CloseAllTabsCommand = new Commands(CloseAllTabs);
         AddReferenceCommand = new AsyncCommand(AddReferenceAsync);
         ToggleRightPanelCommand = new Commands(ToggleRightPanel);
         RemoveReferenceCommand = new ParameterCommand(RemoveReference);
@@ -164,16 +180,22 @@ public sealed class MainWindowViewModel : ViewModelBase
 
         RefreshFunctionLists();
         ApplySecurityPolicy();
+        NewScript();
     }
 
     private void NewScript()
     {
-        _currentFile = null;
-        EditorText = string.Empty;
+        var tab = new DocumentTab($"Untitled {_untitledCounter++}");
+        Tabs.Add(tab);
+        SelectedTab = tab;
         _console?.WriteInfo("[New] Ready for a new script.\n");
     }
 
-    private void ClearEditor() => EditorText = string.Empty;
+    private void ClearEditor()
+    {
+        if (SelectedTab == null) return;
+        SelectedTab.Text = string.Empty;
+    }
 
     public void SetConsoleWriter(ConsoleWriter console) => _console = console;
 
@@ -202,15 +224,24 @@ public sealed class MainWindowViewModel : ViewModelBase
         if (files.Count == 0) return;
 
         var file = files[0];
-        _currentFile = file.Path.LocalPath;
-        EditorText = await File.ReadAllTextAsync(_currentFile);
+        var path = file.Path.LocalPath;
+        var contents = await File.ReadAllTextAsync(path);
+        var tab = new DocumentTab(Path.GetFileName(path), path, contents);
+        Tabs.Add(tab);
+        SelectedTab = tab;
         _console?.WriteInfo($"[Opened] ");
-        _console?.WriteLine(_currentFile, ConsoleColor.Cyan);
+        _console?.WriteLine(path, ConsoleColor.Cyan);
     }
 
     private async Task SaveAsync()
     {
-        if (string.IsNullOrWhiteSpace(_currentFile))
+        if (SelectedTab == null)
+        {
+            _console?.WriteWarning("[Save] No active tab.\n");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(SelectedTab.FilePath))
         {
             var window = GetMainWindow();
             var file = await window.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
@@ -231,12 +262,13 @@ public sealed class MainWindowViewModel : ViewModelBase
             });
 
             if (file is null) return;
-            _currentFile = file.Path.LocalPath;
+            SelectedTab.FilePath = file.Path.LocalPath;
+            SelectedTab.Title = Path.GetFileName(SelectedTab.FilePath);
         }
 
-        await File.WriteAllTextAsync(_currentFile!, EditorText);
+        await File.WriteAllTextAsync(SelectedTab.FilePath!, SelectedTab.Text);
         _console?.WriteSuccess($"[Saved] ");
-        _console?.WriteLine(_currentFile, ConsoleColor.Cyan);
+        _console?.WriteLine(SelectedTab.FilePath, ConsoleColor.Cyan);
     }
 
     private async Task AddReferenceAsync()
@@ -305,6 +337,27 @@ public sealed class MainWindowViewModel : ViewModelBase
     }
 
     private void ToggleRightPanel() => IsRightPanelVisible = !IsRightPanelVisible;
+
+    private void CloseTab(object? parameter)
+    {
+        if (parameter is not DocumentTab tab) return;
+        if (!Tabs.Remove(tab)) return;
+
+        if (Tabs.Count == 0)
+        {
+            NewScript();
+            return;
+        }
+
+        if (ReferenceEquals(SelectedTab, tab))
+            SelectedTab = Tabs[^1];
+    }
+
+    private void CloseAllTabs()
+    {
+        Tabs.Clear();
+        NewScript();
+    }
 
     private void RefreshFunctionLists()
     {
@@ -404,7 +457,16 @@ public sealed class MainWindowViewModel : ViewModelBase
         _console?.WriteInfo($"[Security] Mode set to {SelectedSecurityMode}.\n");
     }
 
-    private async Task RunAsync() => await RunTextAsync(EditorText, "Executing script...");
+    private async Task RunAsync()
+    {
+        if (SelectedTab == null)
+        {
+            _console?.WriteWarning("[Run] No active tab to execute.\n");
+            return;
+        }
+
+        await RunTextAsync(SelectedTab.Text, "Executing script...");
+    }
 
     private async Task RunTextAsync(string source, string statusMessage)
     {

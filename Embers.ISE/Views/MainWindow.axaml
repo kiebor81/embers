@@ -1,10 +1,12 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:Embers.ISE.ViewModels"
         xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
         xmlns:controls="clr-namespace:Embers.ISE.Controls"
+        xmlns:behaviors="clr-namespace:Embers.ISE.Behaviors"
+        xmlns:models="clr-namespace:Embers.ISE.Models"
         xmlns:conv="clr-namespace:Embers.ISE.Converters"
         x:Class="Embers.ISE.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -21,6 +23,12 @@
 
   <Window.Resources>
     <conv:EmptyToNullConverter x:Key="EmptyToNullConverter"/>
+    <conv:BoolToBrushConverter x:Key="TabSelectedBackground"
+                               TrueBrush="#4B4B50"
+                               FalseBrush="#3E3E42"/>
+    <conv:BoolToBrushConverter x:Key="TabUnderlineBrush"
+                               TrueBrush="#F5F5F5"
+                               FalseBrush="#6B6B6B"/>
     <conv:PathToFileNameConverter x:Key="PathToFileNameConverter"/>
     <conv:PanelToggleTextConverter x:Key="PanelToggleTextConverter"/>
   </Window.Resources>
@@ -47,6 +55,11 @@
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Text="🗘" Classes="ToolbarIcon" Foreground="#98FB98"/>
           </StackPanel>
+        </Button>        
+        <Button Height="30" Command="{Binding CloseAllTabsCommand}" Padding="8,4" ToolTip.Tip="Close all tabs">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="x" Classes="ToolbarIcon" Foreground="#E05A5A"/>
+          </StackPanel>
         </Button>
         <Button Command="{Binding OpenCommand}" Padding="8,4" ToolTip.Tip="Open script">
           <StackPanel Orientation="Horizontal" Spacing="6">
@@ -66,7 +79,7 @@
         <Separator Width="1" Height="20" Background="#3E3E42"/>
         <Button Command="{Binding RunCommand}" Padding="8,4" ToolTip.Tip="Run (F5)">
           <StackPanel Orientation="Horizontal" Spacing="6">
-            <TextBlock Text="▶" Classes="ToolbarIcon" Foreground="#55C65A"/>
+            <TextBlock Text="▶︎" Classes="ToolbarIcon" Foreground="#55C65A"/>
             <TextBlock Text="(F5)"/>
           </StackPanel>
         </Button>
@@ -103,25 +116,95 @@
       </Grid.ColumnDefinitions>
       <!-- Left: editor + console -->
       <Grid Column="0" RowDefinitions="*,Auto,220">
-        <!-- Editor -->
-        <ae:TextEditor Grid.Row="0"
-                       Name="Editor"
-                       ShowLineNumbers="True"
-                       FontFamily="Consolas, Courier New, monospace"
-                       FontSize="14"
-                       WordWrap="False"
-                       IsReadOnly="False"
-                       HorizontalScrollBarVisibility="Auto"
-                       VerticalScrollBarVisibility="Auto">
-          <ae:TextEditor.ContextMenu>
-            <ContextMenu>
-              <MenuItem Header="Cut" Click="OnEditorCut"/>
-              <MenuItem Header="Copy" Click="OnEditorCopy"/>
-              <MenuItem Header="Paste" Click="OnEditorPaste"/>
-              <MenuItem Header="Select All" Click="OnEditorSelectAll"/>
-            </ContextMenu>
-          </ae:TextEditor.ContextMenu>
-        </ae:TextEditor>
+        <!-- Editor Tabs -->
+        <Grid Grid.Row="0" RowDefinitions="Auto,*">
+          <DockPanel Background="#2D2D30" Height="32">
+            <Button DockPanel.Dock="Left"
+                    Width="24"
+                    Height="24"
+                    Margin="4,3"
+                    Content="&lt;"
+                    FontSize="8"
+                    Click="OnScrollTabsLeft"/>
+            <Button DockPanel.Dock="Right"
+                    Width="24"
+                    Height="24"
+                    Margin="4,3"
+                    Content="&gt;"
+                    FontSize="8"
+                    Click="OnScrollTabsRight"/>
+            <ScrollViewer Name="TabScroll"
+                          Height="30"
+                          HorizontalScrollBarVisibility="Hidden"
+                          VerticalScrollBarVisibility="Disabled"
+                          Margin="4,0"
+                          VerticalAlignment="Center">
+              <ItemsControl ItemsSource="{Binding Tabs}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="models:DocumentTab">
+                    <Border Background="{Binding IsSelected, Converter={StaticResource TabSelectedBackground}}"
+                            Padding="8,4,8,0"
+                            Margin="2,3"
+                            CornerRadius="3"
+                            PointerPressed="OnTabHeaderPointerPressed">
+                      <Grid RowDefinitions="Auto,2">
+                        <DockPanel Grid.Row="0">
+                          <TextBlock Text="{Binding Title}"
+                                     FontSize="10"
+                                     VerticalAlignment="Center"
+                                     Margin="0,0,8,0"/>
+                          <Button Content="x"
+                                  Padding="4,0"
+                                  Background="#C62828"
+                                  Foreground="#FFFFFF"
+                                  x:CompileBindings="False"
+                                  FontSize="10"
+                                  Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                  CommandParameter="{Binding}"/>
+                        </DockPanel>
+                        <Border Grid.Row="1" Height="1" Margin="-7,2,-7,0"
+                                Background="{Binding IsSelected, Converter={StaticResource TabUnderlineBrush}}"/>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+          </DockPanel>
+
+          <ContentControl Grid.Row="1"
+                          Content="{Binding SelectedTab}">
+            <ContentControl.ContentTemplate>
+              <DataTemplate x:DataType="models:DocumentTab">
+                <ae:TextEditor ShowLineNumbers="True"
+                               FontFamily="Consolas, Courier New, monospace"
+                               FontSize="14"
+                               WordWrap="False"
+                               IsReadOnly="False"
+                               HorizontalScrollBarVisibility="Auto"
+                               VerticalScrollBarVisibility="Auto"
+                               behaviors:TextEditorBindingBehavior.Text="{Binding Text, Mode=TwoWay}"
+                               Loaded="OnEditorLoaded"
+                               Unloaded="OnEditorUnloaded"
+                               GotFocus="OnEditorGotFocus">
+                  <ae:TextEditor.ContextMenu>
+                    <ContextMenu>
+                      <MenuItem Header="Cut" Click="OnEditorCut"/>
+                      <MenuItem Header="Copy" Click="OnEditorCopy"/>
+                      <MenuItem Header="Paste" Click="OnEditorPaste"/>
+                      <MenuItem Header="Select All" Click="OnEditorSelectAll"/>
+                    </ContextMenu>
+                  </ae:TextEditor.ContextMenu>
+                </ae:TextEditor>
+              </DataTemplate>
+            </ContentControl.ContentTemplate>
+          </ContentControl>
+        </Grid>
 
         <GridSplitter Grid.Row="1" 
                       Height="6" 
@@ -246,3 +329,5 @@
     </Grid>
   </DockPanel>
 </Window>
+
+
