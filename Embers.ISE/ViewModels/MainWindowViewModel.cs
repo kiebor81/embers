@@ -191,6 +191,54 @@ public sealed class MainWindowViewModel : ViewModelBase
         _console?.WriteInfo("[New] Ready for a new script.\n");
     }
 
+    public IReadOnlyList<string> GetOpenFilePaths()
+    {
+        var result = new List<string>();
+        foreach (var tab in Tabs)
+        {
+            if (string.IsNullOrWhiteSpace(tab.FilePath))
+                continue;
+
+            result.Add(tab.FilePath);
+        }
+
+        return result;
+    }
+
+    public void RestoreTabs(IEnumerable<string> filePaths)
+    {
+        Tabs.Clear();
+        SelectedTab = null;
+
+        foreach (var path in filePaths)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                continue;
+
+            if (!File.Exists(path))
+                continue;
+
+            try
+            {
+                var contents = File.ReadAllText(path);
+                var tab = new DocumentTab(Path.GetFileName(path), path, contents);
+                Tabs.Add(tab);
+            }
+            catch
+            {
+                // Skip unreadable files during restore.
+            }
+        }
+
+        if (Tabs.Count == 0)
+        {
+            NewScript();
+            return;
+        }
+
+        SelectedTab = Tabs[0];
+    }
+
     private void ClearEditor()
     {
         if (SelectedTab == null) return;
