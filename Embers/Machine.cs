@@ -55,6 +55,8 @@ public class Machine
         moduleclass.SetInstanceMethod("superclass", new LambdaFunction(GetSuperClass));
         moduleclass.SetInstanceMethod("name", new LambdaFunction(GetName));
         moduleclass.SetInstanceMethod("include", new LambdaFunction(IncludeModule));
+        moduleclass.SetInstanceMethod("class_variable_get", new LambdaFunction(ClassVariableGet));
+        moduleclass.SetInstanceMethod("class_variable_set", new LambdaFunction(ClassVariableSet));
 
         classclass.SetInstanceMethod("new", new LambdaFunction(NewInstance));
 
@@ -407,6 +409,64 @@ public class Machine
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Gets a class variable by name on a class or module.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    private static object? ClassVariableGet(DynamicObject obj, Context context, IList<object> values)
+    {
+        if (obj is not DynamicClass target)
+            throw new TypeError("class_variable_get can only be called on classes or modules");
+
+        if (values.Count != 1)
+            throw new ArgumentError($"wrong number of arguments (given {values.Count}, expected 1)");
+
+        string name = values[0] switch
+        {
+            Symbol symbol => symbol.Name,
+            string text => text,
+            _ => throw new TypeError("class_variable_get expects a symbol or string")
+        };
+
+        if (!name.StartsWith("@@", StringComparison.Ordinal))
+            throw new NameError("invalid class variable name");
+
+        return target.GetValue(name[2..]);
+    }
+
+    /// <summary>
+    /// Sets a class variable by name on a class or module.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    private static object? ClassVariableSet(DynamicObject obj, Context context, IList<object> values)
+    {
+        if (obj is not DynamicClass target)
+            throw new TypeError("class_variable_set can only be called on classes or modules");
+
+        if (values.Count != 2)
+            throw new ArgumentError($"wrong number of arguments (given {values.Count}, expected 2)");
+
+        string name = values[0] switch
+        {
+            Symbol symbol => symbol.Name,
+            string text => text,
+            _ => throw new TypeError("class_variable_set expects a symbol or string")
+        };
+
+        if (!name.StartsWith("@@", StringComparison.Ordinal))
+            throw new NameError("invalid class variable name");
+
+        var value = values[1];
+        target.SetValue(name[2..], value);
+        return value;
     }
 
     /// <summary>

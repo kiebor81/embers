@@ -164,5 +164,20 @@ namespace Embers.Tests.Language
             ");
             Assert.AreEqual("Alice", result);
         }
+
+        [TestMethod]
+        public void ToJson_ClassIncludesClassVariablesSetInClassBody()
+        {
+            var result = machine.ExecuteText(@"
+                class MyClass
+                  @@value_0 = 3
+                end
+                MyClass.to_json
+            ");
+            Assert.IsInstanceOfType(result, typeof(string));
+            var json = (string)result;
+            Assert.IsTrue(json.Contains("\"value_0\""));
+            Assert.IsTrue(json.Contains("3"));
+        }
     }
 }

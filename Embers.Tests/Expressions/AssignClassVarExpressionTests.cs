@@ -21,6 +21,19 @@ namespace Embers.Tests.Expressions
         }
 
         [TestMethod]
+        public void AssignValue_ClassContext()
+        {
+            AssignClassVarExpression cmd = new("one", new ConstantExpression(1));
+            DynamicClass cls = new(null);
+            Context context = new(cls, null);
+
+            var result = cmd.Evaluate(context);
+
+            Assert.AreEqual(1, result);
+            Assert.AreEqual(1, cls.GetValue("one"));
+        }
+
+        [TestMethod]
         public void GetLocalVariables()
         {
             AssignClassVarExpression cmd = new("one", new ConstantExpression(1));

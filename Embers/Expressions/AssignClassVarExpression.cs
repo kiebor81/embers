@@ -1,3 +1,5 @@
+using Embers.Language;
+
 namespace Embers.Expressions;
 /// <summary>
 /// AssignExpression for setting a class variable in the current context.
@@ -19,7 +21,8 @@ public class AssignClassVarExpression(string name, IExpression expression) : IEx
     public object? Evaluate(Context context)
     {
         object? value = expression.Evaluate(context);
-        context.Self.Class.SetValue(name, value);
+        var target = context.Self is DynamicClass ? context.Self : context.Self.Class;
+        target.SetValue(name, value);
         return value;
     }
 

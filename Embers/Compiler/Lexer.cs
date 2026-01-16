@@ -79,7 +79,7 @@ public class Lexer
             int peek = PeekChar();
 
             // If followed by a valid symbol name character, it's a symbol
-            if (char.IsLetterOrDigit((char)peek) || peek == '_')
+            if (char.IsLetterOrDigit((char)peek) || peek == '_' || peek == '@')
                 return NextSymbol();
 
             // If followed by another colon, it's a namespace separator
@@ -258,7 +258,7 @@ public class Lexer
         string value = string.Empty;
         int ich;
 
-        for (ich = NextChar(); ich >= 0 && ((char)ich == '_' || char.IsLetterOrDigit((char)ich)); ich = NextChar())
+        for (ich = NextChar(); ich >= 0 && ((char)ich == '_' || char.IsLetterOrDigit((char)ich) || (char)ich == '@'); ich = NextChar())
         {
             char ch = (char)ich;
 

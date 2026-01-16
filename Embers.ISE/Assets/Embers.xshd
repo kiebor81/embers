@@ -58,7 +58,7 @@
 
     <!-- Symbols -->
     <Rule color="Symbol">
-      (?&lt;!:):[A-Za-z_]\w*[?!]?
+      (?&lt;!:):[@A-Za-z_][\w@]*[?!]?
     </Rule>
 
     <!-- Numbers -->

@@ -176,6 +176,19 @@ namespace Embers.Tests.Compiler
         }
 
         [TestMethod]
+        public void GetSymbolWithClassVarPrefix()
+        {
+            Lexer lexer = new(":@@value_0");
+            var result = lexer.NextToken();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("@@value_0", result.Value);
+            Assert.AreEqual(TokenType.Symbol, result.Type);
+
+            Assert.IsNull(lexer.NextToken());
+        }
+
+        [TestMethod]
         public void GetSymbolWithInitialUnderscore()
         {
             Lexer lexer = new(":_123");

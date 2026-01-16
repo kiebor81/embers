@@ -1305,6 +1305,19 @@ namespace Embers.Tests.Compiler
 
             Assert.IsNull(parser.ParseCommand());
         }
+
+        [TestMethod]
+        public void ParseClassVarSymbol()
+        {
+            Parser parser = new(":@@value_0");
+            var expected = new ConstantExpression(new Symbol("@@value_0"));
+            var result = parser.ParseExpression();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseExpression());
+        }
     }
 }
 

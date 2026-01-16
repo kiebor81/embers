@@ -30,6 +30,17 @@ namespace Embers.Tests.Expressions
         }
 
         [TestMethod]
+        public void EvaluateDefinedClassVar_FromClassContext()
+        {
+            ClassVarExpression expr = new("one");
+            DynamicClass cls = new(null);
+            cls.SetValue("one", 1);
+            Context context = new(cls, null);
+
+            Assert.AreEqual(1, expr.Evaluate(context));
+        }
+
+        [TestMethod]
         public void Equals()
         {
             ClassVarExpression expr1 = new("one");

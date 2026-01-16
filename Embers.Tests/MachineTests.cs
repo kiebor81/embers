@@ -425,5 +425,47 @@ namespace Embers.Tests
             Assert.IsNotNull(result);
             Assert.AreSame(machine.RootContext.Self, result);
         }
+
+        [TestMethod]
+        public void ClassVariableGetWithString()
+        {
+            Machine machine = new();
+
+            var result = machine.ExecuteText("class MyClass; @@value_0 = 0; end; MyClass.class_variable_get('@@value_0')");
+
+            Assert.AreEqual(0L, result);
+        }
+
+        [TestMethod]
+        public void ClassVariableGetWithSymbol()
+        {
+            Machine machine = new();
+
+            var result = machine.ExecuteText("class MyClass; @@value_0 = 1; end; MyClass.class_variable_get(:@@value_0)");
+
+            Assert.AreEqual(1L, result);
+        }
+
+        [TestMethod]
+        public void ClassVariableSetWithString()
+        {
+            Machine machine = new();
+
+            var result = machine.ExecuteText("class MyClass; end; MyClass.class_variable_set('@@value_0', 2)");
+
+            Assert.AreEqual(2L, result);
+            Assert.AreEqual(2L, machine.ExecuteText("MyClass.class_variable_get('@@value_0')"));
+        }
+
+        [TestMethod]
+        public void ClassVariableSetWithSymbol()
+        {
+            Machine machine = new();
+
+            var result = machine.ExecuteText("class MyClass; end; MyClass.class_variable_set(:@@value_0, 3)");
+
+            Assert.AreEqual(3L, result);
+            Assert.AreEqual(3L, machine.ExecuteText("MyClass.class_variable_get(:@@value_0)"));
+        }
     }
 }

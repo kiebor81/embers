@@ -1,3 +1,5 @@
+using Embers.Language;
+
 namespace Embers.Expressions;
 /// <summary>
 /// ClassVarExpression represents a class variable expression.
@@ -14,7 +16,8 @@ public class ClassVarExpression(string name) : BaseExpression
 
     public override object Evaluate(Context context)
     {
-        var result = context.Self.Class.GetValue(name);
+        var target = context.Self is DynamicClass ? context.Self : context.Self.Class;
+        var result = target.GetValue(name);
 
         return result;
     }
