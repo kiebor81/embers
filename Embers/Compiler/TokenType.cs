@@ -14,7 +14,8 @@ public enum TokenType
     Symbol = 7,
     InstanceVarName = 8,
     ClassVarName = 9,
-    EndOfLine = 10,
-    InterpolatedString = 11
+    GlobalVarName = 10,
+    EndOfLine = 11,
+    InterpolatedString = 12
 }
 

@@ -165,6 +165,17 @@ Class variables begin with `@@` and are shared by all instances of a class:
 @@instances = []
 ```
 
+### Global Variables
+
+Global variables begin with `$` and are shared across all scopes in the runtime:
+
+```
+$env = "prod"
+$counter = 1
+```
+
+They can be read and assigned anywhere. Accessing an undefined global raises a `NameError`.
+
 ## Operators
 
 ### Arithmetic Operators
@@ -198,6 +209,16 @@ Note: `/` performs integer division when both operands are integers. Use a float
 ||      Logical OR
 !       Logical NOT
 ```
+
+Low-precedence keyword forms are also supported:
+
+```
+and     Logical AND
+or      Logical OR
+not     Logical NOT
+```
+
+The keyword forms bind more weakly than `&&`, `||`, and `!`, so they are often used for control-flow style expressions where you want assignment or other operators to take precedence.
 
 ### Assignment Operators
 
@@ -269,6 +290,18 @@ The `then` keyword is optional after `if` and `elsif`:
 ```
 if x > 0 then
   puts "Positive"
+end
+```
+
+Using `not` as a unary operator:
+
+```
+if not enabled
+  puts "Disabled"
+elsif not admin
+  puts "Read-only"
+else
+  puts "Full access"
 end
 ```
 
@@ -581,6 +614,28 @@ end
 
 person = Person.new
 person.hello      # prints: Hello!
+```
+
+`include` is a module method used in class/module bodies. The most recently included module wins when names collide.
+
+Includes can also be chained through modules:
+
+```
+module A
+  def ping
+    "ping"
+  end
+end
+
+module B
+  include A
+end
+
+class C
+  include B
+end
+
+C.new.ping    # => "ping"
 ```
 
 ### Access Qualified Names in Modules

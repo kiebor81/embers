@@ -13,6 +13,7 @@ public class Lexer
     private const char StartComment = '#';
     private const char EndOfLine = '\n';
     private const char Variable = '@';
+    private const char GlobalVariable = '$';
     private const string Separators = ";()[],.|{}&";
     private static readonly string[] operators = ["?", ":", "+", "-", "*", "/", "%", "**", "=", "<", ">", "!", "==", "<=", ">=", "!=", "=>", "->", "..", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**="];
 
@@ -94,6 +95,9 @@ public class Lexer
 
         if (ch == Variable)
             return NextInstanceVariableName();
+
+        if (ch == GlobalVariable)
+            return NextGlobalVariableName();
 
         if (operators.Contains(ch.ToString()))
         {
@@ -220,6 +224,28 @@ public class Lexer
             throw new SyntaxError("invalid class variable name");
 
         return new Token(TokenType.ClassVarName, value);
+    }
+
+    /// <summary>
+    /// Gets the next global variable name token from the stream.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
+    private Token NextGlobalVariableName()
+    {
+        string value = string.Empty;
+        int ich;
+
+        for (ich = NextChar(); ich >= 0 && ((char)ich == '_' || char.IsLetterOrDigit((char)ich)); ich = NextChar())
+            value += (char)ich;
+
+        if (ich >= 0)
+            BackChar();
+
+        if (string.IsNullOrEmpty(value) || char.IsDigit(value[0]))
+            throw new SyntaxError("invalid global variable name");
+
+        return new Token(TokenType.GlobalVarName, value);
     }
 
     /// <summary>

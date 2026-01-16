@@ -25,9 +25,9 @@ public partial class Parser
 
         for (token = lexer.NextToken(); token != null && IsBinaryOperator(level, token); token = lexer.NextToken())
         {
-            if (token.Value == "&&")
+            if (token.Value == "&&" || token.Value == "and")
                 expr = new AndExpression(expr, ParseBinaryExpression(level + 1));
-            if (token.Value == "||")
+            if (token.Value == "||" || token.Value == "or")
                 expr = new OrExpression(expr, ParseBinaryExpression(level + 1));
             if (token.Value == "+")
                 expr = new AddExpression(expr, ParseBinaryExpression(level + 1));
@@ -316,6 +316,9 @@ public partial class Parser
         if (token.Type == TokenType.ClassVarName)
             return new ClassVarExpression(token.Value);
 
+        if (token.Type == TokenType.GlobalVarName)
+            return new GlobalExpression(token.Value);
+
         if (token.Type == TokenType.Symbol)
             return new ConstantExpression(new Symbol(token.Value));
 
@@ -471,6 +474,7 @@ public partial class Parser
             DotExpression dot => new DotExpression(dot.TargetExpression, dot.Name, dot.Arguments),
             InstanceVarExpression ivar => new InstanceVarExpression(ivar.Name),
             ClassVarExpression cvar => new ClassVarExpression(cvar.Name),
+            GlobalExpression gvar => new GlobalExpression(gvar.Name),
             IndexedExpression idx => new IndexedExpression(idx.Expression, idx.IndexExpression),
             _ => throw new SyntaxError("invalid compound assignment target")
         };
@@ -483,6 +487,7 @@ public partial class Parser
             DotExpression dot => new AssignDotExpressions(dot, binary),
             InstanceVarExpression ivar => new AssignInstanceVarExpression(ivar.Name, binary),
             ClassVarExpression cvar => new AssignClassVarExpression(cvar.Name, binary),
+            GlobalExpression gvar => new AssignGlobalVarExpression(gvar.Name, binary),
             IndexedExpression idx => new AssignIndexedExpression(idx.Expression, idx.IndexExpression, binary),
             _ => throw new SyntaxError("invalid compound assignment target")
         };

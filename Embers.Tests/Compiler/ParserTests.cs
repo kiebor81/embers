@@ -562,6 +562,19 @@ namespace Embers.Tests.Compiler
         }
 
         [TestMethod]
+        public void ParseAssignGlobalVarCommand()
+        {
+            Parser parser = new("$a=2");
+            var expected = new AssignGlobalVarExpression("a", new ConstantExpression(2L));
+            var result = parser.ParseCommand();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseCommand());
+        }
+
+        [TestMethod]
         public void ParseReturnCommand()
         {
             Parser parser = new("return 42");
@@ -810,6 +823,20 @@ namespace Embers.Tests.Compiler
         {
             Parser parser = new("@@a");
             var expected = new ClassVarExpression("a");
+
+            var result = parser.ParseExpression();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseExpression());
+        }
+
+        [TestMethod]
+        public void ParseGlobalVariableExpression()
+        {
+            Parser parser = new("$a");
+            var expected = new GlobalExpression("a");
 
             var result = parser.ParseExpression();
 

@@ -40,6 +40,14 @@ namespace Embers.Tests
         }
 
         [TestMethod]
+        public void EvaluateGlobalAssignment()
+        {
+            Assert.AreEqual(2L, Execute("$a = 2"));
+            Assert.AreEqual(2L, EvaluateExpression("$a"));
+            Assert.AreEqual(3L, EvaluateExpression("$a + 1"));
+        }
+
+        [TestMethod]
         public void EvaluateSimpleArray()
         {
             Assert.IsNotNull(Execute("a = [1,2,3]"));
@@ -242,6 +250,71 @@ namespace Embers.Tests
             Assert.IsInstanceOfType(result, typeof(DynamicClass));
 
             Assert.AreSame(moduleclass, result);
+        }
+
+        [TestMethod]
+        public void EvaluateModuleIncludeInClass()
+        {
+            Execute(@"
+module Greeter
+  def hello
+    'hi'
+  end
+end
+
+class Person
+  include Greeter
+end");
+
+            var result = EvaluateExpression("Person.new.hello");
+            Assert.AreEqual("hi", result);
+        }
+
+        [TestMethod]
+        public void EvaluateModuleIncludeOrder()
+        {
+            Execute(@"
+module M1
+  def foo
+    'm1'
+  end
+end
+
+module M2
+  def foo
+    'm2'
+  end
+end
+
+class C
+  include M1
+  include M2
+end");
+
+            var result = EvaluateExpression("C.new.foo");
+            Assert.AreEqual("m2", result);
+        }
+
+        [TestMethod]
+        public void EvaluateModuleIncludeChained()
+        {
+            Execute(@"
+module M1
+  def bar
+    'bar'
+  end
+end
+
+module M2
+  include M1
+end
+
+class C
+  include M2
+end");
+
+            var result = EvaluateExpression("C.new.bar");
+            Assert.AreEqual("bar", result);
         }
 
         [TestMethod]
@@ -703,6 +776,9 @@ namespace Embers.Tests
             // Short-circuit tests
             Assert.AreEqual(false, EvaluateExpression("false && raise 'fail'"));
             Assert.AreEqual(true, EvaluateExpression("true || raise 'fail'"));
+
+            Assert.AreEqual(false, EvaluateExpression("false and raise 'fail'"));
+            Assert.AreEqual(true, EvaluateExpression("true or raise 'fail'"));
         }
 
         [TestMethod]

@@ -10,6 +10,7 @@ public class Context
 {
     private readonly Context parent;
     private readonly IDictionary<string, object> values = new Dictionary<string, object>();
+    private readonly IDictionary<string, object> globals;
     private DynamicObject self;
     private readonly DynamicClass? module;
     private readonly IFunction? block;
@@ -33,6 +34,7 @@ public class Context
     {
         this.parent = parent;
         this.block = block;
+        globals = parent == null ? new Dictionary<string, object>() : parent.globals;
     }
 
     /// <summary>
@@ -46,6 +48,7 @@ public class Context
         this.module = module;
         this.parent = parent;
         this.block = block;
+        globals = parent == null ? new Dictionary<string, object>() : parent.globals;
         self = module;
     }
 
@@ -60,6 +63,7 @@ public class Context
         this.self = self;
         this.parent = parent;
         this.block = block;
+        globals = parent == null ? new Dictionary<string, object>() : parent.globals;
     }
 
     public DynamicObject Self { get { return self; } internal set { self = value; } }
@@ -168,5 +172,32 @@ public class Context
     /// </summary>
     /// <returns></returns>
     public IList<string> GetLocalNames() => [.. values.Keys];
+
+    /// <summary>
+    /// Sets a global value.
+    /// </summary>
+    /// <param name="name">The name.</param>
+    /// <param name="value">The value.</param>
+    public void SetGlobalValue(string name, object value) => globals[name] = value;
+
+    /// <summary>
+    /// Determines whether the specified global name has value.
+    /// </summary>
+    /// <param name="name">The name.</param>
+    /// <returns></returns>
+    public bool HasGlobalValue(string name) => globals.ContainsKey(name);
+
+    /// <summary>
+    /// Gets the global value.
+    /// </summary>
+    /// <param name="name">The name.</param>
+    /// <returns></returns>
+    public object? GetGlobalValue(string name)
+    {
+        if (globals.TryGetValue(name, out object? value))
+            return value;
+
+        return null;
+    }
 }
 

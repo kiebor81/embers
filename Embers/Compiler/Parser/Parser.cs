@@ -13,7 +13,7 @@ public partial class Parser
     /// the binary operators by precedence level
     /// </summary>
     private static string[][] binaryoperators = [
-        ["&&", "||"],
+        ["&&", "||", "and", "or"],
             ["..", "==", "!=", "<", ">", "<=", ">="],
             ["+", "-"],
             ["*", "/", "%"],
@@ -59,6 +59,7 @@ public partial class Parser
         bool isAssignable = expr is NameExpression
             || expr is ClassVarExpression
             || expr is InstanceVarExpression
+            || expr is GlobalExpression
             || expr is DotExpression
             || expr is IndexedExpression;
 
@@ -79,6 +80,7 @@ public partial class Parser
                 DotExpression dot => new AssignDotExpressions(dot, ParseExpression()),
                 InstanceVarExpression ivar => new AssignInstanceVarExpression(ivar.Name, ParseExpression()),
                 ClassVarExpression cvar => new AssignClassVarExpression(cvar.Name, ParseExpression()),
+                GlobalExpression gvar => new AssignGlobalVarExpression(gvar.Name, ParseExpression()),
                 IndexedExpression idx => new AssignIndexedExpression(idx.Expression, idx.IndexExpression, ParseExpression()),
                 _ => throw new SyntaxError("invalid assignment target")
             };

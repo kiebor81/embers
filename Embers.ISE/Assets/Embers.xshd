@@ -8,6 +8,7 @@
   <Color name="BuiltIn" foreground="#4EC9B0" />
   <Color name="InstanceVar" foreground="#9CDCFE" />
   <Color name="ClassVar" foreground="#4FC1FF" />
+  <Color name="GlobalVar" foreground="#9CDCFE" fontWeight="bold" />
   <Color name="Operator" foreground="#D4D4D4" />
   <Color name="MethodName" foreground="#DCDCAA" />
   <Color name="ModuleName" foreground="#4EC9B0" />
@@ -38,7 +39,11 @@
               <Word>false</Word>
               <Word>nil</Word>
             </Keywords>
+            <Rule color="Keyword">
+              (?&lt;![.:])\binclude\b
+            </Rule>
             <Rule color="InstanceVar">@[a-z_]\w*</Rule>
+            <Rule color="GlobalVar">\$[a-z_]\w*</Rule>
             <Rule color="Number">\b\d+\.?\d*\b</Rule>
           </RuleSet>
         </Span>
@@ -110,6 +115,14 @@
     </Rule>
     <Rule color="ClassVar">
       @@[a-z_]\w*
+    </Rule>
+    <Rule color="GlobalVar">
+      \$[a-z_]\w*
+    </Rule>
+
+    <!-- include keyword (only as a standalone keyword, not a method call) -->
+    <Rule color="Keyword">
+      (?&lt;![.:])\binclude\b
     </Rule>
 
     <!-- Method definitions -->

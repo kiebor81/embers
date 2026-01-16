@@ -54,6 +54,7 @@ public class Machine
 
         moduleclass.SetInstanceMethod("superclass", new LambdaFunction(GetSuperClass));
         moduleclass.SetInstanceMethod("name", new LambdaFunction(GetName));
+        moduleclass.SetInstanceMethod("include", new LambdaFunction(IncludeModule));
 
         classclass.SetInstanceMethod("new", new LambdaFunction(NewInstance));
 
@@ -406,6 +407,33 @@ public class Machine
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Includes a module into a class or module.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    private static object IncludeModule(DynamicObject obj, Context context, IList<object> values)
+    {
+        if (obj is not DynamicClass target)
+            throw new TypeError("include can only be called on classes or modules");
+
+        if (values.Count != 1)
+            throw new ArgumentError($"wrong number of arguments (given {values.Count}, expected 1)");
+
+        if (values[0] is not DynamicClass module)
+            throw new TypeError("include expects a module");
+
+        var moduleClass = context.RootContext.GetLocalValue("Module") as DynamicClass;
+        if (moduleClass != null && module.Class != moduleClass)
+            throw new TypeError("include expects a module");
+
+        target.IncludeModule(module);
+
+        return target;
     }
 
 }

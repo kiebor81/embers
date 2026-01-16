@@ -1,4 +1,5 @@
-﻿using Embers.Exceptions;
+using System;
+using Embers.Exceptions;
 using Embers.Functions;
 
 namespace Embers.Language;
@@ -12,6 +13,7 @@ public class DynamicClass(DynamicClass @class, string name, DynamicClass supercl
     private DynamicClass superclass = superclass;
     private readonly DynamicClass parent = parent;
     private readonly IDictionary<string, IFunction> methods = new Dictionary<string, IFunction>();
+    private readonly IList<DynamicClass> mixins = [];
     private readonly Context constants = new();
 
     public DynamicClass(string name, DynamicClass superclass = null)
@@ -24,6 +26,8 @@ public class DynamicClass(DynamicClass @class, string name, DynamicClass supercl
     public DynamicClass SuperClass { get { return superclass; } }
 
     public Context Constants { get { return constants; } }
+
+    public IList<DynamicClass> Mixins => mixins;
 
     public string FullName
     {
@@ -42,6 +46,16 @@ public class DynamicClass(DynamicClass @class, string name, DynamicClass supercl
     {
         if (methods.TryGetValue(name, out IFunction? value))
             return value;
+
+        if (mixins.Count > 0)
+        {
+            for (int i = mixins.Count - 1; i >= 0; i--)
+            {
+                var method = mixins[i].GetInstanceMethod(name);
+                if (method != null)
+                    return method;
+            }
+        }
 
         if (superclass != null)
             return superclass.GetInstanceMethod(name);
@@ -67,6 +81,21 @@ public class DynamicClass(DynamicClass @class, string name, DynamicClass supercl
         methods[newName] = method;
     }
 
+    public void IncludeModule(DynamicClass module)
+    {
+        if (module == null)
+            throw new ArgumentNullException(nameof(module));
+
+        if (ReferenceEquals(module, this))
+            throw new ArgumentException("module cannot include itself", nameof(module));
+
+        if (mixins.Contains(module))
+            mixins.Remove(module);
+
+        mixins.Add(module);
+    }
+
     internal void SetSuperClass(DynamicClass superclass) => this.superclass = superclass;
 }
+
 

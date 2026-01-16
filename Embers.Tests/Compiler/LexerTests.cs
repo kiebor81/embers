@@ -323,6 +323,58 @@ namespace Embers.Tests.Compiler
         }
 
         [TestMethod]
+        public void GetGlobalVarName()
+        {
+            Lexer lexer = new("$a");
+            var result = lexer.NextToken();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("a", result.Value);
+            Assert.AreEqual(TokenType.GlobalVarName, result.Type);
+
+            Assert.IsNull(lexer.NextToken());
+        }
+
+        [TestMethod]
+        public void GetGlobalVarNameWithDigits()
+        {
+            Lexer lexer = new("$a123");
+            var result = lexer.NextToken();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("a123", result.Value);
+            Assert.AreEqual(TokenType.GlobalVarName, result.Type);
+
+            Assert.IsNull(lexer.NextToken());
+        }
+
+        [TestMethod]
+        public void GetGlobalVarNameWithDigitsAndUnderscore()
+        {
+            Lexer lexer = new("$a_123");
+            var result = lexer.NextToken();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("a_123", result.Value);
+            Assert.AreEqual(TokenType.GlobalVarName, result.Type);
+
+            Assert.IsNull(lexer.NextToken());
+        }
+
+        [TestMethod]
+        public void GetGlobalVarNameWithInitialUnderscore()
+        {
+            Lexer lexer = new("$_123");
+            var result = lexer.NextToken();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("_123", result.Value);
+            Assert.AreEqual(TokenType.GlobalVarName, result.Type);
+
+            Assert.IsNull(lexer.NextToken());
+        }
+
+        [TestMethod]
         public void RaiseWhenInvalidInstanceVarName()
         {
             Lexer lexer = new("@");
@@ -336,6 +388,23 @@ namespace Embers.Tests.Compiler
             {
                 Assert.IsInstanceOfType(ex, typeof(SyntaxError));
                 Assert.AreEqual("invalid instance variable name", ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void RaiseWhenInvalidGlobalVarName()
+        {
+            Lexer lexer = new("$");
+
+            try
+            {
+                lexer.NextToken();
+                Assert.Fail();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(SyntaxError));
+                Assert.AreEqual("invalid global variable name", ex.Message);
             }
         }
 
@@ -387,6 +456,23 @@ namespace Embers.Tests.Compiler
             {
                 Assert.IsInstanceOfType(ex, typeof(SyntaxError));
                 Assert.AreEqual("invalid class variable name", ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void RaiseWhenGlobalVarNameStartsWithADigit()
+        {
+            Lexer lexer = new("$123");
+
+            try
+            {
+                lexer.NextToken();
+                Assert.Fail();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(SyntaxError));
+                Assert.AreEqual("invalid global variable name", ex.Message);
             }
         }
 

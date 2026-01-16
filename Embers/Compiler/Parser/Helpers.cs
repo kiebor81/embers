@@ -181,5 +181,13 @@ public partial class Parser
     /// <param name="level"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    private bool IsBinaryOperator(int level, Token token) => token.Type == TokenType.Operator && binaryoperators[level].Contains(token.Value);
+    private bool IsBinaryOperator(int level, Token token)
+    {
+        if (token.Type == TokenType.Operator && binaryoperators[level].Contains(token.Value))
+            return true;
+
+        return token.Type == TokenType.Name
+            && (token.Value == "and" || token.Value == "or")
+            && binaryoperators[level].Contains(token.Value);
+    }
 }
