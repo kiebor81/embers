@@ -163,7 +163,7 @@ If the input appears to be a file path (e.g. contains path separators, file exte
 
 ## Script Syntax
 
-Embers supports a [substantial Ruby-like syntax](Grammar.md):
+Embers supports a [substantial Ruby-like syntax](/Docs/Grammar.md):
 
 ```ruby
 def square(x)
