@@ -17,10 +17,8 @@ public class Symbol(string name)
         if (obj == null)
             return false;
 
-        if (obj is Symbol)
+        if (obj is Symbol symbol)
         {
-            var symbol = (Symbol)obj;
-
             return name == symbol.name;
         }
 

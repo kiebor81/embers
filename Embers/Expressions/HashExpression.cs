@@ -30,10 +30,8 @@ public class HashExpression(IList<IExpression> keyexpressions, IList<IExpression
         if (obj == null)
             return false;
 
-        if (obj is HashExpression)
+        if (obj is HashExpression expr)
         {
-            var expr = (HashExpression)obj;
-
             if (keyexpressions.Count != expr.keyexpressions.Count)
                 return false;
 

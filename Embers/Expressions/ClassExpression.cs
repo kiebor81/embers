@@ -97,10 +97,8 @@ public class ClassExpression(INamedExpression namedexpression, IExpression expre
         if (obj == null)
             return false;
 
-        if (obj is ClassExpression)
+        if (obj is ClassExpression expr)
         {
-            var expr = (ClassExpression)obj;
-
             return namedexpression.Equals(expr.namedexpression) && expression.Equals(expr.expression);
         }
 

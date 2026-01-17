@@ -41,10 +41,8 @@ public class IfExpression(IExpression condition, IExpression thencommand, IExpre
         if (obj == null)
             return false;
 
-        if (obj is IfExpression)
+        if (obj is IfExpression cmd)
         {
-            var cmd = (IfExpression)obj;
-
             if (elsecommand == null)
             {
                 if (cmd.elsecommand != null)

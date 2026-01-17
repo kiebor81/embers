@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Embers.Functions;
+using Embers.Exceptions;
 
 namespace Embers.Language.Primitive;
 /// <summary>
@@ -16,10 +17,18 @@ public class JsonClass(Machine machine) : NativeClass("JSON", machine)
         return base.GetMethod(name);
     }
 
+    /// <summary>
+    /// Parses a JSON string into an Embers object.
+    /// </summary>
+    /// <param name="self"></param>
+    /// <param name="context"></param>
+    /// <param name="arguments"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentError"></exception>
     private static object ParseLambda(DynamicObject self, Context context, IList<object> arguments)
     {
         if (arguments.Count == 0)
-            throw new Exceptions.ArgumentError("JSON.parse requires at least 1 argument (json string)");
+            throw new ArgumentError("JSON.parse requires at least 1 argument (json string)");
 
         var jsonString = arguments[0]?.ToString() ?? "";
 

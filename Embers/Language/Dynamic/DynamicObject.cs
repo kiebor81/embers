@@ -10,8 +10,14 @@ public class DynamicObject(DynamicClass @class)
     private DynamicClass singletonclass;
     private readonly IDictionary<string, object> values = new Dictionary<string, object>();
 
+    /// <summary>
+    /// Gets the class of this object.
+    /// </summary>
     public DynamicClass @Class { get { return @class; } }
 
+    /// <summary>
+    /// Gets the singleton class for this object.
+    /// </summary>
     public DynamicClass SingletonClass
     {
         get
@@ -26,8 +32,18 @@ public class DynamicObject(DynamicClass @class)
         }
     }
 
+    /// <summary>
+    /// Sets a value for this object.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="value"></param>
     public void SetValue(string name, object value) => values[name] = value;
 
+    /// <summary>
+    /// Gets a value by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public object? GetValue(string name)
     {
         if (values.TryGetValue(name, out object? value))
@@ -36,8 +52,18 @@ public class DynamicObject(DynamicClass @class)
         return null;
     }
 
+    /// <summary>
+    /// Gets all values of this object.
+    /// Useful for reflection purposes and serialization.
+    /// </summary>
+    /// <returns></returns>
     public IReadOnlyDictionary<string, object> GetValues() => new Dictionary<string, object>(values);
 
+    /// <summary>
+    /// Gets a method for this object by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public virtual IFunction? GetMethod(string name)
     {
         if (singletonclass != null)
@@ -51,6 +77,10 @@ public class DynamicObject(DynamicClass @class)
 
     public override string ToString() => string.Format("#<{0}:0x{1}>", Class.Name, GetHashCode().ToString("x"));
 
+    /// <summary>
+    /// Sets the class of this object.
+    /// </summary>
+    /// <param name="class"></param>
     internal void SetClass(DynamicClass @class) => this.@class = @class;
 }
 

@@ -27,10 +27,8 @@ public class CompositeExpression(IList<IExpression> commands) : IExpression
         if (obj == null)
             return false;
 
-        if (obj is CompositeExpression)
+        if (obj is CompositeExpression cmd)
         {
-            var cmd = (CompositeExpression)obj;
-
             if (commands.Count != cmd.commands.Count)
                 return false;
 

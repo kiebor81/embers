@@ -29,10 +29,8 @@ public class AssignClassVarExpression(string name, IExpression expression) : IEx
         if (obj == null)
             return false;
 
-        if (obj is AssignClassVarExpression)
+        if (obj is AssignClassVarExpression cmd)
         {
-            var cmd = (AssignClassVarExpression)obj;
-
             return Name.Equals(cmd.name) && Expression.Equals(cmd.Expression);
         }
 

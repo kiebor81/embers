@@ -1,6 +1,5 @@
 using Embers.Exceptions;
 using Embers.Functions;
-using Embers.Language.Primitive;
 
 namespace Embers.Expressions;
 /// <summary>
@@ -83,10 +82,8 @@ public class CallExpression(string name, IList<IExpression> arguments) : IExpres
         if (obj == null)
             return false;
 
-        if (obj is CallExpression)
+        if (obj is CallExpression expr)
         {
-            var expr = (CallExpression)obj;
-
             if (name != expr.name)
                 return false;
 

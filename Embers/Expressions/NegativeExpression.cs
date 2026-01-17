@@ -28,10 +28,8 @@ public class NegativeExpression(IExpression expression) : IExpression
         if (obj == null)
             return false;
 
-        if (obj is NegativeExpression)
+        if (obj is NegativeExpression expr)
         {
-            var expr = (NegativeExpression)obj;
-
             return expression.Equals(expr.expression);
         }
 

@@ -3,21 +3,14 @@ using System.Runtime.CompilerServices;
 
 namespace Embers.ISE.Models;
 
-public sealed class DocumentTab : INotifyPropertyChanged
+public sealed class DocumentTab(string title, string? filePath = null, string text = "") : INotifyPropertyChanged
 {
-    private string _text = string.Empty;
-    private string? _filePath;
-    private string _title;
+    private string _text = text;
+    private string? _filePath = filePath;
+    private string _title = title;
     private bool _isSelected;
 
     public event PropertyChangedEventHandler? PropertyChanged;
-
-    public DocumentTab(string title, string? filePath = null, string text = "")
-    {
-        _title = title;
-        _filePath = filePath;
-        _text = text;
-    }
 
     public string Title
     {

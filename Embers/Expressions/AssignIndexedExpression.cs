@@ -28,10 +28,8 @@ public class AssignIndexedExpression(IExpression leftexpression, IExpression ind
         if (obj == null)
             return false;
 
-        if (obj is AssignIndexedExpression)
+        if (obj is AssignIndexedExpression expr)
         {
-            var expr = (AssignIndexedExpression)obj;
-
             return leftexpression.Equals(expr.leftexpression) && expression.Equals(expr.expression) && indexexpression.Equals(expr.indexexpression);
         }
 

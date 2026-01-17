@@ -28,10 +28,8 @@ public class AssignInstanceVarExpression(string name, IExpression expression) : 
         if (obj == null)
             return false;
 
-        if (obj is AssignInstanceVarExpression)
+        if (obj is AssignInstanceVarExpression cmd)
         {
-            var cmd = (AssignInstanceVarExpression)obj;
-
             return Name.Equals(cmd.name) && Expression.Equals(cmd.Expression);
         }
 

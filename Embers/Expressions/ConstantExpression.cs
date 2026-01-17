@@ -17,10 +17,8 @@ public class ConstantExpression(object value) : BaseExpression
         if (obj == null)
             return false;
 
-        if (obj is ConstantExpression)
+        if (obj is ConstantExpression expr)
         {
-            var expr = (ConstantExpression)obj;
-
             if (value == null)
                 return expr.value == null;
 

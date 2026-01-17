@@ -25,10 +25,8 @@ public class GlobalExpression(string name) : BaseExpression
         if (obj == null)
             return false;
 
-        if (obj is GlobalExpression)
+        if (obj is GlobalExpression expr)
         {
-            var expr = (GlobalExpression)obj;
-
             return Name.Equals(expr.Name);
         }
 

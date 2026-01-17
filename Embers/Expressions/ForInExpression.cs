@@ -92,9 +92,8 @@ public class ForInExpression(string name, IExpression expression, IExpression co
         if (obj == null)
             return false;
 
-        if (obj is ForInExpression)
+        if (obj is ForInExpression cmd)
         {
-            var cmd = (ForInExpression)obj;
             if (!name.Equals(cmd.name))
                 return false;
             if (!expression.Equals(cmd.expression))

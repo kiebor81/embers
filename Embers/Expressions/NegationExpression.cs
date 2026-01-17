@@ -29,10 +29,8 @@ public class NegationExpression(IExpression expression) : IExpression
         if (obj == null)
             return false;
 
-        if (obj is NegationExpression)
+        if (obj is NegationExpression expr)
         {
-            var expr = (NegationExpression)obj;
-
             return expression.Equals(expr.expression);
         }
 

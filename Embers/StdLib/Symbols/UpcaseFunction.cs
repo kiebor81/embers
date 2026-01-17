@@ -1,6 +1,5 @@
 using Embers.Exceptions;
 using Embers.Annotations;
-using Embers.Language.Primitive;
 
 namespace Embers.StdLib.Symbols;
 

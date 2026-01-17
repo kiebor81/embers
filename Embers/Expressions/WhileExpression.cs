@@ -63,10 +63,8 @@ public class WhileExpression(IExpression condition, IExpression command) : IExpr
         if (obj == null)
             return false;
 
-        if (obj is WhileExpression)
+        if (obj is WhileExpression cmd)
         {
-            var cmd = (WhileExpression)obj;
-
             return condition.Equals(cmd.condition) && command.Equals(cmd.command);
         }
 

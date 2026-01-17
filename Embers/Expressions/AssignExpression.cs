@@ -34,10 +34,8 @@ public class AssignExpression(string name, IExpression expression) : IExpression
         if (obj == null)
             return false;
 
-        if (obj is AssignExpression)
+        if (obj is AssignExpression cmd)
         {
-            var cmd = (AssignExpression)obj;
-
             return Name.Equals(cmd.name) && Expression.Equals(cmd.Expression);
         }
 

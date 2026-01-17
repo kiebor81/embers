@@ -1,7 +1,6 @@
 using Embers.Exceptions;
 using Embers.Annotations;
 using System.Collections;
-using Embers.Language.Primitive;
 
 namespace Embers.StdLib.Hashes;
 

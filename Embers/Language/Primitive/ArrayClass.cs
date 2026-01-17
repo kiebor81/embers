@@ -14,6 +14,12 @@ public class ArrayClass : NativeClass
         SetInstanceMethod("each", DoEach);
     }
 
+    /// <summary>
+    /// Method to iterate over each element in the array.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
     private static object DoEach(object obj, IList<object> values)
     {
         var block = (Block)values[0];

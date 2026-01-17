@@ -39,8 +39,18 @@ public class DynamicClass(DynamicClass @class, string name, DynamicClass supercl
         }
     }
 
+    /// <summary>
+    /// Sets an instance method for this class.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="method"></param>
     public void SetInstanceMethod(string name, IFunction method) => methods[name] = method;
 
+    /// <summary>
+    /// Gets an instance method by name, searching mixins and superclass if necessary.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public IFunction? GetInstanceMethod(string name)
     {
         if (methods.TryGetValue(name, out IFunction? value))
@@ -62,6 +72,11 @@ public class DynamicClass(DynamicClass @class, string name, DynamicClass supercl
         return null;
     }
 
+    /// <summary>
+    /// Gets an instance method by name, searching mixins but not superclass.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public IFunction? GetInstanceMethodNoSuper(string name)
     {
         if (methods.TryGetValue(name, out IFunction? value))
@@ -80,14 +95,28 @@ public class DynamicClass(DynamicClass @class, string name, DynamicClass supercl
         return null;
     }
 
+    /// <summary>
+    /// Creates an instance of this class.
+    /// </summary>
+    /// <returns></returns>
     public DynamicObject CreateInstance() => new(this);
 
     public override IFunction GetMethod(string name) => base.GetMethod(name);
 
+    /// <summary>
+    /// Gets the names of all own instance methods.
+    /// </summary>
+    /// <returns></returns>
     public IList<string> GetOwnInstanceMethodNames() => [.. methods.Keys];
 
     public override string ToString() => FullName;
 
+    /// <summary>
+    /// Creates an alias for an existing method.
+    /// </summary>
+    /// <param name="newName"></param>
+    /// <param name="oldName"></param>
+    /// <exception cref="NameError"></exception>
     public void AliasMethod(string newName, string oldName)
     {
         var method = GetInstanceMethod(oldName);
@@ -98,6 +127,12 @@ public class DynamicClass(DynamicClass @class, string name, DynamicClass supercl
         methods[newName] = method;
     }
 
+    /// <summary>
+    /// Includes a module (mixin) into this class.
+    /// </summary>
+    /// <param name="module"></param>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
     public void IncludeModule(DynamicClass module)
     {
         if (module == null)
@@ -112,6 +147,10 @@ public class DynamicClass(DynamicClass @class, string name, DynamicClass supercl
         mixins.Add(module);
     }
 
+    /// <summary>
+    /// Sets the superclass of this class.
+    /// </summary>
+    /// <param name="superclass"></param>
     internal void SetSuperClass(DynamicClass superclass) => this.superclass = superclass;
 }
 

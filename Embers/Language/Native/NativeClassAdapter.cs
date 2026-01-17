@@ -5,15 +5,9 @@ namespace Embers.Language.Native;
 /// <summary>
 /// DynamicClass wrapper for native types to allow reopening and method lookup.
 /// </summary>
-public sealed class NativeClassAdapter : DynamicClass
+public sealed class NativeClassAdapter(DynamicClass @class, string name, DynamicClass superclass, DynamicClass parent, NativeClass nativeClass) : DynamicClass(@class, name, superclass, parent)
 {
-    public NativeClassAdapter(DynamicClass @class, string name, DynamicClass superclass, DynamicClass parent, NativeClass nativeClass)
-        : base(@class, name, superclass, parent)
-    {
-        NativeClass = nativeClass ?? throw new ArgumentNullException(nameof(nativeClass));
-    }
-
-    public NativeClass NativeClass { get; }
+    public NativeClass NativeClass { get; } = nativeClass ?? throw new ArgumentNullException(nameof(nativeClass));
 
     public override IFunction? GetMethod(string name)
     {

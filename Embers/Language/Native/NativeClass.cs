@@ -11,18 +11,6 @@ public class NativeClass : DynamicObject
     private readonly Machine machine;
     private readonly IDictionary<string, Func<object, IList<object>, object>> methods = new Dictionary<string, Func<object, IList<object>, object>>();
 
-    private NativeClass fixnumclass;
-    private NativeClass floatclass;
-    private NativeClass stringclass;
-    private NativeClass nilclass;
-    private NativeClass falseclass;
-    private NativeClass trueclass;
-    private NativeClass arrayclass;
-    private NativeClass hashclass;
-    private NativeClass rangeclass;
-    private NativeClass datetimeclass;
-    private NativeClass symbolclass;
-
     public NativeClass(string name, Machine machine)
         : base(null)
     {
@@ -33,8 +21,18 @@ public class NativeClass : DynamicObject
 
     public string Name { get { return name; } }
 
+    /// <summary>
+    /// Sets an instance method for this native class.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="method"></param>
     public void SetInstanceMethod(string name, Func<object, IList<object>, object> method) => methods[name] = method;
 
+    /// <summary>
+    /// Gets an instance method by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public Func<object, IList<object>, object>? GetInstanceMethod(string name)
     {
         // Check manually registered methods first
@@ -64,6 +62,13 @@ public class NativeClass : DynamicObject
         return null;
     }
 
+    /// <summary>
+    /// Gets an instance method by name with a specific context.
+    /// Provides the context to StdLib functions that may require it.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
     public Func<object, IList<object>, object>? GetInstanceMethod(string name, Context context)
     {
         // Check manually registered methods first
@@ -94,6 +99,12 @@ public class NativeClass : DynamicObject
 
     public override string ToString() => Name;
 
+    /// <summary>
+    /// Method to get the class of a native object.
+    /// </summary>
+    /// <param name="self"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
     public object? MethodClass(object self, IList<object> values)
     {
         return NativeClassResolver.Resolve(machine.RootContext, self);

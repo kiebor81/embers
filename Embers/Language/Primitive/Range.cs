@@ -16,6 +16,12 @@ public class Range(object from, object to) : IEnumerable
     public object From => from;
     public object To => to;
 
+    /// <summary>
+    /// Tries to get the bounds of the range as integers.
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <returns></returns>
     public bool TryGetIntBounds(out int start, out int end)
     {
         if (NumericCoercion.TryGetLong(from, out var fromLong)
@@ -33,6 +39,12 @@ public class Range(object from, object to) : IEnumerable
         return false;
     }
 
+    /// <summary>
+    /// Tries to get the bounds of the range as long integers.
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <returns></returns>
     public bool TryGetLongBounds(out long start, out long end)
     {
         if (NumericCoercion.TryGetLong(from, out var fromLong)
@@ -48,6 +60,12 @@ public class Range(object from, object to) : IEnumerable
         return false;
     }
 
+    /// <summary>
+    /// Tries to get the bounds of the range as double precision floating point numbers.
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <returns></returns>
     public bool TryGetDoubleBounds(out double start, out double end)
     {
         if (NumericCoercion.TryGetDouble(from, out var fromDouble)
@@ -63,6 +81,11 @@ public class Range(object from, object to) : IEnumerable
         return false;
     }
 
+    /// <summary>
+    /// Enumerates the values in the range.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="TypeError"></exception>
     public IEnumerable Enumerate()
     {
         if (TryGetIntBounds(out var intStart, out var intEnd))
@@ -89,6 +112,10 @@ public class Range(object from, object to) : IEnumerable
         throw new TypeError("range must be numeric");
     }
 
+    /// <summary>
+    /// Gets the enumerator for the range.
+    /// </summary>
+    /// <returns></returns>
     public IEnumerator GetEnumerator() => Enumerate().GetEnumerator();
 
     public override string ToString() => string.Format("{0}..{1}", from, to);

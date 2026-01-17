@@ -47,10 +47,8 @@ public class ModuleExpression(string name, IExpression expression) : BaseExpress
         if (obj == null)
             return false;
 
-        if (obj is ModuleExpression)
+        if (obj is ModuleExpression expr)
         {
-            var expr = (ModuleExpression)obj;
-
             return name == expr.name && expression.Equals(expr.expression);
         }
 

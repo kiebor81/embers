@@ -24,9 +24,8 @@ public class AssignDotExpressions(DotExpression leftvalue, IExpression expressio
     {
         object? target = leftvalue.TargetExpression.Evaluate(context);
 
-        if (target is DynamicObject)
+        if (target is DynamicObject obj)
         {
-            var obj = (DynamicObject)target;
             var method = obj.GetMethod(leftvalue.Name + "=");
 
             if (method != null)
@@ -46,13 +45,11 @@ public class AssignDotExpressions(DotExpression leftvalue, IExpression expressio
         if (obj == null)
             return false;
 
-        if (obj is AssignDotExpressions)
+        if (obj is AssignDotExpressions cmd)
         {
-            var cmd = (AssignDotExpressions)obj;
-
             return leftvalue.Equals(cmd.leftvalue) && Expression.Equals(cmd.Expression);
         }
-        
+
         return false;
     }
 

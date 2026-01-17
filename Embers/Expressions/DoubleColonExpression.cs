@@ -48,14 +48,13 @@ public class DoubleColonExpression : BaseExpression, INamedExpression
 
         //_ = [];
         var result = expression.Evaluate(context);
+        // Check if it's an enum value
 
-        if (result is Type)
+        if (result is Type typeResult)
         {
-            // Check if it's an enum value
-            Type typeResult = (Type)result;
             if (typeResult.IsEnum)
                 return TypeUtilities.ParseEnumValue(typeResult, name);
-            
+
             // Otherwise, try to access static member
             return TypeUtilities.InvokeTypeMember(typeResult, name, []);
         }
@@ -101,10 +100,8 @@ public class DoubleColonExpression : BaseExpression, INamedExpression
         if (obj == null)
             return false;
 
-        if (obj is DoubleColonExpression)
+        if (obj is DoubleColonExpression expr)
         {
-            var expr = (DoubleColonExpression)obj;
-
             return name.Equals(expr.name) && expression.Equals(expr.expression);
         }
 

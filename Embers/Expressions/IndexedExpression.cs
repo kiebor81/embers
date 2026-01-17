@@ -1,4 +1,3 @@
-using Embers.Language.Primitive;
 using System.Collections;
 
 namespace Embers.Expressions;
@@ -31,14 +30,10 @@ public class IndexedExpression(IExpression expression, IExpression indexexpressi
         if (indexvalue is long l)
             indexvalue = (int)l;
 
-        if (indexvalue is int)
+        if (indexvalue is int index)
         {
-            int index = (int)indexvalue;
-
-            if (value is string)
+            if (value is string text)
             {
-                string text = (string)value;
-
                 if (index >= text.Length)
                     return null;
 
@@ -89,10 +84,8 @@ public class IndexedExpression(IExpression expression, IExpression indexexpressi
         if (obj == null)
             return false;
 
-        if (obj is IndexedExpression)
+        if (obj is IndexedExpression expr)
         {
-            var expr = (IndexedExpression)obj;
-
             return expression.Equals(expr.expression) && indexexpression.Equals(expr.indexexpression);
         }
 

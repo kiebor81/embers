@@ -26,10 +26,8 @@ public class ArrayExpression(IList<IExpression> expressions) : BaseExpression
         if (obj == null)
             return false;
 
-        if (obj is ArrayExpression)
+        if (obj is ArrayExpression expr)
         {
-            var expr = (ArrayExpression)obj;
-
             if (expressions.Count != expr.expressions.Count)
                 return false;
 

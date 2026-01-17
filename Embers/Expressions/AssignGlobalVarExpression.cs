@@ -28,10 +28,8 @@ public class AssignGlobalVarExpression(string name, IExpression expression) : IE
         if (obj == null)
             return false;
 
-        if (obj is AssignGlobalVarExpression)
+        if (obj is AssignGlobalVarExpression cmd)
         {
-            var cmd = (AssignGlobalVarExpression)obj;
-
             return Name.Equals(cmd.name) && Expression.Equals(cmd.Expression);
         }
 

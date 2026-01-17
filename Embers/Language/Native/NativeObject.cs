@@ -5,18 +5,11 @@ namespace Embers.Language.Native;
 /// <summary>
 /// DynamicObject wrapper for native CLR values to enable DynamicClass dispatch.
 /// </summary>
-public sealed class NativeObject : DynamicObject
+public sealed class NativeObject(NativeClassAdapter nativeClass, object? nativeValue) : DynamicObject(nativeClass)
 {
-    public NativeObject(NativeClassAdapter nativeClass, object? nativeValue)
-        : base(nativeClass)
-    {
-        NativeClass = nativeClass ?? throw new ArgumentNullException(nameof(nativeClass));
-        NativeValue = nativeValue;
-    }
+    public NativeClassAdapter NativeClass { get; } = nativeClass ?? throw new ArgumentNullException(nameof(nativeClass));
 
-    public NativeClassAdapter NativeClass { get; }
-
-    public object? NativeValue { get; }
+    public object? NativeValue { get; } = nativeValue;
 
     public override IFunction? GetMethod(string name)
     {

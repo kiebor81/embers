@@ -1,5 +1,3 @@
-using Embers.Language.Primitive;
-
 namespace Embers.StdLib;
 
 /// <summary>

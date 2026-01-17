@@ -44,10 +44,8 @@ public class DefExpression(INamedExpression namedexpression, IList<string> param
         if (obj == null)
             return false;
 
-        if (obj is DefExpression)
+        if (obj is DefExpression expr)
         {
-            var expr = (DefExpression)obj;
-
             if (parameters.Count != expr.parameters.Count)
                 return false;
 

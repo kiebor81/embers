@@ -58,10 +58,8 @@ public class NameExpression(string name) : BaseExpression, INamedExpression
         if (obj == null)
             return false;
 
-        if (obj is NameExpression) 
+        if (obj is NameExpression expr)
         {
-            var expr = (NameExpression)obj;
-
             return Name.Equals(expr.Name);
         }
 

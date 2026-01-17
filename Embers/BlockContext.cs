@@ -10,7 +10,6 @@ public class BlockContext : Context
     public BlockContext(Context parent) : base(parent)
     {
         Self = parent.Self;
-        //this.Module = parent.Module;
     }
 
     /// <summary>

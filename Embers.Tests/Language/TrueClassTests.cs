@@ -1,6 +1,4 @@
-﻿using Embers.Language.Primitive;
-
-namespace Embers.Tests.Language
+﻿namespace Embers.Tests.Language
 {
     [TestClass]
     public class TrueClassTests

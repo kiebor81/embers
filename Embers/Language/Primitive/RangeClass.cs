@@ -13,6 +13,13 @@ public class RangeClass : NativeClass
         SetInstanceMethod("each", DoEach);
     }
 
+    /// <summary>
+    /// Implements the 'each' method for Range objects.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    /// <exception cref="TypeError"></exception>
     private static object DoEach(object obj, IList<object> values)
     {
         var block = (Block)values[0];

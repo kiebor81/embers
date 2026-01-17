@@ -65,10 +65,8 @@ public class UntilExpression(IExpression condition, IExpression command) : IExpr
         if (obj == null)
             return false;
 
-        if (obj is UntilExpression)
+        if (obj is UntilExpression cmd)
         {
-            var cmd = (UntilExpression)obj;
-
             return condition.Equals(cmd.condition) && command.Equals(cmd.command);
         }
 

@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using Embers.Exceptions;
 using Embers.Functions;
-using Embers.Language.Primitive;
 using Embers.Security;
 using Embers.Signals;
 using Embers.StdLib.Conversion;

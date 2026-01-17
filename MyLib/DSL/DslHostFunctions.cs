@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text;
-using Embers;
 using Embers.Annotations;
+using Embers;
 using Embers.Exceptions;
 using Embers.Host;
 using Embers.Language.Dynamic;

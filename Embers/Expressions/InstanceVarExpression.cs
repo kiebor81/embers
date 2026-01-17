@@ -23,10 +23,8 @@ public class InstanceVarExpression(string name) : BaseExpression
         if (obj == null)
             return false;
 
-        if (obj is InstanceVarExpression) 
+        if (obj is InstanceVarExpression expr)
         {
-            var expr = (InstanceVarExpression)obj;
-
             return Name.Equals(expr.Name);
         }
 

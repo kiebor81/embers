@@ -25,10 +25,8 @@ public class ClassVarExpression(string name) : BaseExpression
         if (obj == null)
             return false;
 
-        if (obj is ClassVarExpression) 
+        if (obj is ClassVarExpression expr)
         {
-            var expr = (ClassVarExpression)obj;
-
             return Name.Equals(expr.Name);
         }
 

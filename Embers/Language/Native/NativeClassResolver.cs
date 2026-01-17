@@ -1,4 +1,3 @@
-using Embers.Language.Primitive;
 using System.Collections;
 
 namespace Embers.Language.Native;
@@ -8,6 +7,12 @@ namespace Embers.Language.Native;
 /// </summary>
 public static class NativeClassResolver
 {
+    /// <summary>
+    /// Resolves a CLR value to its corresponding NativeClassAdapter.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static NativeClassAdapter? Resolve(Context context, object? value)
     {
         var root = context.RootContext;
