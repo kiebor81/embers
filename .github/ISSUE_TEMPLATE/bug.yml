@@ -1,0 +1,119 @@
+name: Bug Report
+description: Report a defect in Embers (language, runtime, or tooling)
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide a **minimal, self-contained reproduction**.
+        Language bugs without repros cannot be triaged.
+
+  - type: checkboxes
+    id: component
+    attributes:
+      label: Affected Component(s)
+      description: Select all that apply
+      options:
+        - label: Lexer
+        - label: Parser
+        - label: Runtime / VM
+        - label: Stdlib
+        - label: CLI
+        - label: ISE
+        - label: Host API
+        - label: Documentation
+        - label: Other
+
+  - type: input
+    id: version
+    attributes:
+      label: Embers Version / Commit
+      placeholder: e.g. v1.0.0 or commit hash
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: OS, .NET version, host (CLI / Godot / custom)
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Clear and concise description of the defect
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal Reproduction Script
+      description: Smallest possible example that demonstrates the issue
+      render: ruby
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How to trigger the bug
+      placeholder: |
+        1. Run `embers run script.rb`
+        2. Observe output
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behaviour
+      description: What should happen according to Embers semantics
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behaviour
+      description: What actually happens (include errors / output)
+      render: text
+    validations:
+      required: true
+
+  - type: dropdown
+    id: failure_type
+    attributes:
+      label: Failure Type
+      options:
+        - Crash
+        - Incorrect result
+        - Parse error
+        - Runtime error
+        - Performance regression
+        - Documentation mismatch
+        - Undefined behaviour
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - label: Regression (worked previously)
+        - label: Blocks further development
+        - label: Affects core language semantics
+        - label: Host-specific
+        - label: Edge case only
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional Context
+      description: Stack traces, hypotheses, links to related issues, etc.

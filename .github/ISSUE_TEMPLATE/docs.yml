@@ -1,0 +1,15 @@
+name: Documentation Issue
+description: Report missing, unclear, or incorrect documentation
+title: "[Docs] "
+labels: ["docs"]
+body:
+  - type: textarea
+    attributes:
+      label: What is unclear or missing?
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Affected Page / File
+      placeholder: README.md, Grammar.md, examples.md

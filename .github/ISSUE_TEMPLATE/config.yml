@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Embers Discussions
+    url: https://github.com/kiebor81/embers/discussions
+    about: Architectural discussion, design exploration, or early ideas

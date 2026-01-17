@@ -1,0 +1,34 @@
+name: Using Embers
+description: Let us know you are using Embers in a project
+title: "[Using Embers] "
+labels: ["community", "adoption"]
+body:
+  - type: textarea
+    attributes:
+      label: Project Name & Description
+      description: Briefly describe your project
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Project Link
+      description: GitHub, website, itch.io, etc.
+      placeholder: https://
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: How are you using Embers?
+      description: |
+        Embedded scripting, automation, modding, tooling, etc.
+    validations:
+      required: true
+
+  - type: checkboxes
+    attributes:
+      label: Permissions
+      options:
+        - label: You may link to this project from the Embers README or website
+          required: false

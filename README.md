@@ -613,6 +613,8 @@ For more details and if you would like to help build on Embers through contribut
 
 Embers is designed for embedding into diverse .NET applications. For in-depth examples, see [Examples](/Docs/Examples.md)
 
+If you have found a use for Embers in your project, let me know. I'll be happy to hear about it and link to it.
+
 ---
 
 ## Roadmap

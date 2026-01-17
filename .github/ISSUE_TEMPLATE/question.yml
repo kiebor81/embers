@@ -1,0 +1,19 @@
+name: Question / Usage Help
+description: Ask a question about using Embers
+title: "[Question] "
+labels: ["question"]
+body:
+  - type: textarea
+    attributes:
+      label: Question
+      description: What would you like to know?
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Context
+      description: |
+        How are you using Embers?
+        (CLI, embedded, Godot, automation, plugins, user code/content, etc.)
+      placeholder: Optional
