@@ -591,7 +591,7 @@ Embers maps Ruby types to C# types through `NativeClass`:
 - **Array** → `List<object>`
 - **Hash** → `Dictionary<object, object>`
 - **DateTime** → `System.DateTime`
-- **NilClass** → `null`
+- **Nil** → `null`
 - **Range** → `Range`
 
 ### Automatic Discovery
