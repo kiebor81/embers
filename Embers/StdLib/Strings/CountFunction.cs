@@ -2,9 +2,9 @@ using Embers.Language;
 using Embers.Exceptions;
 using Embers.Annotations;
 
-namespace Embers.StdLib.Numeric;
+namespace Embers.StdLib.Strings;
 
-[StdLib("count", TargetTypes = new[] { "Fixnum", "Float" })]
+[StdLib("count", TargetTypes = new[] { "String" })]
 public class CountFunction : StdFunction
 {
     [Comments("Counts the occurrences of a substring within a string.")]

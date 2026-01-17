@@ -18,14 +18,14 @@ public class BetweenFunction : StdFunction
         if (values == null || values.Count < 3 || values[0] == null || values[1] == null || values[2] == null)
             throw new ArgumentError("between? expects number, min, and max arguments");
 
-        if (!double.TryParse(values[0].ToString(), out var number))
-            throw new ArgumentError("between? expects number to be numeric");
+        if (!NumericCoercion.TryGetDouble(values[0], out var number))
+            throw new TypeError("between? expects number to be numeric");
 
-        if (!double.TryParse(values[1].ToString(), out var min))
-            throw new ArgumentError("between? expects min to be numeric");
+        if (!NumericCoercion.TryGetDouble(values[1], out var min))
+            throw new TypeError("between? expects min to be numeric");
 
-        if (!double.TryParse(values[2].ToString(), out var max))
-            throw new ArgumentError("between? expects max to be numeric");
+        if (!NumericCoercion.TryGetDouble(values[2], out var max))
+            throw new TypeError("between? expects max to be numeric");
 
         return number >= min && number <= max;
     }

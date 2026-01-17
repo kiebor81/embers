@@ -16,11 +16,8 @@ public class LogFunction : StdFunction
             throw new ArgumentError("log expects a numeric argument");
 
         var value = values[0];
-        double d;
-        if (value is long l) d = l;
-        else if (value is int i) d = i;
-        else if (value is double dd) d = dd;
-        else throw new TypeError("log expects a numeric argument");
+        if (!NumericCoercion.TryGetDouble(value, out var d))
+            throw new TypeError("log expects a numeric argument");
 
         if (d <= 0)
             throw new ArgumentError("log expects a positive number");

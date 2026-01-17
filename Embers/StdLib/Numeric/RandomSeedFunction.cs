@@ -18,10 +18,10 @@ public class RandomSeedFunction : StdFunction
         if (values == null || values.Count == 0 || values[0] == null)
             throw new ArgumentError("random_seed expects a numeric argument");
 
-        int seed;
-        if (values[0] is int i) seed = i;
-        else if (values[0] is double d) seed = (int)d;
-        else throw new TypeError("random_seed expects a numeric argument");
+        if (!NumericCoercion.TryGetDouble(values[0], out var d))
+            throw new TypeError("random_seed expects a numeric argument");
+
+        int seed = (int)d;
 
         _random = new Random(seed);
         return null;

@@ -8,6 +8,7 @@ namespace Embers.Tests
     /// and static members from the .NET framework.
     /// </summary>
     [TestClass]
+    [DoNotParallelize]
     public class InteropTests
     {
         private Machine machine;
@@ -53,6 +54,62 @@ namespace Embers.Tests
         }
 
         [TestMethod]
+        public void DecimalMapsToFloatClass()
+        {
+            object result = machine.ExecuteText("System::Decimal.Parse('1.5').class");
+
+            Assert.AreSame(machine.RootContext.GetLocalValue("Float"), result);
+        }
+
+        [TestMethod]
+        public void SingleMapsToFloatClass()
+        {
+            object result = machine.ExecuteText("System::Single.Parse('1.25').class");
+
+            Assert.AreSame(machine.RootContext.GetLocalValue("Float"), result);
+        }
+
+        [TestMethod]
+        public void Int16MapsToFixnumClass()
+        {
+            object result = machine.ExecuteText("System::Int16.Parse('7').class");
+
+            Assert.AreSame(machine.RootContext.GetLocalValue("Fixnum"), result);
+        }
+
+        [TestMethod]
+        public void ByteMapsToFixnumClass()
+        {
+            object result = machine.ExecuteText("System::Byte.Parse('7').class");
+
+            Assert.AreSame(machine.RootContext.GetLocalValue("Fixnum"), result);
+        }
+
+        [TestMethod]
+        public void DecimalCeilUsesNumericCoercion()
+        {
+            object result = machine.ExecuteText("System::Decimal.Parse('1.5').ceil");
+
+            Assert.AreEqual(2L, result);
+        }
+
+        [TestMethod]
+        public void SingleFloorUsesNumericCoercion()
+        {
+            object result = machine.ExecuteText("System::Single.Parse('1.25').floor");
+
+            Assert.AreEqual(1L, result);
+        }
+
+        [TestMethod]
+        public void Int16AbsUsesNumericCoercion()
+        {
+            object result = machine.ExecuteText("System::Int16.Parse('-7').abs");
+
+            Assert.AreEqual(7L, result);
+        }
+
+        [TestMethod]
         public void AccessIntMaxValue()
         {
             // Access a static constant field from a .NET type
@@ -60,6 +117,14 @@ namespace Embers.Tests
             
             Assert.IsNotNull(result);
             Assert.AreEqual(int.MaxValue, result);
+        }
+
+        [TestMethod]
+        public void QueueDoesNotMapToRangeClass()
+        {
+            object result = machine.ExecuteText("System::Collections::Queue.new.class");
+
+            Assert.IsNull(result);
         }
 
         // ==================== Chaining .NET Method Calls ====================

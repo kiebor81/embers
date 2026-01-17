@@ -13,6 +13,11 @@ public class BlockContext : Context
         //this.Module = parent.Module;
     }
 
+    /// <summary>
+    /// Determines whether the specified local variable exists in the current context or any parent context.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public override bool HasLocalValue(string name)
     {
         if (base.HasLocalValue(name))
@@ -21,6 +26,11 @@ public class BlockContext : Context
         return Parent.HasLocalValue(name);
     }
 
+    /// <summary>
+    /// Gets the value of the specified local variable from the current context or any parent context.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public override object GetLocalValue(string name)
     {
         if (base.HasLocalValue(name))
@@ -29,6 +39,11 @@ public class BlockContext : Context
         return Parent.GetLocalValue(name);
     }
 
+    /// <summary>
+    /// Sets the value of the specified local variable in the current context or parent context if it exists there.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="value"></param>
     public override void SetLocalValue(string name, object value)
     {
         if (Parent.HasLocalValue(name))

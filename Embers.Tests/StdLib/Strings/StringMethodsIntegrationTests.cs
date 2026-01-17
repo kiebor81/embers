@@ -64,6 +64,16 @@ namespace Embers.Tests.StdLib.Strings
         }
 
         [TestMethod]
+        public void String_SizeAlias_Works()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText("'hello'.size");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(5, result);
+        }
+
+        [TestMethod]
         public void String_EmptyMethod_ReturnsTrueForEmpty()
         {
             Machine machine = new();
@@ -264,6 +274,26 @@ namespace Embers.Tests.StdLib.Strings
             
             Assert.IsNotNull(result);
             Assert.AreEqual("heo", result);
+        }
+
+        [TestMethod]
+        public void String_CountMethod_CountsSubstringOccurrences()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText("'hello'.count('l')");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result);
+        }
+
+        [TestMethod]
+        public void String_CountMethod_CountsRepeatedSubstring()
+        {
+            Machine machine = new();
+            var result = machine.ExecuteText("'aaaa'.count('aa')");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result);
         }
     }
 }

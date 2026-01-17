@@ -18,13 +18,17 @@ public class MaxFunction : StdFunction
         if (values == null || values.Count == 0)
             throw new ArgumentError("max expects at least one argument");
 
-        try
+        double? max = null;
+
+        foreach (var value in values)
         {
-            return values.Max(v => Convert.ToDouble(v));
+            if (!NumericCoercion.TryGetDouble(value, out var d))
+                throw new TypeError("max expects numeric arguments");
+
+            if (max == null || d > max.Value)
+                max = d;
         }
-        catch
-        {
-            throw new TypeError("max expects numeric arguments");
-        }
+
+        return max ?? throw new TypeError("max expects numeric arguments");
     }
 }

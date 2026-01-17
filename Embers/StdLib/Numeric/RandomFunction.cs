@@ -19,11 +19,10 @@ public class RandomFunction : StdFunction
             return _random.NextDouble();
 
         var value = values[0];
-        int max;
-        if (value is long l) max = (int)l;
-        else if (value is int i) max = i;
-        else if (value is double d) max = (int)d;
-        else throw new TypeError("random expects a numeric argument");
+        if (!NumericCoercion.TryGetDouble(value, out var d))
+            throw new TypeError("random expects a numeric argument");
+
+        int max = (int)d;
 
         if (max <= 0)
             throw new ArgumentError("random expects a positive number");

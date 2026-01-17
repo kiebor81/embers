@@ -41,6 +41,10 @@ internal static class Registration
         RegisterAllStdLibFunctionsGlobally(context);
     }
 
+    /// <summary>
+    /// Registers all standard library functions globally in the given context.
+    /// </summary>
+    /// <param name="context"></param>
     private static void RegisterAllStdLibFunctionsGlobally(Context context)
     {
         var baseType = typeof(StdFunction);

@@ -15,11 +15,8 @@ public class DegreeFunction : StdFunction
         if (values == null || values.Count == 0 || values[0] == null)
             throw new ArgumentError("degree expects a numeric argument");
 
-        double radians;
-        if (values[0] is long l) radians = l;
-        else if (values[0] is int i) radians = i;
-        else if (values[0] is double d) radians = d;
-        else throw new TypeError("degree expects a numeric argument");
+        if (!NumericCoercion.TryGetDouble(values[0], out var radians))
+            throw new TypeError("degree expects a numeric argument");
 
         return radians * 180.0 / Math.PI;
     }

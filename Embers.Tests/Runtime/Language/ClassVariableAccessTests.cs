@@ -51,5 +51,19 @@ namespace Embers.Tests
             Assert.ThrowsException<TypeError>(() =>
                 machine.ExecuteText("class MyClass; end; MyClass.class_variable_set(123, 1)"));
         }
+
+        [TestMethod]
+        public void ClassVariableGet_NonClassReceiver_ThrowsTypeError()
+        {
+            Assert.ThrowsException<NoMethodError>(() =>
+                machine.ExecuteText("obj = Object.new; obj.class_variable_get('@@value_0')"));
+        }
+
+        [TestMethod]
+        public void ClassVariableSet_NonClassReceiver_ThrowsTypeError()
+        {
+            Assert.ThrowsException<NoMethodError>(() =>
+                machine.ExecuteText("obj = Object.new; obj.class_variable_set('@@value_0', 1)"));
+        }
     }
 }

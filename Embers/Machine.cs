@@ -486,8 +486,7 @@ public class Machine
         if (values[0] is not DynamicClass module)
             throw new TypeError("include expects a module");
 
-        var moduleClass = context.RootContext.GetLocalValue("Module") as DynamicClass;
-        if (moduleClass != null && module.Class != moduleClass)
+        if (context.RootContext.GetLocalValue("Module") is DynamicClass moduleClass && module.Class != moduleClass)
             throw new TypeError("include expects a module");
 
         target.IncludeModule(module);

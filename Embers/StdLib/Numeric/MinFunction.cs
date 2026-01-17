@@ -18,13 +18,17 @@ public class MinFunction : StdFunction
         if (values == null || values.Count == 0)
             throw new ArgumentError("min expects at least one argument");
 
-        try
+        double? min = null;
+
+        foreach (var value in values)
         {
-            return values.Min(v => Convert.ToDouble(v));
+            if (!NumericCoercion.TryGetDouble(value, out var d))
+                throw new TypeError("min expects numeric arguments");
+
+            if (min == null || d < min.Value)
+                min = d;
         }
-        catch
-        {
-            throw new TypeError("min expects numeric arguments");
-        }
+
+        return min ?? throw new TypeError("min expects numeric arguments");
     }
 }

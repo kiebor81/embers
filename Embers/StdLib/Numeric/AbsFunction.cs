@@ -19,13 +19,11 @@ public class AbsFunction : StdFunction
             return null;
 
         var value = values[0];
-        if (value is long l)
+        if (NumericCoercion.TryGetLong(value, out var l))
             return Math.Abs(l);
-        if (value is int i)
-            return Math.Abs(i);
-        if (value is double d)
+        if (NumericCoercion.TryGetDouble(value, out var d))
             return Math.Abs(d);
 
-        throw new ArgumentError("abs expects an int or double");
+        throw new ArgumentError("abs expects a numeric argument");
     }
 }

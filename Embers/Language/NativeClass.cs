@@ -126,6 +126,13 @@ public class NativeClass : DynamicObject
             return floatclass;
         }
 
+        if (self is float || self is decimal)
+        {
+            floatclass ??= (NativeClass)machine.RootContext.GetLocalValue("Float");
+
+            return floatclass;
+        }
+
         if (self is string)
         {
             stringclass ??= (NativeClass)machine.RootContext.GetLocalValue("String");
@@ -175,13 +182,20 @@ public class NativeClass : DynamicObject
             return arrayclass;
         }
 
+        if (self is short || self is byte)
+        {
+            fixnumclass ??= (NativeClass)machine.RootContext.GetLocalValue("Fixnum");
+
+            return fixnumclass;
+        }
+
         if (self is Proc)
         {
             var procclass = (NativeClass)machine.RootContext.GetLocalValue("Proc");
             return procclass;
         }
 
-        if (self is IEnumerable)
+        if (self is Range)
         {
             rangeclass ??= (NativeClass)machine.RootContext.GetLocalValue("Range");
 

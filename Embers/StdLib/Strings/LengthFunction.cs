@@ -7,7 +7,7 @@ namespace Embers.StdLib.Strings;
 /// <summary>
 /// Returns the length of a string or array.
 /// </summary>
-[StdLib("length", "len", TargetType = "String")]
+[StdLib("length", "len", "size", TargetTypes = new[] { "String" })]
 public class LengthFunction : StdFunction
 {
     [Comments("Returns the length of the string or array.")]

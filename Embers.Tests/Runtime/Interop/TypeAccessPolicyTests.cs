@@ -4,6 +4,7 @@ using Embers.Security;
 namespace Embers.Tests
 {
     [TestClass]
+    [DoNotParallelize]
     public class TypeAccessPolicyTests
     {
         [TestCleanup]

@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace Embers.StdLib.Hashes;
 
-[StdLib("size", TargetType = "Hash")]
+[StdLib("size", "length", TargetTypes = new[] { "Hash" })]
 public class SizeFunction : StdFunction
 {
     [Comments("Returns the number of key-value pairs in the hash.")]

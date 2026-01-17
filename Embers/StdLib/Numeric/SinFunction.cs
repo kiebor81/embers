@@ -16,11 +16,8 @@ public class SinFunction : StdFunction
             throw new ArgumentError("sin expects a numeric argument");
 
         var value = values[0];
-        double d;
-        if (value is long l) d = l;
-        else if (value is int i) d = i;
-        else if (value is double dd) d = dd;
-        else throw new TypeError("sin expects a numeric argument");
+        if (!NumericCoercion.TryGetDouble(value, out var d))
+            throw new TypeError("sin expects a numeric argument");
 
         return Math.Sin(d);
     }

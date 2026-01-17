@@ -141,6 +141,16 @@ namespace Embers.Tests.StdLib.Hashes
         }
 
         [TestMethod]
+        public void HashLength()
+        {
+            var result = Execute(@"
+                h = {:a => 1, :b => 2, :c => 3}
+                h.length
+            ");
+            Assert.AreEqual(3, result);
+        }
+
+        [TestMethod]
         public void HashMerge()
         {
             var result = Execute(@"
