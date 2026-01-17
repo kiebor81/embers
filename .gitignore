@@ -13,3 +13,6 @@ TestResults/
 nuget/
 publish/
 Embers.Tests/MachineFiles/MyLib.dll
+Embers.Tests/test.runsettings
+Embers.Tests/RunTests.ps1
+Embers.Tests/Directory.Build.props

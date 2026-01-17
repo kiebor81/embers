@@ -1,9 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <!-- Configure test results directory -->
-    <VSTestResultsDirectory>$(MSBuildProjectDirectory)/../.vs</VSTestResultsDirectory>
-    
-    <!-- Enable test logging -->
-    <VSTestLogger>trx%3bLogFileName=$([System.DateTime]::Now.ToString('yyyy-MM-dd_HH-mm-ss'))_testOutcomes.trx;html%3bLogFileName=$([System.DateTime]::Now.ToString('yyyy-MM-dd_HH-mm-ss'))_testOutcomes.html</VSTestLogger>
-  </PropertyGroup>
-</Project>
