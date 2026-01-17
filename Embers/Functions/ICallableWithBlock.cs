@@ -1,6 +1,4 @@
-﻿using Embers.Language;
-
-namespace Embers.Functions;
+﻿namespace Embers.Functions;
 /// <summary>
 /// ICallableWithBlock interface extends the IFunction interface to allow functions that can be called with a block.
 /// CallableWithBlock functions can accept an additional block parameter that can be executed within the function's context.

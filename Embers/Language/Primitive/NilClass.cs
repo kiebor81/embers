@@ -1,4 +1,4 @@
-﻿namespace Embers.Language;
+﻿namespace Embers.Language.Primitive;
 /// <summary>
 /// NilClass represents Null
 /// </summary>

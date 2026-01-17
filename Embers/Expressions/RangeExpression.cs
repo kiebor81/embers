@@ -1,4 +1,4 @@
-using Range = Embers.Language.Range;
+using Range = Embers.Language.Primitive.Range;
 
 namespace Embers.Expressions;
 /// <summary>
@@ -18,11 +18,7 @@ public class RangeExpression(IExpression fromexpression, IExpression toexpressio
         var fromValue = fromexpression.Evaluate(context);
         var toValue = toexpression.Evaluate(context);
         
-        // Convert long to int for range (arrays need int indices)
-        int from = fromValue is long l1 ? (int)l1 : (int)fromValue;
-        int to = toValue is long l2 ? (int)l2 : (int)toValue;
-        
-        return new Range(from, to);
+        return new Range(fromValue, toValue);
     }
 
     public IList<string> GetLocalVariables()

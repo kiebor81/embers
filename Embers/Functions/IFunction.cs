@@ -1,6 +1,4 @@
-﻿using Embers.Language;
-
-namespace Embers.Functions;
+﻿namespace Embers.Functions;
 /// <summary>
 /// IFunction interface defines the contract for all functions in the language.
 /// </summary>

@@ -1,5 +1,6 @@
-using Embers.Language;
 using Embers.Annotations;
+using Embers.StdLib.Numeric;
+using Embers.Exceptions;
 
 namespace Embers.StdLib.Ranges;
 
@@ -7,36 +8,51 @@ namespace Embers.StdLib.Ranges;
 public class StepFunction : StdFunction
 {
     [Comments("Iterates over the range, yielding every `step`-th element to the given block.")]
-    [Arguments(ParamNames = new[] { "range", "step" }, ParamTypes = new[] { typeof(Language.Range), typeof(Number) })]
-    [Returns(ReturnType = typeof(Language.Range))]
+    [Arguments(ParamNames = new[] { "range", "step" }, ParamTypes = new[] { typeof(Language.Primitive.Range), typeof(Number) })]
+    [Returns(ReturnType = typeof(Language.Primitive.Range))]
     public override object Apply(DynamicObject self, Context context, IList<object> values)
     {
         if (values.Count != 2)
-            throw new Exceptions.ArgumentError($"wrong number of arguments (given {values.Count - 1}, expected 1)");
+            throw new ArgumentError($"wrong number of arguments (given {values.Count - 1}, expected 1)");
 
-        var range = values[0] as IEnumerable<int>;
+        var range = values[0] as Language.Primitive.Range;
         if (range == null)
-            throw new Exceptions.TypeError("range must be a Range");
+            throw new TypeError("range must be a Range");
 
-        if (values[1] is not int and not long)
-            throw new Exceptions.TypeError("step must be an integer");
+        if (!NumericCoercion.TryGetDouble(values[1], out var stepValue))
+            throw new TypeError("step must be numeric");
 
-        int step = Convert.ToInt32(values[1]);
-
-        if (step <= 0)
-            throw new Exceptions.ArgumentError("step must be positive");
+        if (stepValue <= 0)
+            throw new ArgumentError("step must be positive");
 
         if (context.Block == null)
-            throw new Exceptions.ArgumentError("no block given");
+            throw new ArgumentError("no block given");
 
-        int count = 0;
-        foreach (var value in range)
+        if (range.TryGetLongBounds(out var longStart, out var longEnd)
+            && NumericCoercion.TryGetLong(values[1], out var longStep))
         {
-            if (count % step == 0)
-                context.Block.Apply(self, context, [value]);
-            count++;
+            if (longStep <= 0)
+                throw new ArgumentError("step must be positive");
+            if (longStart <= longEnd)
+            {
+                for (var value = longStart; value <= longEnd; value += longStep)
+                    context.Block.Apply(self, context, [value]);
+            }
+
+            return values[0];
         }
 
-        return values[0];
+        if (range.TryGetDoubleBounds(out var doubleStart, out var doubleEnd))
+        {
+            if (doubleStart <= doubleEnd)
+            {
+                for (var value = doubleStart; value <= doubleEnd + 1e-9; value += stepValue)
+                    context.Block.Apply(self, context, [value]);
+            }
+
+            return values[0];
+        }
+
+        throw new TypeError("range must be numeric");
     }
 }

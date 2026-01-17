@@ -1,3 +1,5 @@
+using Embers.Language.Primitive;
+
 namespace Embers.Tests.StdLib.Symbols
 {
     [TestClass]
@@ -40,32 +42,32 @@ namespace Embers.Tests.StdLib.Symbols
         public void SymbolUpcase()
         {
             var result = machine.ExecuteText(":hello.upcase");
-            Assert.IsInstanceOfType(result, typeof(Embers.Language.Symbol));
-            Assert.AreEqual("HELLO", ((Embers.Language.Symbol)result).Name);
+            Assert.IsInstanceOfType(result, typeof(Symbol));
+            Assert.AreEqual("HELLO", ((Symbol)result).Name);
         }
 
         [TestMethod]
         public void SymbolDowncase()
         {
             var result = machine.ExecuteText(":WORLD.downcase");
-            Assert.IsInstanceOfType(result, typeof(Embers.Language.Symbol));
-            Assert.AreEqual("world", ((Embers.Language.Symbol)result).Name);
+            Assert.IsInstanceOfType(result, typeof(Symbol));
+            Assert.AreEqual("world", ((Symbol)result).Name);
         }
 
         [TestMethod]
         public void SymbolCapitalize()
         {
             var result = machine.ExecuteText(":hello_world.capitalize");
-            Assert.IsInstanceOfType(result, typeof(Embers.Language.Symbol));
-            Assert.AreEqual("Hello_world", ((Embers.Language.Symbol)result).Name);
+            Assert.IsInstanceOfType(result, typeof(Symbol));
+            Assert.AreEqual("Hello_world", ((Symbol)result).Name);
         }
 
         [TestMethod]
         public void SymbolCapitalizeMixed()
         {
             var result = machine.ExecuteText(":hELLO.capitalize");
-            Assert.IsInstanceOfType(result, typeof(Embers.Language.Symbol));
-            Assert.AreEqual("Hello", ((Embers.Language.Symbol)result).Name);
+            Assert.IsInstanceOfType(result, typeof(Symbol));
+            Assert.AreEqual("Hello", ((Symbol)result).Name);
         }
 
         [TestMethod]
@@ -79,16 +81,16 @@ namespace Embers.Tests.StdLib.Symbols
         public void SymbolToSym()
         {
             var result = machine.ExecuteText("sym = :original; sym.to_sym");
-            Assert.IsInstanceOfType(result, typeof(Embers.Language.Symbol));
-            Assert.AreEqual("original", ((Embers.Language.Symbol)result).Name);
+            Assert.IsInstanceOfType(result, typeof(Symbol));
+            Assert.AreEqual("original", ((Symbol)result).Name);
         }
 
         [TestMethod]
         public void SymbolIntern()
         {
             var result = machine.ExecuteText(":test.intern");
-            Assert.IsInstanceOfType(result, typeof(Embers.Language.Symbol));
-            Assert.AreEqual("test", ((Embers.Language.Symbol)result).Name);
+            Assert.IsInstanceOfType(result, typeof(Symbol));
+            Assert.AreEqual("test", ((Symbol)result).Name);
         }
 
         [TestMethod]

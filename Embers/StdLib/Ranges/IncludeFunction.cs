@@ -1,47 +1,34 @@
-using Embers.Language;
 using Embers.Annotations;
+using Embers.StdLib.Numeric;
+using Embers.Exceptions;
 
 namespace Embers.StdLib.Ranges;
 
-[StdLib("include?", TargetType = "Range")]
+[StdLib("include?", "cover?", TargetType = "Range")]
 public class IncludeFunction : StdFunction
 {
     [Comments("Returns true if the range includes the given value.")]
-    [Arguments(ParamNames = new[] { "range", "value" }, ParamTypes = new[] { typeof(Language.Range), typeof(object) })]
+    [Arguments(ParamNames = new[] { "range", "value" }, ParamTypes = new[] { typeof(Language.Primitive.Range), typeof(object) })]
     [Returns(ReturnType = typeof(Boolean))]
     public override object Apply(DynamicObject self, Context context, IList<object> values)
     {
         if (values.Count != 2)
-            throw new Exceptions.ArgumentError($"wrong number of arguments (given {values.Count - 1}, expected 1)");
+            throw new ArgumentError($"wrong number of arguments (given {values.Count - 1}, expected 1)");
 
-        var range = values[0] as Language.Range;
+        var range = values[0] as Language.Primitive.Range;
         if (range == null)
-            throw new Exceptions.TypeError("range must be a Range");
+            throw new TypeError("range must be a Range");
 
-        // Accept both int and long
-        if (values[1] is not int and not long)
+        if (!NumericCoercion.TryGetDouble(values[1], out var testValue))
             return false;
-        
-        int testValue = Convert.ToInt32(values[1]);
 
-        // Get first and last values from range
-        int first = 0;
-        int last = 0;
-        bool hasValues = false;
-
-        foreach (var value in range)
+        if (range.TryGetDoubleBounds(out var start, out var end))
         {
-            if (!hasValues)
-            {
-                first = value;
-                hasValues = true;
-            }
-            last = value;
+            if (start > end)
+                return false;
+            return testValue >= start && testValue <= end;
         }
 
-        if (!hasValues)
-            return false;
-
-        return testValue >= first && testValue <= last;
+        throw new TypeError("range must be numeric");
     }
 }

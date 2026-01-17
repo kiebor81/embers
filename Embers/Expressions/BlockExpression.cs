@@ -1,5 +1,3 @@
-using Embers.Language;
-
 namespace Embers.Expressions;
 /// <summary>
 /// Represents a block expression in the Embers language.

@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using Embers.Exceptions;
 
-namespace Embers.Language;
+namespace Embers.Language.Primitive;
 /// <summary>
 /// RangeClass represents a range of values in the runtime interpreter.
 /// </summary>
@@ -16,12 +16,13 @@ public class RangeClass : NativeClass
     private static object DoEach(object obj, IList<object> values)
     {
         var block = (Block)values[0];
-        IEnumerable list = (IEnumerable)obj;
+        var range = obj as Range ?? throw new TypeError("range must be a Range");
 
-        foreach (var value in list)
+        foreach (var value in range.Enumerate())
             block.Apply([value]);
 
         return obj;
     }
 }
+
 

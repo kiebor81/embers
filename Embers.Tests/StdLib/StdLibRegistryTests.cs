@@ -1,4 +1,3 @@
-using Embers.Language;
 using Embers.StdLib.Arrays;
 
 namespace Embers.Tests.StdLib

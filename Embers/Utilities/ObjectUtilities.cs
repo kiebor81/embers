@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using Embers.Functions;
-using Embers.Language;
 
 namespace Embers.Utilities;
 /// <summary>

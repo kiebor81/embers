@@ -1,4 +1,4 @@
-namespace Embers.Language;
+namespace Embers.Language.Primitive;
 /// <summary>
 /// SymbolClass represents the native Symbol class in the interpreter.
 /// </summary>

@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Embers.Exceptions;
 using Embers.Functions;
-using Embers.Language;
+using Embers.Language.Primitive;
 using Embers.Security;
 using Embers.Signals;
 using Embers.StdLib.Conversion;
@@ -59,19 +59,33 @@ public class Machine
 
         classclass.SetInstanceMethod("new", new LambdaFunction(NewInstance));
 
-        rootcontext.SetLocalValue("Fixnum", new FixnumClass(this));
-        rootcontext.SetLocalValue("Float", new FloatClass(this));
-        rootcontext.SetLocalValue("String", new StringClass(this));
-        rootcontext.SetLocalValue("Symbol", new SymbolClass(this));
-        rootcontext.SetLocalValue("NilClass", new NilClass(this));
-        rootcontext.SetLocalValue("FalseClass", new FalseClass(this));
-        rootcontext.SetLocalValue("TrueClass", new TrueClass(this));
-        rootcontext.SetLocalValue("Array", new ArrayClass(this));
-        rootcontext.SetLocalValue("Hash", new HashClass(this));
-        rootcontext.SetLocalValue("Range", new RangeClass(this));
-        rootcontext.SetLocalValue("DateTime", new DateTimeClass(this));
-        rootcontext.SetLocalValue("JSON", new JsonClass(this));
-        rootcontext.SetLocalValue("Proc", new ProcClass(this));
+        var fixnumNative = new FixnumClass(this);
+        var floatNative = new FloatClass(this);
+        var stringNative = new StringClass(this);
+        var symbolNative = new SymbolClass(this);
+        var nilNative = new NilClass(this);
+        var falseNative = new FalseClass(this);
+        var trueNative = new TrueClass(this);
+        var arrayNative = new ArrayClass(this);
+        var hashNative = new HashClass(this);
+        var rangeNative = new RangeClass(this);
+        var datetimeNative = new DateTimeClass(this);
+        var jsonNative = new JsonClass(this);
+        var procNative = new ProcClass(this);
+
+        rootcontext.SetLocalValue("Fixnum", new NativeClassAdapter(classclass, "Fixnum", objectclass, null, fixnumNative));
+        rootcontext.SetLocalValue("Float", new NativeClassAdapter(classclass, "Float", objectclass, null, floatNative));
+        rootcontext.SetLocalValue("String", new NativeClassAdapter(classclass, "String", objectclass, null, stringNative));
+        rootcontext.SetLocalValue("Symbol", new NativeClassAdapter(classclass, "Symbol", objectclass, null, symbolNative));
+        rootcontext.SetLocalValue("NilClass", new NativeClassAdapter(classclass, "NilClass", objectclass, null, nilNative));
+        rootcontext.SetLocalValue("FalseClass", new NativeClassAdapter(classclass, "FalseClass", objectclass, null, falseNative));
+        rootcontext.SetLocalValue("TrueClass", new NativeClassAdapter(classclass, "TrueClass", objectclass, null, trueNative));
+        rootcontext.SetLocalValue("Array", new NativeClassAdapter(classclass, "Array", objectclass, null, arrayNative));
+        rootcontext.SetLocalValue("Hash", new NativeClassAdapter(classclass, "Hash", objectclass, null, hashNative));
+        rootcontext.SetLocalValue("Range", new NativeClassAdapter(classclass, "Range", objectclass, null, rangeNative));
+        rootcontext.SetLocalValue("DateTime", new NativeClassAdapter(classclass, "DateTime", objectclass, null, datetimeNative));
+        rootcontext.SetLocalValue("JSON", new NativeClassAdapter(classclass, "JSON", objectclass, null, jsonNative));
+        rootcontext.SetLocalValue("Proc", new NativeClassAdapter(classclass, "Proc", objectclass, null, procNative));
 
         rootcontext.Self = objectclass.CreateInstance();
         rootcontext.Self.Class.SetInstanceMethod("require", new RequireFunction(this));

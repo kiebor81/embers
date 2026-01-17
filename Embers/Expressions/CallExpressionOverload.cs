@@ -1,6 +1,6 @@
 using Embers.Exceptions;
 using Embers.Functions;
-using Embers.Language;
+using Embers.Language.Primitive;
 
 namespace Embers.Expressions;
 /// <summary>

@@ -1,5 +1,4 @@
 using Embers.Annotations;
-using Embers.Language;
 using Embers.StdLib;
 
 namespace Embers.Tests.Annotations

@@ -4,7 +4,7 @@ using Embers;
 using Embers.Annotations;
 using Embers.Exceptions;
 using Embers.Host;
-using Embers.Language;
+using Embers.Language.Dynamic;
 
 namespace MyLib.DSL;
 

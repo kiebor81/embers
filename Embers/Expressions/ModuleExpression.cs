@@ -1,5 +1,3 @@
-using Embers.Language;
-
 namespace Embers.Expressions;
 /// <summary>
 /// ModuleExpression is used to execute a module definition or public module method definition.

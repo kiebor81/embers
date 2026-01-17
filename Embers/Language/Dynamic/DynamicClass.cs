@@ -1,7 +1,7 @@
 using Embers.Exceptions;
 using Embers.Functions;
 
-namespace Embers.Language;
+namespace Embers.Language.Dynamic;
 
 /// <summary>
 /// DynamicClass represents a class in the Embers language.
@@ -58,6 +58,24 @@ public class DynamicClass(DynamicClass @class, string name, DynamicClass supercl
 
         if (superclass != null)
             return superclass.GetInstanceMethod(name);
+
+        return null;
+    }
+
+    public IFunction? GetInstanceMethodNoSuper(string name)
+    {
+        if (methods.TryGetValue(name, out IFunction? value))
+            return value;
+
+        if (mixins.Count > 0)
+        {
+            for (int i = mixins.Count - 1; i >= 0; i--)
+            {
+                var method = mixins[i].GetInstanceMethod(name);
+                if (method != null)
+                    return method;
+            }
+        }
 
         return null;
     }

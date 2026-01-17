@@ -1,7 +1,7 @@
 using Embers.Exceptions;
 using Embers.Functions;
 
-namespace Embers.Language;
+namespace Embers.Language.Primitive;
 /// <summary>
 /// Proc represents a first-class procedure/lambda object in Embers.
 /// It can wrap either a Block (from lambdas) or an IFunction (from block parameters).

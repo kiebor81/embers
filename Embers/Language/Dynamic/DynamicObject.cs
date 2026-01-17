@@ -1,6 +1,6 @@
 ﻿using Embers.Functions;
 
-namespace Embers.Language;
+namespace Embers.Language.Dynamic;
 /// <summary>
 /// DynamicObject represents an instance of a DynamicClass in the Embers language.  
 /// </summary>

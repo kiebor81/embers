@@ -1,6 +1,6 @@
 using Embers.Host;
-using Embers.Language;
 using Embers.Annotations;
+using Embers.Language.Dynamic;
 
 namespace Embers.Console.Injected;
 

@@ -1,4 +1,5 @@
 ﻿using Embers.Expressions;
+using Range = Embers.Language.Primitive.Range;
 
 namespace Embers.Tests.Expressions
 {
@@ -13,9 +14,9 @@ namespace Embers.Tests.Expressions
             var result = expr.Evaluate(null);
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(IEnumerable<int>));
+            Assert.IsInstanceOfType(result, typeof(Range));
 
-            var range = (IEnumerable<int>)result;
+            var range = (Range)result;
 
             int total = 0;
 
@@ -66,3 +67,4 @@ namespace Embers.Tests.Expressions
         }
     }
 }
+

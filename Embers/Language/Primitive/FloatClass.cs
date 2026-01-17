@@ -1,4 +1,4 @@
-﻿namespace Embers.Language;
+﻿namespace Embers.Language.Primitive;
 /// <summary>
 /// FloatClass represents the native Float class
 /// <seealso cref="NativeClass" />

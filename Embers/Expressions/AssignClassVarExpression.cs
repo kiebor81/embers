@@ -1,5 +1,3 @@
-using Embers.Language;
-
 namespace Embers.Expressions;
 /// <summary>
 /// AssignExpression for setting a class variable in the current context.

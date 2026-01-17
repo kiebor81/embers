@@ -1,5 +1,6 @@
 using Embers.Exceptions;
 using Embers.Functions;
+using Embers.Language.Primitive;
 
 namespace Embers.Expressions;
 /// <summary>
@@ -47,7 +48,7 @@ public class CallExpression(string name, IList<IExpression> arguments) : IExpres
             {
                 // This is a &block argument - extract the IFunction from the Proc
                 object blockValue = blockArgExpr.Evaluate(context);
-                if (blockValue is Language.Proc proc)
+                if (blockValue is Proc proc)
                 {
                     block = proc.GetFunction();
                 }

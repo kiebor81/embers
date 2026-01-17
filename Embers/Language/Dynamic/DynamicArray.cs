@@ -1,7 +1,7 @@
 ﻿using Embers.StdLib;
 using System.Collections;
 
-namespace Embers.Language;
+namespace Embers.Language.Dynamic;
 /// <summary>
 /// DynamicArray represents a dynamic array in the Embers language.
 /// </summary>

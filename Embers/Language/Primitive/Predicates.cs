@@ -1,4 +1,4 @@
-﻿namespace Embers.Language;
+﻿namespace Embers.Language.Primitive;
 /// <summary>
 /// Predicates for evaluating conditions in the runtime interpreter.
 /// </summary>

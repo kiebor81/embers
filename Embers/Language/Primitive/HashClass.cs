@@ -1,4 +1,4 @@
-﻿namespace Embers.Language;
+﻿namespace Embers.Language.Primitive;
 /// <summary>
 /// HashClass represents the native Hash class in the runtime interpreter.
 /// </summary>

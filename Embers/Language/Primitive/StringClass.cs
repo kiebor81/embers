@@ -1,4 +1,4 @@
-﻿namespace Embers.Language;
+﻿namespace Embers.Language.Primitive;
 /// <summary>
 /// StringClass represents the native String class in the interpreter.
 /// </summary>

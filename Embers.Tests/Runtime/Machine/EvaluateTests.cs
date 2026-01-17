@@ -1,7 +1,6 @@
 using System.Collections;
 using Embers.Exceptions;
 using Embers.Expressions;
-using Embers.Language;
 using Embers.Tests.Classes;
 
 namespace Embers.Tests
@@ -68,7 +67,8 @@ namespace Embers.Tests
             var result = EvaluateExpression("1.class");
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(FixnumClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
+            Assert.AreEqual("Fixnum", ((NativeClassAdapter)result).Name);
         }
 
         [TestMethod]
@@ -77,7 +77,8 @@ namespace Embers.Tests
             var result = EvaluateExpression("'foo'.class");
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(StringClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
+            Assert.AreEqual("String", ((NativeClassAdapter)result).Name);
         }
 
         [TestMethod]
@@ -86,7 +87,8 @@ namespace Embers.Tests
             var result = EvaluateExpression("true.class");
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(TrueClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
+            Assert.AreEqual("TrueClass", ((NativeClassAdapter)result).Name);
         }
 
         [TestMethod]
@@ -95,7 +97,8 @@ namespace Embers.Tests
             var result = EvaluateExpression("false.class");
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(FalseClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
+            Assert.AreEqual("FalseClass", ((NativeClassAdapter)result).Name);
         }
 
         [TestMethod]
@@ -104,7 +107,8 @@ namespace Embers.Tests
             var result = EvaluateExpression("nil.class");
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(NilClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
+            Assert.AreEqual("NilClass", ((NativeClassAdapter)result).Name);
         }
 
         [TestMethod]
@@ -113,7 +117,8 @@ namespace Embers.Tests
             var result = EvaluateExpression("1.2.class");
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(FloatClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
+            Assert.AreEqual("Float", ((NativeClassAdapter)result).Name);
         }
 
         [TestMethod]
@@ -122,7 +127,8 @@ namespace Embers.Tests
             var result = EvaluateExpression("[1,2].class");
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(ArrayClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
+            Assert.AreEqual("Array", ((NativeClassAdapter)result).Name);
         }
 
         [TestMethod]
@@ -131,7 +137,8 @@ namespace Embers.Tests
             var result = EvaluateExpression("{:one=>1, :two => 2}.class");
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(HashClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
+            Assert.AreEqual("Hash", ((NativeClassAdapter)result).Name);
         }
 
         [TestMethod]
@@ -325,7 +332,8 @@ end");
             var result = Execute("(1..10).class");
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(RangeClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
+            Assert.AreEqual("Range", ((NativeClassAdapter)result).Name);
 
             Assert.AreSame(rangeclass, result);
         }

@@ -1,4 +1,4 @@
-﻿namespace Embers.Language;
+﻿namespace Embers.Language.Primitive;
 /// <summary>
 /// TrueClass is a native class that represents the TrueClass type
 /// </summary>

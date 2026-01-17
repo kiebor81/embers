@@ -1,5 +1,4 @@
 ﻿using Embers.Exceptions;
-using Embers.Language;
 
 namespace Embers.StdLib;
 

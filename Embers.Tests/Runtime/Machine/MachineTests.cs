@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using Embers.Functions;
-using Embers.Language;
 
 namespace Embers.Tests
 {
@@ -105,9 +104,9 @@ namespace Embers.Tests
 
             var result = machine.RootContext.GetValue("Fixnum");
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(FixnumClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
 
-            var @class = (FixnumClass)result;
+            var @class = (NativeClassAdapter)result;
             Assert.AreEqual("Fixnum", @class.Name);
         }
 
@@ -118,9 +117,9 @@ namespace Embers.Tests
 
             var result = machine.RootContext.GetValue("Float");
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(FloatClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
 
-            var @class = (FloatClass)result;
+            var @class = (NativeClassAdapter)result;
             Assert.AreEqual("Float", @class.Name);
         }
 
@@ -131,9 +130,9 @@ namespace Embers.Tests
 
             var result = machine.RootContext.GetValue("String");
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(StringClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
 
-            var @class = (StringClass)result;
+            var @class = (NativeClassAdapter)result;
             Assert.AreEqual("String", @class.Name);
         }
 
@@ -144,9 +143,9 @@ namespace Embers.Tests
 
             var result = machine.RootContext.GetValue("NilClass");
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(NilClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
 
-            var @class = (NilClass)result;
+            var @class = (NativeClassAdapter)result;
             Assert.AreEqual("NilClass", @class.Name);
         }
 
@@ -157,9 +156,9 @@ namespace Embers.Tests
 
             var result = machine.RootContext.GetValue("FalseClass");
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(FalseClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
 
-            var @class = (FalseClass)result;
+            var @class = (NativeClassAdapter)result;
             Assert.AreEqual("FalseClass", @class.Name);
         }
 
@@ -170,9 +169,9 @@ namespace Embers.Tests
 
             var result = machine.RootContext.GetValue("TrueClass");
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(TrueClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
 
-            var @class = (TrueClass)result;
+            var @class = (NativeClassAdapter)result;
             Assert.AreEqual("TrueClass", @class.Name);
         }
 
@@ -183,9 +182,9 @@ namespace Embers.Tests
 
             var result = machine.RootContext.GetValue("Array");
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(ArrayClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
 
-            var @class = (ArrayClass)result;
+            var @class = (NativeClassAdapter)result;
             Assert.AreEqual("Array", @class.Name);
         }
 
@@ -196,9 +195,9 @@ namespace Embers.Tests
 
             var result = machine.RootContext.GetValue("Hash");
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(HashClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
 
-            var @class = (HashClass)result;
+            var @class = (NativeClassAdapter)result;
             Assert.AreEqual("Hash", @class.Name);
         }
 
@@ -209,9 +208,9 @@ namespace Embers.Tests
 
             var result = machine.RootContext.GetValue("Range");
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(RangeClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
 
-            var @class = (RangeClass)result;
+            var @class = (NativeClassAdapter)result;
             Assert.AreEqual("Range", @class.Name);
         }
 

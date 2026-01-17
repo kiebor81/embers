@@ -1,5 +1,4 @@
 using Embers.Functions;
-using Embers.Language;
 using Embers.Host;
 using Embers.StdLib;
 using System.Reflection;

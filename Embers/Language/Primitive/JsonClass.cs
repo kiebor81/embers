@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Embers.Functions;
 
-namespace Embers.Language;
+namespace Embers.Language.Primitive;
 /// <summary>
 /// JsonClass provides JSON parsing and serialization capabilities.
 /// </summary>

@@ -1,5 +1,4 @@
 ﻿using Embers.Annotations;
-using Embers.Language;
 
 namespace Embers.Functions;
 /// <summary>

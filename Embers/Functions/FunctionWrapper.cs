@@ -1,6 +1,4 @@
-﻿using Embers.Functions;
-
-namespace Embers.Language;
+﻿namespace Embers.Functions;
 /// <summary>
 /// FunctionWrapper is a base class for wrapping functions with a specific context.
 /// Allows for creating delegates that can be used to invoke the function with the provided context.

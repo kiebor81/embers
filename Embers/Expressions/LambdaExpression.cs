@@ -1,5 +1,3 @@
-using Embers.Language;
-
 namespace Embers.Expressions;
 /// <summary>
 /// LambdaExpression creates a Proc object from a block expression.

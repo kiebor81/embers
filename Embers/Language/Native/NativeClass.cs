@@ -1,7 +1,6 @@
 ﻿using Embers.StdLib;
-using System.Collections;
 
-namespace Embers.Language;
+namespace Embers.Language.Native;
 /// <summary>
 /// NativeClass resolves Ember runtime types to C# equivalents.
 /// </summary>
@@ -97,112 +96,7 @@ public class NativeClass : DynamicObject
 
     public object? MethodClass(object self, IList<object> values)
     {
-        if (self == null)
-        {
-            nilclass ??= (NativeClass)machine.RootContext.GetLocalValue("NilClass");
-
-            return nilclass;
-        }
-
-
-        if (self is int)
-        {
-            fixnumclass ??= (NativeClass)machine.RootContext.GetLocalValue("Fixnum");
-
-            return fixnumclass;
-        }
-
-        if (self is long)
-        {
-            fixnumclass ??= (NativeClass)machine.RootContext.GetLocalValue("Fixnum");
-
-            return fixnumclass;
-        }
-
-        if (self is double)
-        {
-            floatclass ??= (NativeClass)machine.RootContext.GetLocalValue("Float");
-
-            return floatclass;
-        }
-
-        if (self is float || self is decimal)
-        {
-            floatclass ??= (NativeClass)machine.RootContext.GetLocalValue("Float");
-
-            return floatclass;
-        }
-
-        if (self is string)
-        {
-            stringclass ??= (NativeClass)machine.RootContext.GetLocalValue("String");
-
-            return stringclass;
-        }
-
-        if (self is Symbol)
-        {
-            symbolclass ??= (NativeClass)machine.RootContext.GetLocalValue("Symbol");
-
-            return symbolclass;
-        }
-
-        if (self is DateTime)
-        {
-            datetimeclass ??= (NativeClass)machine.RootContext.GetLocalValue("DateTime");
-
-            return datetimeclass;
-        }
-
-        if (self is bool)
-            if ((bool)self)
-            {
-                trueclass ??= (NativeClass)machine.RootContext.GetLocalValue("TrueClass");
-
-                return trueclass;
-            }
-            else
-            {
-                falseclass ??= (NativeClass)machine.RootContext.GetLocalValue("FalseClass");
-
-                return falseclass;
-            }
-
-        if (self is IDictionary)
-        {
-            hashclass ??= (NativeClass)machine.RootContext.GetLocalValue("Hash");
-
-            return hashclass;
-        }
-
-        if (self is IList)
-        {
-            arrayclass ??= (NativeClass)machine.RootContext.GetLocalValue("Array");
-
-            return arrayclass;
-        }
-
-        if (self is short || self is byte)
-        {
-            fixnumclass ??= (NativeClass)machine.RootContext.GetLocalValue("Fixnum");
-
-            return fixnumclass;
-        }
-
-        if (self is Proc)
-        {
-            var procclass = (NativeClass)machine.RootContext.GetLocalValue("Proc");
-            return procclass;
-        }
-
-        if (self is Range)
-        {
-            rangeclass ??= (NativeClass)machine.RootContext.GetLocalValue("Range");
-
-            return rangeclass;
-        }
-
-        return null;
+        return NativeClassResolver.Resolve(machine.RootContext, self);
     }
 }
 

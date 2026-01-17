@@ -1,5 +1,4 @@
 ﻿using Embers.Functions;
-using Embers.Language;
 
 namespace Embers.Tests.Language
 {

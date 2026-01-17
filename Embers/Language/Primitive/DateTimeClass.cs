@@ -1,4 +1,4 @@
-namespace Embers.Language;
+namespace Embers.Language.Primitive;
 /// <summary>
 /// DateTimeClass is a native class that represents the DateTime type
 /// </summary>

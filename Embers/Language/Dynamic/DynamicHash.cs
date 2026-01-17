@@ -1,4 +1,4 @@
-﻿namespace Embers.Language;
+﻿namespace Embers.Language.Dynamic;
 /// <summary>
 /// DynamicHash represents a hash table in the Embers language.
 /// </summary>

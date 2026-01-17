@@ -1,6 +1,5 @@
 ﻿using Embers.Annotations;
 using Embers.Expressions;
-using Embers.Language;
 using Embers.Signals;
 
 namespace Embers.Functions;

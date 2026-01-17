@@ -1,6 +1,6 @@
 using Embers.Exceptions;
 using Embers.Functions;
-using Embers.Language;
+using Embers.Language.Primitive;
 using Embers.StdLib;
 using Embers.Utilities;
 
@@ -34,17 +34,78 @@ public class DotExpression(IExpression expression, string name, IList<IExpressio
 
         if (result is not DynamicObject)
         {
-            NativeClass nclass = (NativeClass)context.GetValue("Fixnum");
-            nclass = (NativeClass)nclass.MethodClass(result, null);
-            
+            var nativeClass = NativeClassResolver.Resolve(context, result);
+            if (nativeClass != null)
+            {
+                var dynamicMethod = nativeClass.GetInstanceMethodNoSuper(name);
+                if (dynamicMethod != null)
+                {
+                    var nativeObj = new NativeObject(nativeClass, result);
+
+                    // Check for trailing block in arguments
+                    IFunction? nativeBlock0 = null;
+                    var nativeArgList0 = arguments.ToList();
+
+                    if (nativeArgList0.Count > 0 && nativeArgList0[^1] is BlockExpression nativeBlockExpr0)
+                    {
+                        nativeBlock0 = new BlockFunction(nativeBlockExpr0);
+                        nativeArgList0.RemoveAt(nativeArgList0.Count - 1);
+                    }
+
+                    // Check for &block argument syntax
+                    foreach (var argument in nativeArgList0.ToList())
+                    {
+                        if (argument is BlockArgumentExpression blockArgExpr)
+                        {
+                            // This is a &block argument - extract the IFunction from the Proc
+                            object blockValue = blockArgExpr.Evaluate(context);
+                            if (blockValue is Proc proc)
+                            {
+                                nativeBlock0 = proc.GetFunction();
+                            }
+                            else if (blockValue == null)
+                            {
+                                nativeBlock0 = null;
+                            }
+                            else
+                            {
+                                throw new Embers.Exceptions.TypeError($"Expected Proc for block argument, got {blockValue.GetType().Name}");
+                            }
+                            nativeArgList0.Remove(argument);  // Don't add to values - block is passed separately
+                        }
+                    }
+
+                    // Evaluate remaining arguments
+                    foreach (var argument in nativeArgList0)
+                        values.Add(argument.Evaluate(context));
+
+                    // Use block-aware function call if method supports blocks
+                    if (nativeBlock0 != null && dynamicMethod is ICallableWithBlock callableWithBlock0)
+                        return callableWithBlock0.ApplyWithBlock(nativeObj, context, values, nativeBlock0);
+
+                    // Check if method has ApplyWithBlock method (for StdFunction and DefinedFunction)
+                    if (nativeBlock0 != null)
+                    {
+                        var applyWithBlockMethod = dynamicMethod.GetType().GetMethod("ApplyWithBlock");
+                        if (applyWithBlockMethod != null)
+                            return applyWithBlockMethod.Invoke(dynamicMethod, [nativeObj, context, values, nativeBlock0]);
+                    }
+
+                    // Fallback to standard function call
+                    return dynamicMethod.Apply(nativeObj, context, values);
+                }
+            }
+
+            NativeClass nclass = nativeClass?.NativeClass;
+
             // Check if this is a StdLib method (which needs block in context)
             // vs a manually registered method (which expects block in values)
-            bool isStdLibMethod = nclass != null && StdLibRegistry.GetMethod(nclass.Name, name) != null;
-            
+            bool isStdLibMethod = nclass != null && nativeClass != null && StdLibRegistry.GetMethod(nativeClass.Name, name) != null;
+
             // Check for trailing block in arguments
             IFunction? nativeBlock = null;
             var nativeArgList = arguments != null ? arguments.ToList() : [];
-            
+
             // Only extract block for StdLib methods; manual methods still get block in values
             if (isStdLibMethod && nativeArgList.Count > 0 && nativeArgList[^1] is BlockExpression nativeBlockExpr)
             {
@@ -59,7 +120,7 @@ public class DotExpression(IExpression expression, string name, IList<IExpressio
                 {
                     // This is a &block argument - extract the IFunction from the Proc
                     object blockValue = blockArgExpr.Evaluate(context);
-                    if (blockValue is Embers.Language.Proc proc)
+                    if (blockValue is Proc proc)
                     {
                         nativeBlock = proc.GetFunction();
                     }
@@ -81,8 +142,8 @@ public class DotExpression(IExpression expression, string name, IList<IExpressio
             Func<object, IList<object>, object> nmethod = null;
 
             if (nclass != null)
-                nmethod = isStdLibMethod 
-                    ? nclass.GetInstanceMethod(name, nativeContext) 
+                nmethod = isStdLibMethod
+                    ? nclass.GetInstanceMethod(name, nativeContext)
                     : nclass.GetInstanceMethod(name);
 
             if (nativeArgList.Count > 0)
@@ -122,7 +183,7 @@ public class DotExpression(IExpression expression, string name, IList<IExpressio
             {
                 // This is a &block argument - extract the IFunction from the Proc
                 object blockValue = blockArgExpr.Evaluate(context);
-                if (blockValue is Embers.Language.Proc proc)
+                if (blockValue is Proc proc)
                 {
                     block = proc.GetFunction();
                 }

@@ -1,4 +1,4 @@
-﻿namespace Embers.Language;
+﻿namespace Embers.Language.Primitive;
 /// <summary>
 /// Symbols are used to represent identifiers in the language.
 /// A symbol is a unique identifier that is immutable and interned.

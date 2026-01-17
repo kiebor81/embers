@@ -2,7 +2,7 @@
 using Embers.Expressions;
 using Embers.Signals;
 
-namespace Embers.Language;
+namespace Embers.Language.Primitive;
 /// <summary>
 /// Block represents a block of code that can be executed with a set of arguments.
 /// </summary>

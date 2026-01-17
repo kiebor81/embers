@@ -1,4 +1,4 @@
-﻿namespace Embers.Language;
+﻿namespace Embers.Language.Primitive;
 /// <summary>
 /// fixnumclass is a native class that represents the Fixnum type
 /// </summary>

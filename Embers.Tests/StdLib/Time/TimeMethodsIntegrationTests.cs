@@ -1,5 +1,3 @@
-using Embers.Language;
-
 namespace Embers.Tests.StdLib.Time
 {
     [TestClass]

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Embers.Language;
+namespace Embers.Language.Primitive;
 
 /// <summary>
 /// ArrayClass represents the Array class in the Embers language.

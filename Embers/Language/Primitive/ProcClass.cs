@@ -1,4 +1,4 @@
-namespace Embers.Language;
+namespace Embers.Language.Primitive;
 /// <summary>
 /// ProcClass represents the Proc class in the Embers language.
 /// Procs are first-class callable objects that wrap blocks.

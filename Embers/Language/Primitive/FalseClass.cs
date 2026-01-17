@@ -1,4 +1,4 @@
-﻿namespace Embers.Language;
+﻿namespace Embers.Language.Primitive;
 /// <summary>
 /// FalseClass is a native class that represents the FalseClass type
 /// </summary>

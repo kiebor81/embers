@@ -1,4 +1,4 @@
-namespace Embers.Tests.StdLib.Ranges
+﻿namespace Embers.Tests.StdLib.Ranges
 {
     using Embers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,6 +25,28 @@ namespace Embers.Tests.StdLib.Ranges
             var result = machine.ExecuteText("(5..4).to_a");
             Assert.IsNotNull(result);
             Assert.AreEqual("[]", result.ToString());
+        }
+
+        [TestMethod]
+        public void RangeToAFloat()
+        {
+            var result = machine.ExecuteText("(1.5..3.5).to_a");
+            Assert.IsNotNull(result);
+            Assert.AreEqual("[1.5, 2.5, 3.5]", result.ToString());
+        }
+
+        [TestMethod]
+        public void RangeIncludeFloat()
+        {
+            var result = machine.ExecuteText("(1.5..3.5).include?(2.5)");
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void RangeSizeFloat()
+        {
+            var result = machine.ExecuteText("(1.5..3.5).size");
+            Assert.AreEqual(3L, result);
         }
 
         [TestMethod]
@@ -237,3 +259,5 @@ namespace Embers.Tests.StdLib.Ranges
         }
     }
 }
+
+

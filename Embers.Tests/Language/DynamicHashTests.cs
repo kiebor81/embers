@@ -1,6 +1,4 @@
-﻿using Embers.Language;
-
-namespace Embers.Tests.Language
+﻿namespace Embers.Tests.Language
 {
     [TestClass]
     public class DynamicHashTests

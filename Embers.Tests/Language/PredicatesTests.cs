@@ -1,4 +1,4 @@
-﻿using Embers.Language;
+﻿using Embers.Language.Primitive;
 using Embers.Tests.Classes;
 
 namespace Embers.Tests.Language

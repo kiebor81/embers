@@ -1,4 +1,4 @@
-﻿using Range = Embers.Language.Range;
+﻿using Range = Embers.Language.Primitive.Range;
 
 namespace Embers.Tests.Language
 {

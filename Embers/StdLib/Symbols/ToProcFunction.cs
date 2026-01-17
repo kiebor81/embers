@@ -1,6 +1,6 @@
-using Embers.Language;
 using Embers.Exceptions;
 using Embers.Annotations;
+using Embers.Language.Primitive;
 
 namespace Embers.StdLib.Symbols;
 
@@ -60,16 +60,18 @@ internal class SymbolToProcExpression(string methodName) : Expressions.BaseExpre
         }
         else
         {
-            // Native object - use NativeClass to find the method
-            var fixnumClass = context.GetValue("Fixnum");
-            if (fixnumClass is NativeClass nclass)
+            // Native object - resolve via NativeClassAdapter dispatch
+            var nativeClass = NativeClassResolver.Resolve(context, obj);
+            if (nativeClass != null)
             {
-                var methodClass = nclass.MethodClass(obj, null) as NativeClass;
-                var nativeMethod = methodClass?.GetInstanceMethod(methodName, context);
+                var nativeObj = new NativeObject(nativeClass, obj);
+                var dynamicMethod = nativeClass.GetInstanceMethodNoSuper(methodName);
+                if (dynamicMethod != null)
+                    return dynamicMethod.Apply(nativeObj, context, []);
+
+                var nativeMethod = nativeClass.NativeClass.GetInstanceMethod(methodName, context);
                 if (nativeMethod != null)
-                {
                     return nativeMethod(obj, []);
-                }
             }
             
             throw new NoMethodError($"undefined method '{methodName}' for {obj.GetType().Name}");

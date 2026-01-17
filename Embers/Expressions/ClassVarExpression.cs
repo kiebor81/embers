@@ -1,5 +1,3 @@
-using Embers.Language;
-
 namespace Embers.Expressions;
 /// <summary>
 /// ClassVarExpression represents a class variable expression.

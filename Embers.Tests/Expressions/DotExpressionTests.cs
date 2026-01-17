@@ -1,6 +1,5 @@
 ﻿using Embers.Exceptions;
 using Embers.Expressions;
-using Embers.Language;
 
 namespace Embers.Tests.Expressions
 {
@@ -59,7 +58,8 @@ namespace Embers.Tests.Expressions
             var result = expression.Evaluate(machine.RootContext);
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(FixnumClass));
+            Assert.IsInstanceOfType(result, typeof(NativeClassAdapter));
+            Assert.AreEqual("Fixnum", ((NativeClassAdapter)result).Name);
         }
 
         [TestMethod]
