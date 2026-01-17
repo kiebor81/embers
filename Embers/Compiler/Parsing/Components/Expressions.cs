@@ -211,6 +211,37 @@ internal sealed class Expressions(Parser parser)
     }
 
     /// <summary>
+    /// Applies postfix ternary (? :) only.
+    /// </summary>
+    /// <param name="expr"></param>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
+    public IExpression ApplyPostfixTernary(IExpression expr)
+    {
+        Token? token = parser.Lexer.NextToken();
+
+        if (token != null && token.Type == TokenType.Operator && token.Value == "?")
+        {
+            IExpression trueExpr = ParseNoAssignExpression();
+            trueExpr = ApplyPostfixesButNotTernary(trueExpr);
+
+            Token? colonToken = parser.Lexer.NextToken();
+            if (colonToken == null || colonToken.Type != TokenType.Operator || colonToken.Value != ":")
+                throw new SyntaxError("expected ':'");
+
+            IExpression falseExpr = ParseNoAssignExpression();
+            falseExpr = ApplyPostfixesButNotTernary(falseExpr);
+
+            return new TernaryExpression(expr, trueExpr, falseExpr);
+        }
+
+        if (token != null)
+            parser.Lexer.PushToken(token);
+
+        return expr;
+    }
+
+    /// <summary>
     /// Applies postfixes except for ternary
     /// </summary>
     /// <param name="expr"></param>

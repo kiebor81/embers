@@ -60,6 +60,9 @@ internal sealed class Core(Lexer lexer, string[][] binaryoperators)
         if (token.Type == TokenType.Name && token.Value == "end")
             return false;
 
+        if (token.Type == TokenType.Name && (token.Value == "if" || token.Value == "unless"))
+            return false;
+
         return true;
     }
 

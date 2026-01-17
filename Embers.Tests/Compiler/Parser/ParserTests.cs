@@ -271,6 +271,21 @@ namespace Embers.Tests.Compiler
         }
 
         [TestMethod]
+        public void ParsePostfixUnlessWithCommandCall()
+        {
+            Parser parser = new("print action unless action == 'OK'");
+            var condition = new CompareExpression(new NameExpression("action"), new ConstantExpression("OK"), CompareOperator.Equal);
+            var expected = new UnlessExpression(condition, new CallExpression("print", [new NameExpression("action")]), null);
+
+            var result = parser.ParseExpression();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseExpression());
+        }
+
+        [TestMethod]
         public void ParseAddTwoNameExpressions()
         {
             Parser parser = new("foo+bar");

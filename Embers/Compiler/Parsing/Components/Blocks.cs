@@ -116,6 +116,11 @@ internal sealed class Blocks(Parser parser)
     /// <exception cref="SyntaxError"></exception>
     public IExpression? ParseSingleExpressionWithBlockPrefix()
     {
+        return ParseSingleExpressionWithBlockPrefix(true);
+    }
+
+    private IExpression? ParseSingleExpressionWithBlockPrefix(bool allowPostfixConditional)
+    {
         if (parser.TryParseToken(TokenType.Separator, "&"))
         {
             if (parser.TryParseToken(TokenType.Separator, ":"))
@@ -129,13 +134,21 @@ internal sealed class Blocks(Parser parser)
                 return new BlockArgumentExpression(toProcCall);
             }
 
-            IExpression expr = parser.ParseExpression();
+            IExpression expr = allowPostfixConditional ? parser.ParseExpression() : ParseCommandArgExpression();
             if (expr != null)
                 return new BlockArgumentExpression(expr);
             throw new SyntaxError("Expected expression after &");
         }
 
-        return parser.ParseExpression();
+        return allowPostfixConditional ? parser.ParseExpression() : ParseCommandArgExpression();
+    }
+
+    private IExpression? ParseCommandArgExpression()
+    {
+        IExpression? expr = parser.ParseNoAssignExpression();
+        if (expr == null)
+            return null;
+        return parser.ApplyPostfixTernary(expr);
     }
 
     /// <summary>
@@ -148,7 +161,7 @@ internal sealed class Blocks(Parser parser)
 
         bool inparentheses = parser.TryParseToken(TokenType.Separator, "(");
 
-        for (IExpression? expression = ParseSingleExpressionWithBlockPrefix(); expression != null; expression = ParseSingleExpressionWithBlockPrefix())
+        for (IExpression? expression = ParseSingleExpressionWithBlockPrefix(inparentheses); expression != null; expression = ParseSingleExpressionWithBlockPrefix(inparentheses))
         {
             expressions.Add(expression);
             if (!parser.TryParseToken(TokenType.Separator, ","))

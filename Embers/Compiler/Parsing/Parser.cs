@@ -145,7 +145,7 @@ public class Parser
     /// Parses an expression without assignment.
     /// </summary>
     /// <returns></returns>
-    private IExpression? ParseNoAssignExpression()
+    internal IExpression? ParseNoAssignExpression()
     {
         return expressionParser.ParseNoAssignExpression();
     }
@@ -413,6 +413,14 @@ public class Parser
     /// <returns></returns>
     internal IExpression ApplyPostfixConditional(IExpression expr)
         => expressionParser.ApplyPostfixConditional(expr);
+
+    /// <summary>
+    /// Applies postfix ternary expressions (? :).
+    /// </summary>
+    /// <param name="expr"></param>
+    /// <returns></returns>
+    internal IExpression ApplyPostfixTernary(IExpression expr)
+        => expressionParser.ApplyPostfixTernary(expr);
 
     /// <summary>
     /// Applies postfixes except for the ternary operator.
