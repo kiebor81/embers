@@ -40,14 +40,9 @@ public class ToProcFunction : StdFunction
 /// <summary>
 /// Internal expression used by Symbol.to_proc to call a method on an object.
 /// </summary>
-internal class SymbolToProcExpression : Expressions.BaseExpression
+internal class SymbolToProcExpression(string methodName) : Expressions.BaseExpression
 {
-    private readonly string methodName;
-
-    public SymbolToProcExpression(string methodName)
-    {
-        this.methodName = methodName;
-    }
+    private readonly string methodName = methodName;
 
     public override object Evaluate(Context context)
     {

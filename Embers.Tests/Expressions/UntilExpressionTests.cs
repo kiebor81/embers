@@ -1,5 +1,4 @@
-﻿using Embers.Compiler;
-using Embers.Expressions;
+﻿using Embers.Expressions;
 
 namespace Embers.Tests.Expressions
 {

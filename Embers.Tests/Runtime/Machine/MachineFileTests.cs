@@ -8,6 +8,8 @@ namespace Embers.Tests
     public class MachineFileTests
     {
         private Machine machine;
+        private static string FixturePath(string relativePath)
+            => Path.Combine("MachineFiles", relativePath);
 
         [TestInitialize]
         public void Setup() => machine = new Machine();

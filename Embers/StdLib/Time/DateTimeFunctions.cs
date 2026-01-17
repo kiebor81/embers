@@ -66,14 +66,14 @@ public class ParseDateTimeFunction : StdFunction
         if (values[0] is string s)
         {
             // Try common date formats
-            string[] formats = {
+            string[] formats = [
                     "dd/MM/yyyy HH:mm:ss",
                     "dd/MM/yyyy",
                     "MM/dd/yyyy HH:mm:ss",
                     "MM/dd/yyyy",
                     "yyyy-MM-dd HH:mm:ss",
                     "yyyy-MM-dd"
-                };
+                ];
 
             if (DateTime.TryParseExact(s, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out var result))
                 return result;

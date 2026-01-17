@@ -1,14 +1,22 @@
 using Embers.Exceptions;
 
-namespace Embers.Compiler;
+namespace Embers.Compiler.Parsing.Components;
 
-public partial class Parser
+/// <summary>
+/// Core parsing components
+/// </summary>
+/// <param name="lexer"></param>
+/// <param name="binaryoperators"></param>
+internal sealed class Core(Lexer lexer, string[][] binaryoperators)
 {
+    private readonly Lexer lexer = lexer;
+    private readonly string[][] binaryoperators = binaryoperators;
+
     /// <summary>
-    /// Parses the end of a command.
+    /// Parses an end-of-line token
     /// </summary>
     /// <exception cref="SyntaxError"></exception>
-    private void ParseEndOfCommand()
+    public void ParseEndOfCommand()
     {
         Token token = lexer.NextToken();
 
@@ -29,10 +37,10 @@ public partial class Parser
     }
 
     /// <summary>
-    /// Determines if the next token starts an expression list.
+    /// Determines if the next token starts an expression list
     /// </summary>
     /// <returns></returns>
-    private bool NextTokenStartsExpressionList()
+    public bool NextTokenStartsExpressionList()
     {
         Token token = lexer.NextToken();
         lexer.PushToken(token);
@@ -56,11 +64,11 @@ public partial class Parser
     }
 
     /// <summary>
-    /// Determines if a token is an end of command.
+    /// Determines if the specified token indicates the end of a command
     /// </summary>
     /// <param name="token"></param>
     /// <returns></returns>
-    private bool IsEndOfCommand(Token token)
+    public bool IsEndOfCommand(Token token)
     {
         if (token == null)
             return true;
@@ -75,18 +83,18 @@ public partial class Parser
     }
 
     /// <summary>
-    /// Parses a name token with the given value.
+    /// Parses a name token with the specified value
     /// </summary>
     /// <param name="name"></param>
-    private void ParseName(string name) => ParseToken(TokenType.Name, name);
+    public void ParseName(string name) => ParseToken(TokenType.Name, name);
 
     /// <summary>
-    /// Parses a token of the given type and value.
+    /// Parses a token of the specified type and value
     /// </summary>
     /// <param name="type"></param>
     /// <param name="value"></param>
     /// <exception cref="SyntaxError"></exception>
-    private void ParseToken(TokenType type, string value)
+    public void ParseToken(TokenType type, string value)
     {
         Token token = lexer.NextToken();
 
@@ -95,11 +103,11 @@ public partial class Parser
     }
 
     /// <summary>
-    /// Parses a name token.
+    /// Parses a name token
     /// </summary>
     /// <returns></returns>
     /// <exception cref="SyntaxError"></exception>
-    private string ParseName()
+    public string ParseName()
     {
         Token token = lexer.NextToken();
 
@@ -110,19 +118,19 @@ public partial class Parser
     }
 
     /// <summary>
-    /// Tries to parse a name token with the given value.
+    /// Tries to parse a name token with the specified value
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    private bool TryParseName(string name) => TryParseToken(TokenType.Name, name);
+    public bool TryParseName(string name) => TryParseToken(TokenType.Name, name);
 
     /// <summary>
-    /// Tries to parse a token of the given type and value.
+    /// Tries to parse a token of the specified type and value
     /// </summary>
     /// <param name="type"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    private bool TryParseToken(TokenType type, string value)
+    public bool TryParseToken(TokenType type, string value)
     {
         Token token = lexer.NextToken();
 
@@ -135,10 +143,10 @@ public partial class Parser
     }
 
     /// <summary>
-    /// Tries to parse a name token.
+    /// Tries to parse a name token
     /// </summary>
     /// <returns></returns>
-    private string? TryParseName()
+    public string? TryParseName()
     {
         Token token = lexer.NextToken();
 
@@ -151,10 +159,10 @@ public partial class Parser
     }
 
     /// <summary>
-    /// Tries to parse an end-of-line token.
+    /// Tries to parse an end-of-line token
     /// </summary>
     /// <returns></returns>
-    private bool TryParseEndOfLine()
+    public bool TryParseEndOfLine()
     {
         Token token = lexer.NextToken();
 
@@ -166,7 +174,10 @@ public partial class Parser
         return false;
     }
 
-    private void SkipEndOfLines()
+    /// <summary>
+    /// Skips all consecutive end-of-line tokens
+    /// </summary>
+    public void SkipEndOfLines()
     {
         while (TryParseEndOfLine())
         {
@@ -174,12 +185,12 @@ public partial class Parser
     }
 
     /// <summary>
-    /// Determines if the given token is a binary operator at the specified precedence level.
+    /// Parses primary expressions
     /// </summary>
     /// <param name="level"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    private bool IsBinaryOperator(int level, Token token)
+    public bool IsBinaryOperator(int level, Token token)
     {
         if (token.Type == TokenType.Operator && binaryoperators[level].Contains(token.Value))
             return true;
