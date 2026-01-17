@@ -30,7 +30,7 @@ The following are detailed, real-world scenarios demonstrating how to integrate 
 
 For game engines like Godot and Unity, Embers doesn't give you Ruby syntax to replace built-in language support, but it does give you a boundary between developer code and user code.
 
-**Use Case**: Enable game designers to script behaviors, quest logic, and NPC interactions in Embers without recompiling the game.
+**Use Case**: Enable game designers to script behaviours, quest logic, and NPC interactions in Embers without recompiling the game.
 
 #### Dynamic Node Interaction
 
@@ -124,7 +124,7 @@ internal class SpawnEnemyFunction : HostFunction
 **Embers Quest Script** (`quest_01.rb`):
 
 ```ruby
-# Dynamic quest behavior
+# Dynamic quest behaviour
 def on_quest_trigger
   gd_print("Quest started!")
   
@@ -138,7 +138,7 @@ def on_quest_trigger
   ui.GetNode("Label").Text = "Defeat the goblins!"
 end
 
-# Enemy AI behavior
+# Enemy AI behaviour
 def enemy_think(enemy)
   player = $player
   distance = enemy.Position.DistanceTo(player.Position)

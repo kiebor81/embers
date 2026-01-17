@@ -128,7 +128,7 @@ internal static class StdLibRegistry
     }
 
     /// <summary>
-    /// Registers global StdLib functions on the root context (existing behavior).
+    /// Registers global StdLib functions on the root context (existing behaviour).
     /// </summary>
     internal static void RegisterGlobalFunctions(Context context)
     {

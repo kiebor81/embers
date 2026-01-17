@@ -445,7 +445,7 @@ This includes conditional and block expressions.
 
 ### Method Naming Conventions
 
-Methods may optionally end with `?` or `!` to indicate their behavior.
+Methods may optionally end with `?` or `!` to indicate their behaviour.
 
 - Methods ending in `?` typically return true/false (predicate methods):
   ```
