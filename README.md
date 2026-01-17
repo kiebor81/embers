@@ -615,6 +615,18 @@ Embers is designed for embedding into diverse .NET applications. For in-depth ex
 
 ---
 
+## Roadmap
+
+- [ ] Regex literals
+- [ ] `case/when`
+- [ ] `case/in`
+- [ ] Type expansion: date, time
+- [ ] StdLib expansion: date, time
+- [ ] Struct support
+- [ ] Tighter comparison semantics
+
+---
+
 ## License
 
 MIT License
