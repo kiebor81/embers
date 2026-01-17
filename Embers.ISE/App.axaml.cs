@@ -8,12 +8,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using Embers.Security;
 
 namespace Embers.ISE
 {
     public partial class App : Application
     {
         private const string TabStateFileName = "ISETabs.json";
+        private const string ConfigStateFileName = "ISEConfig.json";
 
         public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
@@ -26,13 +28,18 @@ namespace Embers.ISE
                 DisableAvaloniaDataAnnotationValidation();
                 var viewModel = new MainWindowViewModel();
                 RestoreTabs(viewModel);
+                RestoreConfiguration(viewModel);
 
                 desktop.MainWindow = new MainWindow
                 {
                     DataContext = viewModel,
                 };
 
-                desktop.Exit += (_, _) => SaveTabs(viewModel);
+                desktop.Exit += (_, _) =>
+                {
+                    SaveTabs(viewModel);
+                    SaveConfiguration(viewModel);
+                };
             }
 
             base.OnFrameworkInitializationCompleted();
@@ -88,10 +95,66 @@ namespace Embers.ISE
             File.WriteAllText(configPath, json);
         }
 
+        private static void RestoreConfiguration(MainWindowViewModel viewModel)
+        {
+            var configPath = GetConfigStatePath();
+            if (!File.Exists(configPath))
+                return;
+
+            try
+            {
+                var json = File.ReadAllText(configPath);
+                var state = JsonSerializer.Deserialize<IseConfigState>(json);
+                if (state == null)
+                    return;
+
+                viewModel.RestoreConfiguration(state.SecurityMode, state.WhitelistEntries, state.ReferenceAssemblies);
+            }
+            catch
+            {
+                // Ignore malformed config.
+            }
+        }
+
+        private static void SaveConfiguration(MainWindowViewModel viewModel)
+        {
+            var configPath = GetConfigStatePath();
+            var directory = Path.GetDirectoryName(configPath);
+            if (!string.IsNullOrWhiteSpace(directory))
+                Directory.CreateDirectory(directory);
+
+            var state = new IseConfigState
+            {
+                SecurityMode = viewModel.SelectedSecurityMode,
+                WhitelistEntries = viewModel.WhitelistEntries.ToList(),
+                ReferenceAssemblies = viewModel.ReferenceAssemblies.ToList()
+            };
+
+            var json = JsonSerializer.Serialize(state, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            File.WriteAllText(configPath, json);
+        }
+
         private static string GetTabStatePath()
         {
             var root = Directory.GetCurrentDirectory();
             return Path.Combine(root, ".vs", TabStateFileName);
+        }
+
+        private static string GetConfigStatePath()
+        {
+            var root = Directory.GetCurrentDirectory();
+            return Path.Combine(root, ".vs", ConfigStateFileName);
+        }
+
+        private sealed class IseConfigState
+        {
+            public List<string> ReferenceAssemblies { get; set; } = [];
+            public List<string> WhitelistEntries { get; set; } = [];
+            public SecurityMode SecurityMode { get; set; } = SecurityMode.Unrestricted;
         }
     }
 }

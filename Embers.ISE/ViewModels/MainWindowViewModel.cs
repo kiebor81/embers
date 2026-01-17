@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -239,6 +240,26 @@ public sealed class MainWindowViewModel : ViewModelBase
         SelectedTab = Tabs[0];
     }
 
+    public void RestoreConfiguration(SecurityMode mode, IEnumerable<string>? whitelistEntries, IEnumerable<string>? referenceAssemblies)
+    {
+        WhitelistEntries.Clear();
+        if (whitelistEntries != null)
+        {
+            foreach (var entry in whitelistEntries)
+            {
+                var trimmed = entry?.Trim();
+                if (string.IsNullOrWhiteSpace(trimmed))
+                    continue;
+
+                if (!WhitelistEntries.Contains(trimmed))
+                    WhitelistEntries.Add(trimmed);
+            }
+        }
+
+        SelectedSecurityMode = mode;
+        RestoreReferenceAssemblies(referenceAssemblies);
+    }
+
     private void ClearEditor()
     {
         if (SelectedTab == null) return;
@@ -346,9 +367,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             var path = file.Path.LocalPath;
             try
             {
-                _host.AddReferenceAssembly(path);
-                if (!ReferenceAssemblies.Contains(path))
-                    ReferenceAssemblies.Add(path);
+                AddReferenceAssembly(path);
                 _console?.WriteSuccess("[Reference added] ");
                 _console?.WriteLine(path, ConsoleColor.Cyan);
             }
@@ -567,5 +586,44 @@ public sealed class MainWindowViewModel : ViewModelBase
         // Avalonia classic: get main window from current app lifetime.
         var lifetime = (Avalonia.Application.Current!.ApplicationLifetime as Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime)!;
         return lifetime.MainWindow!;
+    }
+
+    private void RestoreReferenceAssemblies(IEnumerable<string>? referenceAssemblies)
+    {
+        if (referenceAssemblies == null)
+            return;
+
+        foreach (var path in referenceAssemblies)
+        {
+            var trimmed = path?.Trim();
+            if (string.IsNullOrWhiteSpace(trimmed))
+                continue;
+
+            if (!File.Exists(trimmed))
+                continue;
+
+            try
+            {
+                AddReferenceAssembly(trimmed);
+            }
+            catch
+            {
+                // Skip invalid assemblies during restore.
+            }
+        }
+
+        RefreshFunctionLists();
+    }
+
+    private void AddReferenceAssembly(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return;
+
+        if (ReferenceAssemblies.Contains(path, StringComparer.OrdinalIgnoreCase))
+            return;
+
+        _host.AddReferenceAssembly(path);
+        ReferenceAssemblies.Add(path);
     }
 }
