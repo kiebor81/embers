@@ -1,30 +1,36 @@
 using System.Collections;
+using Embers.Exceptions;
 
 namespace Embers.Expressions;
 /// <summary>
 /// Indices an expression with another expression, allowing for dynamic access to elements in collections or strings.
 /// </summary>
 /// <seealso cref="IExpression" />
-public class IndexedExpression(IExpression expression, IExpression indexexpression) : IExpression
+public class IndexedExpression(IExpression expression, IExpression? indexexpression) : IExpression
 {
     private static readonly int hashcode = typeof(IndexedExpression).GetHashCode();
     private readonly IExpression expression = expression;
-    private readonly IExpression indexexpression = indexexpression;
+    private readonly IExpression? indexexpression = indexexpression;
 
     public IExpression Expression { get { return expression; } }
 
-    public IExpression IndexExpression { get { return indexexpression; } }
+    public IExpression? IndexExpression { get { return indexexpression; } }
 
     public object? Evaluate(Context context)
     {
         object value = expression.Evaluate(context);
-        object indexvalue = indexexpression.Evaluate(context);
+        object? indexvalue = indexexpression?.Evaluate(context);
 
         // Handle Proc: f[arg] is equivalent to f.call(arg)
         if (value is Proc proc)
         {
+            if (indexexpression == null)
+                return proc.Call([]);
             return proc.Call([indexvalue]);
         }
+
+        if (indexexpression == null)
+            throw new TypeError("empty index requires a Proc");
 
         // Convert long to int for indexing (arrays need int indices)
         if (indexvalue is long l)
@@ -74,7 +80,9 @@ public class IndexedExpression(IExpression expression, IExpression indexexpressi
 
     public IList<string> GetLocalVariables()
     {
-        var list = new List<IExpression>() { indexexpression, expression };
+        var list = new List<IExpression>() { expression };
+        if (indexexpression != null)
+            list.Add(indexexpression);
 
         return BaseExpression.GetLocalVariables(list);
     }
@@ -86,11 +94,12 @@ public class IndexedExpression(IExpression expression, IExpression indexexpressi
 
         if (obj is IndexedExpression expr)
         {
-            return expression.Equals(expr.expression) && indexexpression.Equals(expr.indexexpression);
+            return expression.Equals(expr.expression) && Equals(indexexpression, expr.indexexpression);
         }
 
         return false;
     }
 
-    public override int GetHashCode() => expression.GetHashCode() + indexexpression.GetHashCode() + hashcode;
+    public override int GetHashCode()
+        => expression.GetHashCode() + (indexexpression?.GetHashCode() ?? 0) + hashcode;
 }

@@ -244,7 +244,7 @@ The keyword forms bind more weakly than `&&`, `||`, and `!`, so they are often u
 .       Method call / member access
 ::      Namespace/Module separator
 =>      Hash literal mapping (key => value)
-->      Lambda/proc literal
+->      Lambda/proc (stabby) literal
 ```
 
 ### Operator Precedence
@@ -505,6 +505,32 @@ end
 Utils.current_time
 ```
 
+### Lambdas and Procs
+
+Embers supports first-class callable objects via `Proc`. You can create them with
+`lambda`, `proc`, or the stabby lambda `->` syntax. Each form requires a block
+and captures the current context.
+
+`lambda` and `proc` are equivalent; parameters are declared with block pipes:
+
+```
+double = lambda { |x| x * 2 }
+double.call(3)      # => 6
+```
+
+Stabby lambdas declare parameters in parentheses after `->`. The block body uses
+`{}` or `do ... end` and does not use `| |` for parameters:
+
+```
+adder = ->(a, b) { a + b }
+adder.call(1, 2)    # => 3
+
+zero = -> { 42 }
+zero[]              # alias for call
+```
+
+Lambdas capture the surrounding context at the point of definition, subject to host execution rules.
+
 ## Classes
 
 ### Defining Classes
@@ -680,7 +706,7 @@ end
 [1, 2, 3].each { |x| puts x }
 ```
 
-The `|x|` syntax declares block parameters. Block parameters are local to the block body
+The `|x|` syntax declares block parameters. Block parameters are local to the block body.
 
 ### Passing Blocks to Methods
 

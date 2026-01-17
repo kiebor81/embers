@@ -1062,6 +1062,19 @@ namespace Embers.Tests.Compiler
         }
 
         [TestMethod]
+        public void ParseEmptyIndexedExpression()
+        {
+            Parser parser = new("a[]");
+            var expected = new IndexedExpression(new NameExpression("a"), null);
+            var result = parser.ParseExpression();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseCommand());
+        }
+
+        [TestMethod]
         public void ParseCallWithDo()
         {
             Parser parser = new("k.times do print 'foo' end");

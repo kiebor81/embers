@@ -155,9 +155,16 @@ internal sealed class Expressions(Parser parser)
 
             if (parser.TryParseToken(TokenType.Separator, "["))
             {
-                IExpression indexexpr = parser.ParseExpression();
-                parser.ParseToken(TokenType.Separator, "]");
-                expression = new IndexedExpression(expression, indexexpr);
+                if (parser.TryParseToken(TokenType.Separator, "]"))
+                {
+                    expression = new IndexedExpression(expression, null);
+                }
+                else
+                {
+                    IExpression indexexpr = parser.ParseExpression();
+                    parser.ParseToken(TokenType.Separator, "]");
+                    expression = new IndexedExpression(expression, indexexpr);
+                }
 
                 continue;
             }
@@ -281,6 +288,7 @@ internal sealed class Expressions(Parser parser)
             InstanceVarExpression ivar => new InstanceVarExpression(ivar.Name),
             ClassVarExpression cvar => new ClassVarExpression(cvar.Name),
             GlobalExpression gvar => new GlobalExpression(gvar.Name),
+            IndexedExpression idx when idx.IndexExpression == null => throw new SyntaxError("empty index is not assignable"),
             IndexedExpression idx => new IndexedExpression(idx.Expression, idx.IndexExpression),
             _ => throw new SyntaxError("invalid compound assignment target")
         };
@@ -294,6 +302,7 @@ internal sealed class Expressions(Parser parser)
             InstanceVarExpression ivar => new AssignInstanceVarExpression(ivar.Name, binary),
             ClassVarExpression cvar => new AssignClassVarExpression(cvar.Name, binary),
             GlobalExpression gvar => new AssignGlobalVarExpression(gvar.Name, binary),
+            IndexedExpression idx when idx.IndexExpression == null => throw new SyntaxError("empty index is not assignable"),
             IndexedExpression idx => new AssignIndexedExpression(idx.Expression, idx.IndexExpression, binary),
             _ => throw new SyntaxError("invalid compound assignment target")
         };

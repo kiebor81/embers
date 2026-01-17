@@ -99,7 +99,8 @@ public class Parser
                 InstanceVarExpression ivar => new AssignInstanceVarExpression(ivar.Name, ParseExpression()),
                 ClassVarExpression cvar => new AssignClassVarExpression(cvar.Name, ParseExpression()),
                 GlobalExpression gvar => new AssignGlobalVarExpression(gvar.Name, ParseExpression()),
-                IndexedExpression idx => new AssignIndexedExpression(idx.Expression, idx.IndexExpression, ParseExpression()),
+                IndexedExpression idx when idx.IndexExpression == null => throw new SyntaxError("empty index is not assignable"),
+                IndexedExpression idx => new AssignIndexedExpression(idx.Expression, idx.IndexExpression!, ParseExpression()),
                 _ => throw new SyntaxError("invalid assignment target")
             };
 

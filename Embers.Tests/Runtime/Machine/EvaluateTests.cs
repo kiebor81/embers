@@ -562,6 +562,22 @@ end");
         }
 
         [TestMethod]
+        public void EvaluateProcEmptyIndexCall()
+        {
+            var result = Execute("zero = -> { 42 }\nzero[]");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(42L, result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TypeError))]
+        public void EvaluateEmptyIndexOnNonProcRaisesTypeError()
+        {
+            EvaluateExpression("'foo'[]");
+        }
+
+        [TestMethod]
         public void DefineQualifiedClass()
         {
             Execute("module MyModule\nend");
