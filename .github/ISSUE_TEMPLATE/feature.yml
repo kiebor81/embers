@@ -22,16 +22,16 @@ body:
   - type: dropdown
     id: risk
     attributes:
-      label: Risk Level
+      label: Risk Level (optional)
       options:
         - Low
         - Medium
         - High
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: tasks
     attributes:
-      label: Task Breakdown
+      label: Task Breakdown (optional)
       description: Provide phased tasks and test gates
