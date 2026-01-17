@@ -179,9 +179,12 @@ Supports:
 - Variable assignments
 - Control structures (`if`, `unless`, `while`, etc.)
 - Class and instance variables (`@foo`, `@@bar`)
+- Global variables (`$monkey`)
+- Ruby-like symbol handling (`:banana`)
+- Ruby-like reflection and a subset of meta-methods (to be expanded)
 - Exceptions (`raise`, `begin/rescue/ensure/end`)
 - Instance methods on native types (e.g., `5.abs`, `3.14.ceil`, `now.year`)
-- C# interop via direct .NET type access (e.g., `System.DateTime.Now`)
+- C# interop via direct .NET type access (e.g., `System::DateTime.Now`)
 
 **Note**:
 Availability of .NET types depends on the configured type access policy.
