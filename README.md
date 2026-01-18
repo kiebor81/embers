@@ -45,7 +45,7 @@ The following section is primarily useful for contributors or developers extendi
 flowchart TD
     A[Embers Script]
     B[Lexer<br/>Embers.Compiler.Lexer]
-    C[Parser<br/>Embers.Compiler.Parser]
+    C[Parser<br/>Embers.Compiler.Parsing.Parser]
     D[Expression Tree<br/>IExpression Instances]
     E[Machine<br/>Embers.Machine]
     F[Context & Scope<br/>Context / BlockContext]
