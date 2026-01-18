@@ -1,4 +1,8 @@
 ﻿namespace Embers.Security;
+
+/// <summary>
+/// Security modes for type access policy.
+/// </summary>
 public enum SecurityMode
 {
     Unrestricted,
@@ -18,8 +22,16 @@ internal static class TypeAccessPolicy
     private static readonly HashSet<string> ExplicitTypeWhitelist = [];
     private static readonly List<string> NamespaceWhitelist = [];
 
+    /// <summary>
+    /// Gets or sets the current security mode.
+    /// </summary>
     public static SecurityMode Mode { get; set; } = SecurityMode.Unrestricted;
 
+    /// <summary>
+    /// Sets the type access policy with the specified entries and mode.
+    /// </summary>
+    /// <param name="entries"></param>
+    /// <param name="mode"></param>
     public static void SetPolicy(IEnumerable<string> entries, SecurityMode mode = SecurityMode.WhitelistOnly)
     {
         lock (SyncLock)
@@ -37,6 +49,23 @@ internal static class TypeAccessPolicy
         }
     }
 
+    /// <summary>
+    /// Sets the type access policy with the specified mode only.
+    /// </summary>
+    /// <param name="mode"></param>
+    public static void SetPolicy(SecurityMode mode = SecurityMode.WhitelistOnly)
+    {
+        lock (SyncLock)
+        {
+            Clear();
+            Mode = mode;
+        }
+    }
+
+    /// <summary>
+    /// Adds a single type to the type access policy.
+    /// </summary>
+    /// <param name="fullTypeName"></param>
     public static void AddType(string fullTypeName)
     {
         lock (SyncLock)
@@ -45,12 +74,20 @@ internal static class TypeAccessPolicy
         }
     }
 
+    /// <summary>
+    /// Adds multiple types to the type access policy.
+    /// </summary>
+    /// <param name="typeNames"></param>
     public static void AddTypes(IEnumerable<string> typeNames)
     {
         foreach (var name in typeNames)
             AddType(name);
     }
 
+    /// <summary>
+    /// Adds a namespace prefix to the type access policy.
+    /// </summary>
+    /// <param name="namespacePrefix"></param>
     public static void AddNamespace(string namespacePrefix)
     {
         lock (SyncLock)
@@ -59,6 +96,9 @@ internal static class TypeAccessPolicy
         }
     }
 
+    /// <summary>
+    /// Clears all entries from the type access policy.
+    /// </summary>
     public static void Clear()
     {
         lock (SyncLock)
@@ -68,13 +108,18 @@ internal static class TypeAccessPolicy
         }
     }
 
+    /// <summary>
+    /// Determines if the specified type is allowed based on the current security policy.
+    /// </summary>
+    /// <param name="fullTypeName"></param>
+    /// <returns></returns>
     public static bool IsAllowed(string fullTypeName)
     {
         if (Mode == SecurityMode.Unrestricted)
             return true;
 
         return ExplicitTypeWhitelist.Contains(fullTypeName) ||
-               NamespaceWhitelist.Any(prefix => fullTypeName.StartsWith(prefix));
+               NamespaceWhitelist.Any(fullTypeName.StartsWith);
     }
 }
 

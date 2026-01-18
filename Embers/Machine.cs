@@ -15,6 +15,10 @@ namespace Embers;
 /// </summary>
 public class Machine
 {
+    /// <summary>
+    /// Custom supported file extensions.
+    /// </summary>
+    private string[] customSupportedExtensions = [];
     private static readonly string[] SupportedExtensions = [".ers", ".emb", ".rb", ".rs", ".txt"];
     /// <summary>
     /// The rootcontext
@@ -103,6 +107,53 @@ public class Machine
     public Context RootContext { get { return rootcontext; } }
 
     /// <summary>
+    /// Gets the supported file extensions.
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<string> GetSupportedExtensions()
+    {
+        foreach (var ext in SupportedExtensions)
+            yield return ext;
+
+        foreach (var ext in customSupportedExtensions)
+            yield return ext;
+    }
+
+    /// <summary>
+    /// Clears all supported file extensions.
+    /// </summary>
+    public void ClearSupportedExtensions()
+    {
+        customSupportedExtensions = [];
+    }
+
+    /// <summary>
+    /// Sets the supported file extensions.
+    /// </summary>
+    /// <param name="extensions"></param>
+    public void SetSupportedExtensions(IEnumerable<string> extensions)
+    {
+        customSupportedExtensions = extensions.Select(ext => ext.StartsWith(".") ? ext : "." + ext).ToArray();
+    }
+
+    /// <summary>
+    /// Adds a supported file extension.
+    /// </summary>
+    /// <param name="extension"></param>
+    public void AddSupportedExtension(string extension)
+    {
+        if (!extension.StartsWith("."))
+            extension = "." + extension;
+
+        var extensionsList = customSupportedExtensions.ToList();
+        if (!extensionsList.Contains(extension, StringComparer.OrdinalIgnoreCase))
+        {
+            extensionsList.Add(extension);
+            customSupportedExtensions = [.. extensionsList];
+        }
+    }
+
+    /// <summary>
     /// Short-hand proxy for ExecuteText and ExecuteFile.
     /// </summary>
     /// <param name="argument">The executable argument.</param>
@@ -129,7 +180,7 @@ public class Machine
     /// <summary>
     /// Determines if a string looks like a file path (contains path separators or file extensions).
     /// </summary>
-    private static bool LooksLikeFilePath(string argument)
+    private bool LooksLikeFilePath(string argument)
     {
         if (string.IsNullOrWhiteSpace(argument))
             return false;
@@ -152,7 +203,7 @@ public class Machine
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    private static bool HasSupportedExtension(string path)
+    private bool HasSupportedExtension(string path)
     {
         var ext = Path.GetExtension(path);
         if (string.IsNullOrEmpty(ext)) return false;
@@ -163,9 +214,14 @@ public class Machine
                 return true;
         }
 
+        foreach (var supported in customSupportedExtensions)
+        {
+            if (ext.Equals(supported, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+
         return false;
     }
-
 
     /// <summary>
     /// Executes the text.
@@ -209,6 +265,29 @@ public class Machine
         {
             requirepaths.RemoveAt(0);
         }
+    }
+
+    /// <summary>
+    /// Executes the reader.
+    /// </summary>
+    /// <param name="reader">The reader.</param>
+    /// <returns></returns>
+    public object ExecuteReader(TextReader reader)
+    {
+        Parser parser = new(reader);
+        object result = null;
+
+        try
+        {
+            for (var command = parser.ParseCommand(); command != null; command = parser.ParseCommand())
+                result = command.Evaluate(rootcontext);
+        }
+        catch (ReturnSignal)
+        {
+            throw new InvalidOperationError("return can only be used inside methods");
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -266,9 +345,16 @@ public class Machine
     /// </summary>
     /// <param name="basePath"></param>
     /// <returns></returns>
-    private static string AppendFirstExistingExtension(string basePath)
+    private string AppendFirstExistingExtension(string basePath)
     {
         foreach (var extension in SupportedExtensions)
+        {
+            var candidate = basePath + extension;
+            if (File.Exists(candidate))
+                return candidate;
+        }
+
+        foreach (var extension in customSupportedExtensions)
         {
             var candidate = basePath + extension;
             if (File.Exists(candidate))
@@ -280,35 +366,18 @@ public class Machine
     }
 
     /// <summary>
-    /// Executes the reader.
-    /// </summary>
-    /// <param name="reader">The reader.</param>
-    /// <returns></returns>
-    public object ExecuteReader(TextReader reader)
-    {
-        Parser parser = new(reader);
-        object result = null;
-
-        try
-        {
-            for (var command = parser.ParseCommand(); command != null; command = parser.ParseCommand())
-                result = command.Evaluate(rootcontext);
-        }
-        catch (ReturnSignal)
-        {
-            throw new InvalidOperationError("return can only be used inside methods");
-        }
-
-        return result;
-    }
-
-    /// <summary>
     /// Sets the type access policy.
     /// Allowed entries are a list of full type names that are allowed to be accessed.
     /// Provide allowed entries as a list of strings where final character '.' implies a namespace.
     /// </summary>
     /// <param name="allowedEntries">The allowed entries.</param>
-    public void SetTypeAccessPolicy(IEnumerable<string> allowedEntries, SecurityMode mode = SecurityMode.WhitelistOnly) => TypeAccessPolicy.SetPolicy(allowedEntries, mode);
+    public void SetTypeAccessPolicy(IEnumerable<string> allowedEntries, SecurityMode mode = SecurityMode.WhitelistOnly)
+    {
+        if (allowedEntries == null || !allowedEntries.Any())
+            TypeAccessPolicy.SetPolicy(mode);
+        else
+            TypeAccessPolicy.SetPolicy(allowedEntries, mode);
+    }
 
     /// <summary>
     /// Allows the type.

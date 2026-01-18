@@ -246,42 +246,48 @@ TypeAccessPolicy.Clear();
 The policy is governed by the machine (runtime) instance via the public API:
 
 ```csharp
-        /// <summary>
-        /// Sets the type access policy.
-        /// Allowed entries are a list of full type names that are allowed to be accessed.
-        /// Provide allowed entries as a list of strings where final character '.' implies a namespace.
-        /// </summary>
-        /// <param name="allowedEntries">The allowed entries.</param>
-        public void SetTypeAccessPolicy(IEnumerable<string> allowedEntries, SecurityMode mode = SecurityMode.WhitelistOnly)
-        {
-            TypeAccessPolicy.SetPolicy(allowedEntries, mode);
-        }
+    machine.<<POLICY_METHOD>>
+```
 
-        /// <summary>
-        /// Allows the type.
-        /// </summary>
-        /// <param name="fullTypeName">Full name of the type.</param>
-        public void AllowType(string fullTypeName)
-        {
-            Security.TypeAccessPolicy.AddType(fullTypeName);
-        }
+Using the publicly accessible policy control as below:
 
-        /// <summary>
-        /// Allows the namespace.
-        /// </summary>
-        /// <param name="prefix">The prefix.</param>
-        public void AllowNamespace(string prefix)
-        {
-            Security.TypeAccessPolicy.AddNamespace(prefix);
-        }
+```csharp
+/// <summary>
+/// Sets the type access policy.
+/// Allowed entries are a list of full type names that are allowed to be accessed.
+/// Provide allowed entries as a list of strings where final character '.' implies a namespace.
+/// </summary>
+/// <param name="allowedEntries">The allowed entries.</param>
+public void SetTypeAccessPolicy(IEnumerable<string> allowedEntries, SecurityMode mode = SecurityMode.WhitelistOnly)
+{
+    Security.TypeAccessPolicy.SetPolicy(allowedEntries, mode);
+}
 
-        /// <summary>
-        /// Clears the security policy.
-        /// </summary>
-        public void ClearSecurityPolicy()
-        {
-            Security.TypeAccessPolicy.Clear();
-        }
+/// <summary>
+/// Allows the type.
+/// </summary>
+/// <param name="fullTypeName">Full name of the type.</param>
+public void AllowType(string fullTypeName)
+{
+    Security.TypeAccessPolicy.AddType(fullTypeName);
+}
+
+/// <summary>
+/// Allows the namespace.
+/// </summary>
+/// <param name="prefix">The prefix.</param>
+public void AllowNamespace(string prefix)
+{
+    Security.TypeAccessPolicy.AddNamespace(prefix);
+}
+
+/// <summary>
+/// Clears the security policy.
+/// </summary>
+public void ClearSecurityPolicy()
+{
+    Security.TypeAccessPolicy.Clear();
+}
 ```
 
 ### Runtime Enforcement
@@ -294,6 +300,55 @@ if (!TypeAccessPolicy.IsAllowed(fullTypeName))
 ```
 
 This ensures unregistered types are never exposed to interpreted code under `WhitelistOnly` mode.
+
+### Custom File Extensions
+
+By default, Embers recognizes the following file extensions: `.ers`, `.emb`, `.rb`, `.rs`, and `.txt`. Host applications can extend this list to support custom file types specific to their domain or use case.
+
+This is particularly useful when:
+- Building DSLs with domain-specific file extensions (e.g., `.quest`, `.config`, `.mod`)
+- Supporting legacy scripts with non-standard extensions
+- Integrating with existing toolchains that use custom file formats
+
+#### Managing Custom Extensions
+
+The `Machine` provides a runtime API for managing supported file extensions:
+
+```csharp
+// Add a single custom extension
+machine.AddSupportedExtension(".quest");
+
+// Set multiple custom extensions at once
+machine.SetSupportedExtensions(new[] { ".quest", ".mod", ".script" });
+
+// Retrieve all supported extensions (built-in + custom)
+var allExtensions = machine.GetSupportedExtensions();
+
+// Clear all custom extensions (built-in extensions remain)
+machine.ClearSupportedExtensions();
+```
+
+**Note**:  
+Extensions can be provided with or without the leading dot (`.`). Embers normalizes them internally:
+
+```csharp
+machine.AddSupportedExtension("quest");  // Normalized to ".quest"
+machine.AddSupportedExtension(".quest"); // Already normalized
+```
+
+#### Example: Plugin System
+
+For a plugin system that uses `.plugin` files:
+
+```csharp
+Machine machine = new();
+machine.AddSupportedExtension(".plugin");
+
+// Now plugin files can be executed
+machine.Execute("mods/damage_calculator.plugin");
+```
+
+Custom extensions are checked alongside built-in extensions during file resolution via `Execute`, `ExecuteFile`, and `RequireFile`.
 
 ---
 

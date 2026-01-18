@@ -9,6 +9,13 @@ public class ConsoleReader(TextReader inner) : TextReader
         return line?.Length >= 2 ? line[2..] : string.Empty;
     }
 
-    // Optional: override other members as needed, depending on your parser
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _inner.Dispose();
+        }
+        base.Dispose(disposing);
+    }
 }
 

@@ -21,17 +21,21 @@ public class Program
             System.Console.WriteLine(Output.Green(string.Format("Loaded {0}", Output.Cyan(arg))));
         }
 
-        if (has_executes) Interative(machine);
+        if (has_executes) Interactive(machine);
 
         if (args.Length == 0)
         {
             Welcome.Print();
 
-            Interative(machine);
+            Interactive(machine);
         }
     }
 
-    public static void Interative(Machine machine)
+    /// <summary>
+    /// Starts an interactive REPL session.
+    /// </summary>
+    /// <param name="machine"></param>
+    public static void Interactive(Machine machine)
     {
         while (true)
         {
@@ -54,7 +58,7 @@ public class Program
                 IExpression expr = parser.ParseCommand();
 
                 var result = expr.Evaluate(machine.RootContext);
-                var text = (result == null ? "nil" : result.ToString());
+                var text = result == null ? "nil" : result.ToString();
                 System.Console.WriteLine(Output.Yellow($"=> {Output.Cyan(text)}"));
             }
             catch (Exception ex)
@@ -69,6 +73,11 @@ public class Program
         }
     }
 
+    /// <summary>
+    /// Prepares the input by appending necessary terminators if missing.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
     private static string PrepareInput(string input)
     {
         string trimmed = input.TrimEnd();
