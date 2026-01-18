@@ -30,7 +30,7 @@ Embers is built around a clean, minimal core with the goal of executing Ruby-lik
 - Lexical analysis via a custom `Lexer`
 - A virtual execution engine (`Machine`)
 - Context-sensitive execution (`Context`, `BlockContext`)
-- Robust exception model mirroring Ruby's error semantics
+- Robust exception model mimicking Ruby's error semantics
 - Embeddability and interoperability within .NET 9+ projects
 
 ---
@@ -121,7 +121,7 @@ graph TD
 ## Key Components
 
 - **Lexer** (`Compiler/Lexer.cs`): Tokenizes input strings into operators, literals, variables, etc.
-- **Parser** (`Compiler/Parser.cs`): Converts tokens into expression trees (`IExpression`)
+- **Parser** (`Compiler/Parsing/Parser.cs`): Converts tokens into expression trees (`IExpression`)
 - **Machine** (`Machine.cs`): Executes expression trees using a visitor-style interpreter
 - **Context & BlockContext**: Manages variable scopes, closures, and execution frames
 - **Registration** (`Registration.cs`): Handles registration of built-in methods and object types
