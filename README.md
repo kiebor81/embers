@@ -174,7 +174,7 @@ This method is useful for:
 - **Piped input**: Processing scripts from stdin or inter-process communication
 - **In-memory buffers**: Testing or dynamic script generation scenarios
 
-**Example: Embedded Resource Execution**
+e.g.
 
 ```csharp
 // Load script embedded in assembly
@@ -186,7 +186,7 @@ Machine machine = new();
 machine.ExecuteReader(reader);
 ```
 
-Embedded resources are particularly useful for shipping initialization scripts, default configurations, or standard library extensions alongside compiled assemblies without external file dependencies.
+Embedded resources are particularly useful for shipping initialization scripts, default configurations, or extensions alongside compiled assemblies without external file dependencies.
 
 **Note**: Most applications should use `ExecuteText` or `ExecuteFile`. `ExecuteReader` is intended for specialized integration scenarios where scripts originate from non-filesystem sources.
 
