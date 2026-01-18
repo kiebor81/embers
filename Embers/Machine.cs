@@ -224,7 +224,7 @@ public class Machine
     }
 
     /// <summary>
-    /// Executes the text.
+    /// Executes the text. Embers will parse and execute the provided text.
     /// </summary>
     /// <param name="text">The text.</param>
     /// <returns></returns>
@@ -247,7 +247,7 @@ public class Machine
     }
 
     /// <summary>
-    /// Executes the file.
+    /// Executes the file. Embers code is read from the file and executed.
     /// </summary>
     /// <param name="filename">The filename.</param>
     /// <returns></returns>
@@ -268,7 +268,8 @@ public class Machine
     }
 
     /// <summary>
-    /// Executes the reader.
+    /// Executes the Embers reader.
+    /// This allows executing from any TextReader source, e.g., StringReader, StreamReader, etc.
     /// </summary>
     /// <param name="reader">The reader.</param>
     /// <returns></returns>

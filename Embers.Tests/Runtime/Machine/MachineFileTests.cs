@@ -114,15 +114,15 @@ namespace Embers.Tests
             Assert.IsInstanceOfType(result, typeof(DynamicClass));
         }
 
-        //[TestMethod]
-        //public void RequireLibraryFile()
-        //{
-        //    Assert.IsTrue(machine.RequireFile("MachineFiles\\MyLib"));
+        [TestMethod]
+        public void RequireLibraryFile()
+        {
+           Assert.IsTrue(machine.RequireFile("MachineFiles\\MyLib"));
 
-        //    var result = machine.ExecuteText("MyLib::MyClass");
-        //    Assert.IsNotNull(result);
-        //    Assert.IsInstanceOfType(result, typeof(Type));
-        //}
+           var result = machine.ExecuteText("MyLib::MyClass");
+           Assert.IsNotNull(result);
+           Assert.IsInstanceOfType(result, typeof(Type));
+        }
 
         [TestMethod]
         public void RequireFileTwice()
@@ -371,5 +371,26 @@ Module1.test_me
         public void Execute_WithNonExistentFilePathBackslash_ThrowsFileNotFoundException() =>
             // Test with Windows-style path separator
             Assert.ThrowsException<FileNotFoundException>(() => machine.Execute("path\\to\\nonexistent.rb"));
+
+        [TestMethod]
+        public void ExecuteReader_WithEmbeddedResource_ExecutesSuccessfully()
+        {
+            // Load embedded resource from MyLib.dll
+            var myLibPath = FixturePath("MyLib.dll");
+            var assembly = System.Reflection.Assembly.LoadFrom(myLibPath);
+            var resourceName = "MyLib.EmbeddedScript.rb";
+
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            Assert.IsNotNull(stream, $"Could not find embedded resource: {resourceName}");
+
+            using var reader = new StreamReader(stream);
+            var result = machine.ExecuteReader(reader);
+
+            // Verify the script executed correctly
+            Assert.AreEqual(30L, result);
+            Assert.AreEqual(10L, machine.RootContext.GetValue("x"));
+            Assert.AreEqual(20L, machine.RootContext.GetValue("y"));
+            Assert.AreEqual(30L, machine.RootContext.GetValue("result"));
+        }
     }
 }

@@ -141,7 +141,7 @@ machine.Execute("puts 'Hello from Embers!'");
 
 #### Execution Methods
 
-The `Machine` exposes three execution entry points:
+The `Machine` exposes three primary execution entry points:
 
 - `ExecuteText(string code)`  
   Parses and executes Embers code directly from a string.
@@ -158,6 +158,37 @@ The `Machine` exposes three execution entry points:
 If the input appears to be a file path (e.g. contains path separators, file extensions, or is rooted) but does not resolve to an existing file, `Execute` will throw a `FileNotFoundException` rather than attempting to execute it as code.
 
 > For explicit intent and clarity, prefer calling `ExecuteText` or `ExecuteFile` directly.
+
+#### Streaming & Embedded Resources
+
+For advanced scenarios requiring script execution from non-file sources, `ExecuteReader` provides a lower-level interface accepting any `TextReader`:
+
+```csharp
+public object ExecuteReader(TextReader reader)
+```
+
+This method is useful for:
+
+- **Embedded resources**: Executing scripts compiled into assemblies
+- **Network streams**: Running scripts fetched from HTTP responses or other network sources
+- **Piped input**: Processing scripts from stdin or inter-process communication
+- **In-memory buffers**: Testing or dynamic script generation scenarios
+
+**Example: Embedded Resource Execution**
+
+```csharp
+// Load script embedded in assembly
+var assembly = Assembly.LoadFrom("MyScripts.dll");
+using var stream = assembly.GetManifestResourceStream("MyScripts.init.rb");
+using var reader = new StreamReader(stream);
+
+Machine machine = new();
+machine.ExecuteReader(reader);
+```
+
+Embedded resources are particularly useful for shipping initialization scripts, default configurations, or standard library extensions alongside compiled assemblies without external file dependencies.
+
+**Note**: Most applications should use `ExecuteText` or `ExecuteFile`. `ExecuteReader` is intended for specialized integration scenarios where scripts originate from non-filesystem sources.
 
 ---
 
