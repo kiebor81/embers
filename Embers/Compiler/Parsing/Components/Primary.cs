@@ -226,20 +226,13 @@ internal sealed class Primary(Parser parser)
 
         foreach (var flag in optionsText)
         {
-            switch (flag)
+            options |= flag switch
             {
-                case 'i':
-                    options |= RegexOptions.IgnoreCase;
-                    break;
-                case 'm':
-                    options |= RegexOptions.Multiline;
-                    break;
-                case 'x':
-                    options |= RegexOptions.IgnorePatternWhitespace;
-                    break;
-                default:
-                    throw new SyntaxError($"unknown regex option '{flag}'");
-            }
+                'i' => RegexOptions.IgnoreCase,
+                'm' => RegexOptions.Multiline,
+                'x' => RegexOptions.IgnorePatternWhitespace,
+                _ => throw new SyntaxError($"unknown regex option '{flag}'"),
+            };
         }
 
         return options;

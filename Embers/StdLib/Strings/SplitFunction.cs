@@ -17,9 +17,7 @@ public class SplitFunction : StdFunction
         if (values == null || values.Count == 0 || values[0] == null)
             throw new ArgumentError("split expects a string argument");
 
-        var s = values[0]?.ToString();
-        if (s == null)
-            throw new TypeError("split expects a string");
+        var s = (values[0]?.ToString()) ?? throw new TypeError("split expects a string");
 
         // If no separator is provided (only the string itself in values[0]), split on whitespace
         if (values.Count == 1)

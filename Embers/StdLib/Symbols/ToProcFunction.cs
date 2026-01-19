@@ -46,10 +46,7 @@ internal class SymbolToProcExpression(string methodName) : Expressions.BaseExpre
     public override object Evaluate(Context context)
     {
         // Get the object passed to the proc
-        var obj = context.GetLocalValue("obj");
-        
-        if (obj == null)
-            throw new NoMethodError($"undefined method '{methodName}' for nil");
+        var obj = context.GetLocalValue("obj") ?? throw new NoMethodError($"undefined method '{methodName}' for nil");
 
         // Call the method on the object
         if (obj is DynamicObject dynObj)

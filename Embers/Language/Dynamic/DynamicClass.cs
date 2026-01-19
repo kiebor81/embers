@@ -137,11 +137,7 @@ public class DynamicClass(DynamicClass @class, string name, DynamicClass supercl
     /// <exception cref="NameError"></exception>
     public void AliasMethod(string newName, string oldName)
     {
-        var method = GetInstanceMethod(oldName);
-
-        if (method == null)
-            throw new NameError($"method '{oldName}' not found for alias");
-
+        var method = GetInstanceMethod(oldName) ?? throw new NameError($"method '{oldName}' not found for alias");
         methods[newName] = method;
     }
 

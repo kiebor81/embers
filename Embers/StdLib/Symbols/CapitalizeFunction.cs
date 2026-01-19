@@ -13,10 +13,7 @@ public class CapitalizeFunction : StdFunction
         if (values.Count != 1)
             throw new Exceptions.ArgumentError($"wrong number of arguments (given {values.Count - 1}, expected 0)");
 
-        var symbol = values[0] as Symbol;
-        if (symbol == null)
-            throw new Exceptions.TypeError("symbol must be a Symbol");
-
+        var symbol = values[0] as Symbol ?? throw new Exceptions.TypeError("symbol must be a Symbol");
         if (string.IsNullOrEmpty(symbol.Name))
             return symbol;
 

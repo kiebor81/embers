@@ -354,10 +354,7 @@ internal sealed class Expressions(Parser parser)
                 parser.SkipEndOfLines();
             }
 
-            var keyexpression = parser.ParseExpression();
-            if (keyexpression == null)
-                throw new SyntaxError("hash key expected");
-
+            var keyexpression = parser.ParseExpression() ?? throw new SyntaxError("hash key expected");
             parser.SkipEndOfLines();
 
             if (parser.TryParseToken(TokenType.Operator, ":"))
@@ -378,10 +375,7 @@ internal sealed class Expressions(Parser parser)
 
             parser.SkipEndOfLines();
 
-            var valueexpression = parser.ParseExpression();
-            if (valueexpression == null)
-                throw new SyntaxError("hash value expected");
-
+            var valueexpression = parser.ParseExpression() ?? throw new SyntaxError("hash value expected");
             keyexpressions.Add(keyexpression);
             valueexpressions.Add(valueexpression);
         }

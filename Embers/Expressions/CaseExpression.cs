@@ -1,9 +1,5 @@
-using System;
 using System.Collections;
 using Embers.Exceptions;
-using Embers.Language.Dynamic;
-using Embers.Language.Native;
-using Embers.Language.Primitive;
 using Embers.StdLib.Numeric;
 using Microsoft.VisualBasic.CompilerServices;
 using Range = Embers.Language.Primitive.Range;

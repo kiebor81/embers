@@ -24,10 +24,7 @@ internal static class EnumerableHelpers
         if (self is IEnumerable enumerable)
             return EnumerateEnumerable(enumerable);
 
-        var each = self.GetMethod("each");
-        if (each == null)
-            throw new TypeError($"{methodName} expects an enumerable");
-
+        var each = self.GetMethod("each") ?? throw new TypeError($"{methodName} expects an enumerable");
         var collected = new List<IList<object>>();
         var collector = new YieldCollector(collected);
 
@@ -37,10 +34,7 @@ internal static class EnumerableHelpers
             return collected;
         }
 
-        var applyWithBlock = each.GetType().GetMethod("ApplyWithBlock");
-        if (applyWithBlock == null)
-            throw new TypeError("each expects a block");
-
+        var applyWithBlock = each.GetType().GetMethod("ApplyWithBlock") ?? throw new TypeError("each expects a block");
         applyWithBlock.Invoke(each, [self, context, Array.Empty<object>(), collector]);
         return collected;
     }

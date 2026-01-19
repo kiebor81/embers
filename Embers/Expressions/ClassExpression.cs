@@ -45,7 +45,7 @@ public class ClassExpression(INamedExpression namedexpression, IExpression expre
             var classclass = (DynamicClass)context.RootContext.GetLocalValue("Class");
             var superclass = (DynamicClass)context.RootContext.GetLocalValue("Object");
             string name = namedexpression.Name;
-            var parent = target == null ? context.Module : target;
+            var parent = target ?? context.Module;
 
             if (superclassexpression != null)
                 superclass = (DynamicClass)superclassexpression.Evaluate(context);

@@ -14,9 +14,7 @@ public class LastFunction : StdFunction
         if (values.Count != 1)
             throw new ArgumentError($"wrong number of arguments (given {values.Count - 1}, expected 0)");
 
-        var range = values[0] as Language.Primitive.Range;
-        if (range == null)
-            throw new TypeError("range must be a Range");
+        var range = values[0] as Language.Primitive.Range ?? throw new TypeError("range must be a Range");
         if (range.TryGetIntBounds(out var intStart, out var intEnd))
             return intStart > intEnd ? null : intEnd;
 

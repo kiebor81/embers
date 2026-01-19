@@ -14,9 +14,7 @@ public class MapFunction : StdFunction
         if (values.Count != 1)
             throw new ArgumentError($"wrong number of arguments (given {values.Count - 1}, expected 0)");
 
-        var range = values[0] as Language.Primitive.Range;
-        if (range == null)
-            throw new TypeError("range must be a Range");
+        var range = values[0] as Language.Primitive.Range ?? throw new TypeError("range must be a Range");
         if (context.Block == null)
             throw new ArgumentError("no block given");
 

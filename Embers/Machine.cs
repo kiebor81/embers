@@ -626,6 +626,14 @@ public class Machine
         return target;
     }
 
+    /// <summary>
+    /// Structures the new.
+    /// </summary>
+    /// <param name="obj">The object.</param>
+    /// <param name="context">The context.</param>
+    /// <param name="values">The values.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentError"></exception>
     private static object StructNew(DynamicObject obj, Context context, IList<object> values)
     {
         if (values == null || values.Count == 0)

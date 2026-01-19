@@ -126,10 +126,7 @@ internal sealed class Statements(Parser parser)
 
     private string ParseDefName()
     {
-        Token token = parser.Lexer.NextToken();
-        if (token == null)
-            throw new SyntaxError("name expected");
-
+        Token token = parser.Lexer.NextToken() ?? throw new SyntaxError("name expected");
         if (token.Type == TokenType.Name || token.Type == TokenType.Operator)
             return token.Value;
 
@@ -217,11 +214,7 @@ internal sealed class Statements(Parser parser)
     public CaseExpression ParseCaseExpression()
     {
         IExpression? subject = null;
-        Token token = parser.Lexer.NextToken();
-
-        if (token == null)
-            throw new SyntaxError("unexpected end of input");
-
+        Token token = parser.Lexer.NextToken() ?? throw new SyntaxError("unexpected end of input");
         bool hasSubject = true;
 
         if (parser.IsEndOfCommand(token))
@@ -258,18 +251,12 @@ internal sealed class Statements(Parser parser)
 
                 var patterns = new List<ICasePattern>();
 
-                var first = parser.ParseExpression();
-                if (first == null)
-                    throw new SyntaxError("expression expected");
-
+                var first = parser.ParseExpression() ?? throw new SyntaxError("expression expected");
                 patterns.Add(new ExpressionPattern(first));
 
                 while (parser.TryParseToken(TokenType.Separator, ","))
                 {
-                    var next = parser.ParseExpression();
-                    if (next == null)
-                        throw new SyntaxError("expression expected");
-
+                    var next = parser.ParseExpression() ?? throw new SyntaxError("expression expected");
                     patterns.Add(new ExpressionPattern(next));
                 }
 
@@ -319,10 +306,7 @@ internal sealed class Statements(Parser parser)
 
     private ICasePattern ParseCasePattern()
     {
-        Token token = parser.Lexer.NextToken();
-        if (token == null)
-            throw new SyntaxError("pattern expected");
-
+        Token token = parser.Lexer.NextToken() ?? throw new SyntaxError("pattern expected");
         if (token.Type == TokenType.Separator && token.Value == "{")
             return ParseHashPattern(true);
 
@@ -344,10 +328,7 @@ internal sealed class Statements(Parser parser)
             parser.Lexer.PushToken(token);
         }
 
-        var expr = parser.ParseExpression();
-        if (expr == null)
-            throw new SyntaxError("pattern expected");
-
+        var expr = parser.ParseExpression() ?? throw new SyntaxError("pattern expected");
         return new ExpressionPattern(expr);
     }
 
@@ -405,20 +386,13 @@ internal sealed class Statements(Parser parser)
 
     private HashPatternEntry ParseHashPatternEntry()
     {
-        Token token = parser.Lexer.NextToken();
-        if (token == null)
-            throw new SyntaxError("pattern key expected");
-
+        Token token = parser.Lexer.NextToken() ?? throw new SyntaxError("pattern key expected");
         string? name = token.Type switch
         {
             TokenType.Name => token.Value,
             TokenType.Symbol => token.Value,
             _ => null
-        };
-
-        if (name == null)
-            throw new SyntaxError("pattern key expected");
-
+        } ?? throw new SyntaxError("pattern key expected");
         IExpression key = new ConstantExpression(new Symbol(name));
 
         if (parser.TryParseToken(TokenType.Operator, ":"))
@@ -459,10 +433,7 @@ internal sealed class Statements(Parser parser)
         }
 
         parser.Lexer.PushToken(token);
-        var expr = parser.ParseExpression();
-        if (expr == null)
-            throw new SyntaxError("pattern expected");
-
+        var expr = parser.ParseExpression() ?? throw new SyntaxError("pattern expected");
         return new ExpressionPattern(expr);
     }
 
