@@ -1,6 +1,6 @@
 using Embers.StdLib.Numeric;
 
-namespace Embers.Tests.StdLib
+namespace Embers.Tests.StdLib.Numeric
 {
     [TestClass]
     public class AbsFunctionTests

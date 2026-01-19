@@ -1,5 +1,5 @@
-using Embers.Exceptions;
 using Embers.Annotations;
+using Embers.Exceptions;
 using System.Text.RegularExpressions;
 
 namespace Embers.StdLib.Strings;
@@ -15,12 +15,21 @@ public class MatchFunction : StdFunction
         if (values == null || values.Count < 2 || values[0] == null)
             throw new ArgumentError("match expects a string and a pattern");
 
-        if (values[0] is string s && values[1] is string pattern)
+        if (values[0] is not string s)
+            throw new TypeError("match expects a string and a pattern");
+
+        if (values[1] is string pattern)
         {
             var match = Regex.Match(s, pattern);
             return match.Success ? match.Value : null;
         }
 
-        throw new TypeError("match expects string arguments");
+        if (values[1] is Regexp regexp)
+        {
+            var match = regexp.Regex.Match(s);
+            return match.Success ? match.Value : null;
+        }
+
+        throw new TypeError("match expects a string and a pattern");
     }
 }

@@ -4,6 +4,8 @@ using Embers.Functions;
 using Embers.Security;
 using Embers.Signals;
 using Embers.StdLib.Conversion;
+using Embers.StdLib.Enumerable;
+using Embers.StdLib.Comparable;
 
 namespace Embers;
 
@@ -26,6 +28,7 @@ public class Machine
     private readonly Context rootcontext = new();
     private readonly IList<string> requirepaths = [];
     private readonly IList<string> required = [];
+    private static int anonymousStructIndex;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Machine"/> class.
@@ -47,6 +50,24 @@ public class Machine
         objectclass.SetClass(classclass);
         moduleclass.SetClass(classclass);
         classclass.SetClass(classclass);
+
+        var enumerableModule = new DynamicClass(moduleclass, "Enumerable", objectclass);
+        var enumerableReduce = new EnumerableReduceFunction();
+        enumerableModule.SetInstanceMethod("map", new EnumerableMapFunction());
+        enumerableModule.SetInstanceMethod("select", new EnumerableSelectFunction());
+        enumerableModule.SetInstanceMethod("reject", new EnumerableRejectFunction());
+        enumerableModule.SetInstanceMethod("each_with_index", new EnumerableEachWithIndexFunction());
+        enumerableModule.SetInstanceMethod("reduce", enumerableReduce);
+        enumerableModule.SetInstanceMethod("inject", enumerableReduce);
+        enumerableModule.SetInstanceMethod("any?", new EnumerableAnyFunction());
+        enumerableModule.SetInstanceMethod("all?", new EnumerableAllFunction());
+        enumerableModule.SetInstanceMethod("find", new EnumerableFindFunction());
+        enumerableModule.SetInstanceMethod("to_a", new EnumerableToAFunction());
+        rootcontext.SetLocalValue("Enumerable", enumerableModule);
+
+        var comparableModule = new DynamicClass(moduleclass, "Comparable", objectclass);
+        comparableModule.SetInstanceMethod("between?", new BetweenFunction());
+        rootcontext.SetLocalValue("Comparable", comparableModule);
 
         basicobjectclass.SetInstanceMethod("class", new LambdaFunction(GetClass));
         basicobjectclass.SetInstanceMethod("methods", new LambdaFunction(GetMethods));
@@ -75,6 +96,11 @@ public class Machine
         var datetimeNative = new DateTimeClass(this);
         var jsonNative = new JsonClass(this);
         var procNative = new ProcClass(this);
+        var regexpNative = new RegexpClass(this);
+
+        var structClass = new DynamicClass(classclass, "Struct", objectclass);
+        structClass.SingletonClass.SetInstanceMethod("new", new LambdaFunction(StructNew));
+        rootcontext.SetLocalValue("Struct", structClass);
 
         rootcontext.SetLocalValue("Fixnum", new NativeClassAdapter(classclass, "Fixnum", objectclass, null, fixnumNative));
         rootcontext.SetLocalValue("Float", new NativeClassAdapter(classclass, "Float", objectclass, null, floatNative));
@@ -89,6 +115,29 @@ public class Machine
         rootcontext.SetLocalValue("DateTime", new NativeClassAdapter(classclass, "DateTime", objectclass, null, datetimeNative));
         rootcontext.SetLocalValue("JSON", new NativeClassAdapter(classclass, "JSON", objectclass, null, jsonNative));
         rootcontext.SetLocalValue("Proc", new NativeClassAdapter(classclass, "Proc", objectclass, null, procNative));
+        rootcontext.SetLocalValue("Regexp", new NativeClassAdapter(classclass, "Regexp", objectclass, null, regexpNative));
+
+        var dateTimeAdapter = rootcontext.GetLocalValue("DateTime");
+        rootcontext.SetLocalValue("Time", dateTimeAdapter);
+        rootcontext.SetLocalValue("Date", dateTimeAdapter);
+
+        if (rootcontext.GetLocalValue("Array") is DynamicClass arrayClass)
+            arrayClass.IncludeModule(enumerableModule);
+        if (rootcontext.GetLocalValue("Hash") is DynamicClass hashClass)
+            hashClass.IncludeModule(enumerableModule);
+        if (rootcontext.GetLocalValue("Range") is DynamicClass rangeClass)
+            rangeClass.IncludeModule(enumerableModule);
+
+        if (rootcontext.GetLocalValue("Fixnum") is DynamicClass fixnumClass)
+            fixnumClass.IncludeModule(comparableModule);
+        if (rootcontext.GetLocalValue("Float") is DynamicClass floatClass)
+            floatClass.IncludeModule(comparableModule);
+        if (rootcontext.GetLocalValue("String") is DynamicClass stringClass)
+            stringClass.IncludeModule(comparableModule);
+        if (rootcontext.GetLocalValue("Symbol") is DynamicClass symbolClass)
+            symbolClass.IncludeModule(comparableModule);
+        if (rootcontext.GetLocalValue("DateTime") is DynamicClass dateTimeClass)
+            dateTimeClass.IncludeModule(comparableModule);
 
         rootcontext.Self = objectclass.CreateInstance();
         rootcontext.Self.Class.SetInstanceMethod("require", new RequireFunction(this));
@@ -133,7 +182,7 @@ public class Machine
     /// <param name="extensions"></param>
     public void SetSupportedExtensions(IEnumerable<string> extensions)
     {
-        customSupportedExtensions = extensions.Select(ext => ext.StartsWith(".") ? ext : "." + ext).ToArray();
+        customSupportedExtensions = extensions.Select(ext => ext.StartsWith('.') ? ext : "." + ext).ToArray();
     }
 
     /// <summary>
@@ -142,7 +191,7 @@ public class Machine
     /// <param name="extension"></param>
     public void AddSupportedExtension(string extension)
     {
-        if (!extension.StartsWith("."))
+        if (!extension.StartsWith('.'))
             extension = "." + extension;
 
         var extensionsList = customSupportedExtensions.ToList();
@@ -575,6 +624,74 @@ public class Machine
         target.IncludeModule(module);
 
         return target;
+    }
+
+    private static object StructNew(DynamicObject obj, Context context, IList<object> values)
+    {
+        if (values == null || values.Count == 0)
+            throw new ArgumentError("Struct.new expects at least one member");
+
+        int startIndex = 0;
+        string? structName = null;
+
+        if (values[0] is string nameText && Predicates.IsConstantName(nameText))
+        {
+            structName = nameText;
+            startIndex = 1;
+        }
+        else if (values[0] is Symbol symbolName && Predicates.IsConstantName(symbolName.Name))
+        {
+            structName = symbolName.Name;
+            startIndex = 1;
+        }
+
+        if (startIndex >= values.Count)
+            throw new ArgumentError("Struct.new expects at least one member");
+
+        var memberNames = new List<string>();
+        for (int i = startIndex; i < values.Count; i++)
+        {
+            string memberName = values[i] switch
+            {
+                Symbol symbol => symbol.Name,
+                string text => text,
+                _ => throw new TypeError("Struct member names must be symbols or strings")
+            };
+
+            if (string.IsNullOrWhiteSpace(memberName))
+                throw new ArgumentError("Struct member name cannot be empty");
+
+            if (memberNames.Contains(memberName))
+                throw new ArgumentError($"duplicate member name '{memberName}'");
+
+            memberNames.Add(memberName);
+        }
+
+        var classclass = (DynamicClass)context.RootContext.GetLocalValue("Class");
+        var objectclass = (DynamicClass)context.RootContext.GetLocalValue("Object");
+        var parent = context.Module;
+        var name = structName ?? $"Struct{++anonymousStructIndex}";
+        var structClass = new DynamicClass(classclass, name, objectclass, parent);
+        structClass.SetValue("__struct_members__", memberNames);
+
+        foreach (var member in memberNames)
+        {
+            structClass.SetInstanceMethod(member, new StructMemberGetFunction(member));
+            structClass.SetInstanceMethod(member + "=", new StructMemberSetFunction(member));
+        }
+
+        structClass.SetInstanceMethod("initialize", new StructInitializeFunction(memberNames));
+        structClass.SingletonClass.SetInstanceMethod("members", new StructMembersFunction(memberNames));
+
+        if (structName != null)
+        {
+            if (parent == null)
+                context.RootContext.SetLocalValue(structName, structClass);
+            else
+                parent.Constants.SetLocalValue(structName, structClass);
+        }
+
+        return structClass;
     }
 
 }

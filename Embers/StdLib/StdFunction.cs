@@ -1,4 +1,5 @@
-﻿using Embers.Annotations;
+using System.Reflection;
+using Embers.Annotations;
 using Embers.Functions;
 
 namespace Embers.StdLib;
@@ -11,6 +12,10 @@ namespace Embers.StdLib;
 [ScannerIgnore]
 public abstract class StdFunction : IFunction
 {
+    private static readonly FieldInfo? BlockField = typeof(Context)
+        .GetField("<Block>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)
+        ?? typeof(Context).GetField("block", BindingFlags.Instance | BindingFlags.NonPublic);
+
     public abstract object? Apply(DynamicObject self, Context context, IList<object> values);
 
     public virtual object? ApplyWithBlock(DynamicObject self, Context context, IList<object> values, IFunction block)
@@ -20,19 +25,14 @@ public abstract class StdFunction : IFunction
         try
         {
             // Assign the block temporarily
-            typeof(Context)
-                .GetField("<Block>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)?
-                .SetValue(context, block);
+            BlockField?.SetValue(context, block);
 
             return Apply(self, context, values);
         }
         finally
         {
-            typeof(Context)
-                .GetField("<Block>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)?
-                .SetValue(context, previous);
+            BlockField?.SetValue(context, previous);
         }
     }
 
 }
-

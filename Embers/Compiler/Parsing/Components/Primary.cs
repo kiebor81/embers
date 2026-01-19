@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Embers.Exceptions;
 using Embers.Expressions;
 
@@ -34,6 +35,13 @@ internal sealed class Primary(Parser parser)
 
         if (token.Type == TokenType.InterpolatedString)
             return ParseInterpolatedString(token.Value);
+
+        if (token.Type == TokenType.Operator && token.Value == "/")
+        {
+            var (pattern, optionsText) = parser.Lexer.ReadRegexLiteral();
+            var options = ParseRegexOptions(optionsText);
+            return new RegexLiteralExpression(pattern, options);
+        }
 
         if (token.Type == TokenType.Name)
         {
@@ -207,6 +215,31 @@ internal sealed class Primary(Parser parser)
         parser.Lexer.PushToken(token);
 
         return null;
+    }
+
+    private static RegexOptions ParseRegexOptions(string optionsText)
+    {
+        RegexOptions options = RegexOptions.None;
+
+        foreach (var flag in optionsText)
+        {
+            switch (flag)
+            {
+                case 'i':
+                    options |= RegexOptions.IgnoreCase;
+                    break;
+                case 'm':
+                    options |= RegexOptions.Multiline;
+                    break;
+                case 'x':
+                    options |= RegexOptions.IgnorePatternWhitespace;
+                    break;
+                default:
+                    throw new SyntaxError($"unknown regex option '{flag}'");
+            }
+        }
+
+        return options;
     }
 
     /// <summary>

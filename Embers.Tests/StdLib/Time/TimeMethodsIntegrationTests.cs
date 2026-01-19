@@ -16,6 +16,17 @@ namespace Embers.Tests.StdLib.Time
         }
 
         [TestMethod]
+        public void DateAndTimeConstants_AliasDateTime()
+        {
+            var dateTimeClass = machine.RootContext.GetValue("DateTime");
+            var timeClass = machine.RootContext.GetValue("Time");
+            var dateClass = machine.RootContext.GetValue("Date");
+
+            Assert.AreSame(dateTimeClass, timeClass);
+            Assert.AreSame(dateTimeClass, dateClass);
+        }
+
+        [TestMethod]
         public void Today_GlobalFunction_ReturnsDateTime()
         {
             var result = machine.ExecuteText("today");

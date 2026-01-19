@@ -74,6 +74,8 @@ internal sealed class Expressions(Parser parser)
                 expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.Equal);
             if (token.Value == "!=")
                 expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.NotEqual);
+            if (token.Value == "<=>")
+                expr = new CompareThreeWayExpression(expr, ParseBinaryExpression(level + 1));
             if (token.Value == "<")
                 expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.Less);
             if (token.Value == ">")

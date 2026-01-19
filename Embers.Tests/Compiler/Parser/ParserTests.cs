@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Embers.Exceptions;
 using Embers.Expressions;
 
@@ -37,6 +38,19 @@ namespace Embers.Tests.Compiler
         {
             Parser parser = new("'foo'");
             var expected = new ConstantExpression("foo");
+            var result = parser.ParseExpression();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseExpression());
+        }
+
+        [TestMethod]
+        public void ParseRegexLiteral()
+        {
+            Parser parser = new(@"/\d+/i");
+            var expected = new RegexLiteralExpression(@"\d+", RegexOptions.IgnoreCase);
             var result = parser.ParseExpression();
 
             Assert.IsNotNull(result);
@@ -862,7 +876,7 @@ namespace Embers.Tests.Compiler
         [TestMethod]
         public void ParseCompareExpressions()
         {
-            Parser parser = new("1==2 1!=2 1<2 1>2 1<=2 1>=2");
+            Parser parser = new("1==2 1!=2 1<2 1>2 1<=2 1>=2 1<=>2");
             var expected = new IExpression[] 
             {
                 new CompareExpression(new ConstantExpression(1L), new ConstantExpression(2L), CompareOperator.Equal),
@@ -870,7 +884,8 @@ namespace Embers.Tests.Compiler
                 new CompareExpression(new ConstantExpression(1L), new ConstantExpression(2L), CompareOperator.Less),
                 new CompareExpression(new ConstantExpression(1L), new ConstantExpression(2L), CompareOperator.Greater),
                 new CompareExpression(new ConstantExpression(1L), new ConstantExpression(2L), CompareOperator.LessOrEqual),
-                new CompareExpression(new ConstantExpression(1L), new ConstantExpression(2L), CompareOperator.GreaterOrEqual)
+                new CompareExpression(new ConstantExpression(1L), new ConstantExpression(2L), CompareOperator.GreaterOrEqual),
+                new CompareThreeWayExpression(new ConstantExpression(1L), new ConstantExpression(2L))
             };
 
             foreach (var exp in expected)

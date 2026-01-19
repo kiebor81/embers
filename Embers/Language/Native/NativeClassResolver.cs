@@ -47,6 +47,9 @@ public static class NativeClassResolver
         if (value is Proc)
             return root.GetValue("Proc") as NativeClassAdapter;
 
+        if (value is Regexp)
+            return root.GetValue("Regexp") as NativeClassAdapter;
+
         if (value is Primitive.Range)
             return root.GetValue("Range") as NativeClassAdapter;
 

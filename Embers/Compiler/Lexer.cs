@@ -15,7 +15,7 @@ public class Lexer
     private const char Variable = '@';
     private const char GlobalVariable = '$';
     private const string Separators = ";()[],.|{}&";
-    private static readonly string[] operators = ["?", ":", "+", "-", "*", "/", "%", "**", "=", "<", ">", "!", "==", "<=", ">=", "!=", "=>", "->", "..", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**="];
+    private static readonly string[] operators = ["?", ":", "+", "-", "*", "/", "%", "**", "=", "<", ">", "!", "==", "<=", ">=", "!=", "<=>", "=>", "->", "..", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**="];
 
     /// <summary>
     /// the character stream
@@ -99,35 +99,41 @@ public class Lexer
         if (ch == GlobalVariable)
             return NextGlobalVariableName();
 
-        if (operators.Contains(ch.ToString()))
+        string value1 = ch.ToString();
+        if (operators.Any(op => op.StartsWith(value1)))
         {
-            string value = ch.ToString();
-            ich = NextChar();
-
-            if (ich >= 0)
+            if (operators.Any(op => op.Length > 1 && op.StartsWith(value1)))
             {
-                value += (char)ich;
-                if (operators.Contains(value))
-                    return new Token(TokenType.Operator, value);
+                int ich1 = NextChar();
+                if (ich1 >= 0)
+                {
+                    char ch1 = (char)ich1;
+                    string value2 = value1 + ch1;
 
-                BackChar();
+                    if (operators.Any(op => op.Length > 2 && op.StartsWith(value2)))
+                    {
+                        int ich2 = NextChar();
+                        if (ich2 >= 0)
+                        {
+                            char ch2 = (char)ich2;
+                            string value3 = value2 + ch2;
+
+                            if (operators.Contains(value3))
+                                return new Token(TokenType.Operator, value3);
+
+                            BackChar();
+                        }
+                    }
+
+                    if (operators.Contains(value2))
+                        return new Token(TokenType.Operator, value2);
+
+                    BackChar();
+                }
             }
 
-            return new Token(TokenType.Operator, ch.ToString());
-        }
-        else if (operators.Any(op => op.StartsWith(ch.ToString())))
-        {
-            string value = ch.ToString();
-            ich = NextChar();
-
-            if (ich >= 0)
-            {
-                value += (char)ich;
-                if (operators.Contains(value))
-                    return new Token(TokenType.Operator, value);
-
-                BackChar();
-            }
+            if (operators.Contains(value1))
+                return new Token(TokenType.Operator, value1);
         }
 
         if (Separators.Contains(ch))
@@ -334,6 +340,59 @@ public class Lexer
             throw new SyntaxError("unclosed string");
 
         return new Token(TokenType.String, value);
+    }
+
+    /// <summary>
+    /// Reads a regex literal after the leading '/' has already been consumed.
+    /// </summary>
+    /// <returns>Pattern and option flags.</returns>
+    /// <exception cref="SyntaxError"></exception>
+    internal (string Pattern, string Options) ReadRegexLiteral()
+    {
+        string pattern = string.Empty;
+        bool escaped = false;
+        int ich;
+
+        for (ich = NextChar(); ich >= 0; ich = NextChar())
+        {
+            char ch = (char)ich;
+
+            if (!escaped && ch == '/')
+                break;
+
+            if (!escaped && ch == '\n')
+                throw new SyntaxError("unclosed regex");
+
+            if (!escaped && ch == '\\')
+            {
+                escaped = true;
+                pattern += ch;
+                continue;
+            }
+
+            escaped = false;
+            pattern += ch;
+        }
+
+        if (ich < 0)
+            throw new SyntaxError("unclosed regex");
+
+        string options = string.Empty;
+        int ichOption = NextChar();
+        while (ichOption >= 0)
+        {
+            char opt = (char)ichOption;
+            if (!char.IsLetter(opt))
+            {
+                BackChar();
+                break;
+            }
+
+            options += opt;
+            ichOption = NextChar();
+        }
+
+        return (pattern, options);
     }
 
     /// <summary>

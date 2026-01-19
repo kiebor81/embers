@@ -1,5 +1,5 @@
-using Embers.Exceptions;
 using Embers.Annotations;
+using Embers.Exceptions;
 using System.Text.RegularExpressions;
 
 namespace Embers.StdLib.Strings;
@@ -15,10 +15,16 @@ public class SubFunction : StdFunction
         if (values == null || values.Count < 3 || values[0] == null || values[1] == null || values[2] == null)
             throw new ArgumentError("sub expects a string, pattern, and replacement");
 
-        if (values[0] is string s && values[1] is string pattern && values[2] is string replacement)
+        if (values[0] is not string s || values[2] is not string replacement)
+            throw new TypeError("sub expects a string, pattern, and replacement");
+
+        if (values[1] is string pattern)
             return Regex.Replace(s, pattern, replacement, RegexOptions.None, TimeSpan.FromMilliseconds(100)); // Replace first occurrence
 
-        throw new TypeError("sub expects string arguments");
+        if (values[1] is Regexp regexp)
+            return regexp.Regex.Replace(s, replacement, 1);
+
+        throw new TypeError("sub expects a string, pattern, and replacement");
     }
 }
 

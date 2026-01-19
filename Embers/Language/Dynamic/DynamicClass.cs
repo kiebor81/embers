@@ -60,7 +60,7 @@ public class DynamicClass(DynamicClass @class, string name, DynamicClass supercl
         {
             for (int i = mixins.Count - 1; i >= 0; i--)
             {
-                var method = mixins[i].GetInstanceMethod(name);
+                var method = mixins[i].GetMixinMethod(name);
                 if (method != null)
                     return method;
             }
@@ -86,7 +86,25 @@ public class DynamicClass(DynamicClass @class, string name, DynamicClass supercl
         {
             for (int i = mixins.Count - 1; i >= 0; i--)
             {
-                var method = mixins[i].GetInstanceMethod(name);
+                var method = mixins[i].GetMixinMethod(name);
+                if (method != null)
+                    return method;
+            }
+        }
+
+        return null;
+    }
+
+    private IFunction? GetMixinMethod(string name)
+    {
+        if (methods.TryGetValue(name, out IFunction? value))
+            return value;
+
+        if (mixins.Count > 0)
+        {
+            for (int i = mixins.Count - 1; i >= 0; i--)
+            {
+                var method = mixins[i].GetMixinMethod(name);
                 if (method != null)
                     return method;
             }
