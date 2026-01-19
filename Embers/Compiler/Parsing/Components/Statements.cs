@@ -200,6 +200,282 @@ internal sealed class Statements(Parser parser)
     }
 
     /// <summary>
+    /// Parses a case expression.
+    /// </summary>
+    public CaseExpression ParseCaseExpression()
+    {
+        IExpression? subject = null;
+        Token token = parser.Lexer.NextToken();
+
+        if (token == null)
+            throw new SyntaxError("unexpected end of input");
+
+        bool hasSubject = true;
+
+        if (parser.IsEndOfCommand(token))
+        {
+            hasSubject = false;
+        }
+        else if (token.Type == TokenType.Name && token.Value == "when")
+        {
+            hasSubject = false;
+            parser.Lexer.PushToken(token);
+        }
+        else
+        {
+            parser.Lexer.PushToken(token);
+        }
+
+        if (hasSubject)
+        {
+            subject = parser.ParseExpression();
+            parser.ParseEndOfCommand();
+        }
+
+        var clauses = new List<ICaseClause>();
+        bool? isInClause = null;
+
+        while (true)
+        {
+            if (parser.TryParseName("when"))
+            {
+                if (isInClause == true)
+                    throw new SyntaxError("case cannot mix when and in clauses");
+
+                isInClause = false;
+
+                var patterns = new List<ICasePattern>();
+
+                var first = parser.ParseExpression();
+                if (first == null)
+                    throw new SyntaxError("expression expected");
+
+                patterns.Add(new ExpressionPattern(first));
+
+                while (parser.TryParseToken(TokenType.Separator, ","))
+                {
+                    var next = parser.ParseExpression();
+                    if (next == null)
+                        throw new SyntaxError("expression expected");
+
+                    patterns.Add(new ExpressionPattern(next));
+                }
+
+                if (parser.TryParseName("then"))
+                    parser.TryParseEndOfLine();
+                else
+                    parser.ParseEndOfCommand();
+
+                var body = parser.ParseCommandList(["when", "else", "end"]);
+                clauses.Add(new CaseWhenClause(patterns, body));
+                continue;
+            }
+
+            if (parser.TryParseName("in"))
+            {
+                if (isInClause == false)
+                    throw new SyntaxError("case cannot mix when and in clauses");
+
+                isInClause = true;
+
+                var pattern = ParseCasePattern();
+
+                if (parser.TryParseName("then"))
+                    parser.TryParseEndOfLine();
+                else
+                    parser.ParseEndOfCommand();
+
+                var body = parser.ParseCommandList(["in", "else", "end"]);
+                clauses.Add(new CaseInClause(pattern, body));
+                continue;
+            }
+
+            break;
+        }
+
+        if (clauses.Count == 0)
+            throw new SyntaxError("case requires at least one when or in clause");
+
+        IExpression? elseExpression = null;
+        if (parser.TryParseName("else"))
+            elseExpression = parser.ParseCommandList(["end"]);
+
+        parser.ParseName("end");
+
+        return new CaseExpression(subject, clauses, elseExpression);
+    }
+
+    private ICasePattern ParseCasePattern()
+    {
+        Token token = parser.Lexer.NextToken();
+        if (token == null)
+            throw new SyntaxError("pattern expected");
+
+        if (token.Type == TokenType.Separator && token.Value == "{")
+            return ParseHashPattern(true);
+
+        if (token.Type == TokenType.Name)
+        {
+            Token next = parser.Lexer.NextToken();
+            if (next != null && next.Type == TokenType.Operator && next.Value == ":")
+            {
+                parser.Lexer.PushToken(next);
+                parser.Lexer.PushToken(token);
+                return ParseHashPattern(false);
+            }
+
+            parser.Lexer.PushToken(next);
+            parser.Lexer.PushToken(token);
+        }
+        else
+        {
+            parser.Lexer.PushToken(token);
+        }
+
+        var expr = parser.ParseExpression();
+        if (expr == null)
+            throw new SyntaxError("pattern expected");
+
+        return new ExpressionPattern(expr);
+    }
+
+    private HashPattern ParseHashPattern(bool hasBraces)
+    {
+        var entries = new List<HashPatternEntry>();
+
+        while (true)
+        {
+            parser.SkipEndOfLines();
+
+            if (hasBraces && parser.TryParseToken(TokenType.Separator, "}"))
+                break;
+
+            if (!hasBraces)
+            {
+                Token? peek = parser.Lexer.NextToken();
+                if (IsPatternTerminator(peek))
+                {
+                    parser.Lexer.PushToken(peek);
+                    break;
+                }
+                parser.Lexer.PushToken(peek);
+            }
+
+            entries.Add(ParseHashPatternEntry());
+            parser.SkipEndOfLines();
+
+            if (hasBraces)
+            {
+                if (parser.TryParseToken(TokenType.Separator, "}"))
+                    break;
+
+                parser.ParseToken(TokenType.Separator, ",");
+            }
+            else
+            {
+                if (!parser.TryParseToken(TokenType.Separator, ","))
+                {
+                    Token? peek = parser.Lexer.NextToken();
+                    if (IsPatternTerminator(peek))
+                    {
+                        parser.Lexer.PushToken(peek);
+                        break;
+                    }
+
+                    parser.Lexer.PushToken(peek);
+                    throw new SyntaxError("expected ','");
+                }
+            }
+        }
+
+        return new HashPattern(entries);
+    }
+
+    private HashPatternEntry ParseHashPatternEntry()
+    {
+        Token token = parser.Lexer.NextToken();
+        if (token == null)
+            throw new SyntaxError("pattern key expected");
+
+        string? name = token.Type switch
+        {
+            TokenType.Name => token.Value,
+            TokenType.Symbol => token.Value,
+            _ => null
+        };
+
+        if (name == null)
+            throw new SyntaxError("pattern key expected");
+
+        IExpression key = new ConstantExpression(new Symbol(name));
+
+        if (parser.TryParseToken(TokenType.Operator, ":"))
+        {
+            var valuePattern = ParseHashValuePattern(name);
+            return new HashPatternEntry(key, valuePattern);
+        }
+
+        parser.ParseToken(TokenType.Operator, "=>");
+        var pattern = ParseCasePattern();
+        return new HashPatternEntry(key, pattern);
+    }
+
+    private ICasePattern ParseHashValuePattern(string bindingName)
+    {
+        Token? token = parser.Lexer.NextToken();
+        if (token == null || IsPatternValueTerminator(token))
+        {
+            if (token != null)
+                parser.Lexer.PushToken(token);
+            return new BindingPattern(bindingName);
+        }
+
+        if (token.Type == TokenType.Separator && token.Value == "{")
+            return ParseHashPattern(true);
+
+        if (token.Type == TokenType.Name)
+        {
+            Token? next = parser.Lexer.NextToken();
+            if (next != null && next.Type == TokenType.Operator && next.Value == ":")
+            {
+                parser.Lexer.PushToken(next);
+                parser.Lexer.PushToken(token);
+                return ParseHashPattern(false);
+            }
+
+            parser.Lexer.PushToken(next);
+        }
+
+        parser.Lexer.PushToken(token);
+        var expr = parser.ParseExpression();
+        if (expr == null)
+            throw new SyntaxError("pattern expected");
+
+        return new ExpressionPattern(expr);
+    }
+
+    private bool IsPatternTerminator(Token? token)
+    {
+        if (token == null)
+            return true;
+
+        if (parser.IsEndOfCommand(token))
+            return true;
+
+        return token.Type == TokenType.Name
+            && (token.Value == "then" || token.Value == "else" || token.Value == "end");
+    }
+
+    private bool IsPatternValueTerminator(Token token)
+    {
+        if (IsPatternTerminator(token))
+            return true;
+
+        return token.Type == TokenType.Separator
+            && (token.Value == "," || token.Value == "}");
+    }
+
+    /// <summary>
     /// Parses a try expression
     /// </summary>
     /// <returns></returns>

@@ -1,6 +1,8 @@
 ﻿using Embers.Compiler;
 using Embers.Exceptions;
 
+using System.Reflection;
+
 namespace Embers.Tests.Compiler
 {
     [TestClass]
@@ -927,6 +929,68 @@ namespace Embers.Tests.Compiler
             Assert.IsNotNull(result);
             Assert.AreEqual(TokenType.Name, result.Type);
             Assert.AreEqual("two", result.Value);
+        }
+
+        [TestMethod]
+        public void RegexLiteral_EmptyPattern()
+        {
+            Lexer lexer = new("//");
+            var token = lexer.NextToken();
+
+            Assert.IsNotNull(token);
+            Assert.AreEqual(TokenType.Operator, token.Type);
+            Assert.AreEqual("/", token.Value);
+
+            var method = typeof(Lexer).GetMethod("ReadRegexLiteral", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(method);
+
+            var result = (ValueTuple<string, string>)method.Invoke(lexer, null);
+            Assert.AreEqual(string.Empty, result.Item1);
+            Assert.AreEqual(string.Empty, result.Item2);
+        }
+
+        [TestMethod]
+        public void RegexLiteral_EscapedSlash()
+        {
+            Lexer lexer = new("/\\//");
+            var token = lexer.NextToken();
+
+            Assert.IsNotNull(token);
+            Assert.AreEqual(TokenType.Operator, token.Type);
+            Assert.AreEqual("/", token.Value);
+
+            var method = typeof(Lexer).GetMethod("ReadRegexLiteral", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(method);
+
+            var result = (ValueTuple<string, string>)method.Invoke(lexer, null);
+            Assert.AreEqual("\\/", result.Item1);
+            Assert.AreEqual(string.Empty, result.Item2);
+        }
+
+        [TestMethod]
+        public void RegexLiteral_UnclosedRaises()
+        {
+            Lexer lexer = new("/abc");
+            var token = lexer.NextToken();
+
+            Assert.IsNotNull(token);
+            Assert.AreEqual(TokenType.Operator, token.Type);
+            Assert.AreEqual("/", token.Value);
+
+            var method = typeof(Lexer).GetMethod("ReadRegexLiteral", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(method);
+
+            try
+            {
+                method.Invoke(lexer, null);
+                Assert.Fail();
+            }
+            catch (TargetInvocationException ex)
+            {
+                Assert.IsNotNull(ex.InnerException);
+                Assert.IsInstanceOfType(ex.InnerException, typeof(SyntaxError));
+                Assert.AreEqual("unclosed regex", ex.InnerException.Message);
+            }
         }
     }
 }

@@ -90,6 +90,9 @@ internal sealed class Primary(Parser parser)
             if (token.Value == "unless")
                 return parser.ParseUnlessExpression();
 
+            if (token.Value == "case")
+                return parser.ParseCaseExpression();
+
             if (token.Value == "break")
             {
                 if (parser.NextTokenStartsExpressionList())

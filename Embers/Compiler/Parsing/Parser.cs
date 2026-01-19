@@ -358,6 +358,12 @@ public class Parser
         => statementParser.ParseUnlessExpression();
 
     /// <summary>
+    /// Parses a case expression.
+    /// </summary>
+    internal CaseExpression ParseCaseExpression()
+        => statementParser.ParseCaseExpression();
+
+    /// <summary>
     /// Parses a try expression.
     /// </summary>
     /// <returns></returns>

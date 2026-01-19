@@ -4,6 +4,9 @@ using Embers.Utilities;
 
 namespace Embers.StdLib.Comparable;
 
+/// <summary>
+/// Function that checks if a value is between two bounds.
+/// </summary>
 public sealed class BetweenFunction : StdFunction
 {
     [Comments("Returns true if the value falls within the provided min/max bounds.")]

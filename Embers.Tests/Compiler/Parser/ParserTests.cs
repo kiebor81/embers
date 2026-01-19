@@ -475,6 +475,146 @@ namespace Embers.Tests.Compiler
         }
 
         [TestMethod]
+        public void ParseCaseStatementWithSubject()
+        {
+            Parser parser = new("case x\nwhen 1 then 2\nelse 3\nend");
+            var expected = new CaseExpression(
+                new NameExpression("x"),
+                new ICaseClause[] { new CaseWhenClause([new ExpressionPattern(new ConstantExpression(1L))], new ConstantExpression(2L)) },
+                new ConstantExpression(3L));
+
+            var result = parser.ParseCommand();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseCommand());
+        }
+
+        [TestMethod]
+        public void ParseCaseStatementWithoutSubject()
+        {
+            Parser parser = new("case\nwhen x > 1 then 2\nend");
+            var expected = new CaseExpression(
+                null,
+                new ICaseClause[] { new CaseWhenClause([new ExpressionPattern(new CompareExpression(new NameExpression("x"), new ConstantExpression(1L), CompareOperator.Greater))], new ConstantExpression(2L)) },
+                null);
+
+            var result = parser.ParseCommand();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseCommand());
+        }
+
+        [TestMethod]
+        public void ParseCaseStatementWithMultiplePatterns()
+        {
+            Parser parser = new("case x\nwhen 1, 2 then 3\nend");
+            var expected = new CaseExpression(
+                new NameExpression("x"),
+                new ICaseClause[] { new CaseWhenClause(
+                    [new ExpressionPattern(new ConstantExpression(1L)), new ExpressionPattern(new ConstantExpression(2L))],
+                    new ConstantExpression(3L)) },
+                null);
+
+            var result = parser.ParseCommand();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseCommand());
+        }
+
+        [TestMethod]
+        public void ParseCaseExpressionAssignment()
+        {
+            Parser parser = new("result = case x\nwhen 1 then 2\nend");
+            var expected = new AssignExpression(
+                "result",
+                new CaseExpression(
+                    new NameExpression("x"),
+                    new ICaseClause[] { new CaseWhenClause([new ExpressionPattern(new ConstantExpression(1L))], new ConstantExpression(2L)) },
+                    null));
+
+            var result = parser.ParseCommand();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseCommand());
+        }
+
+        [TestMethod]
+        public void ParseCaseInPatternWithNestedHashBinding()
+        {
+            Parser parser = new("case config\nin db: {user:} then user\nend");
+            var expected = new CaseExpression(
+                new NameExpression("config"),
+                new ICaseClause[]
+                {
+                    new CaseInClause(
+                        new HashPattern(
+                            new HashPatternEntry[]
+                            {
+                                new HashPatternEntry(
+                                    new ConstantExpression(new Symbol("db")),
+                                    new HashPattern(
+                                        new HashPatternEntry[]
+                                        {
+                                            new HashPatternEntry(
+                                                new ConstantExpression(new Symbol("user")),
+                                                new BindingPattern("user"))
+                                        }))
+                            }),
+                        new NameExpression("user"))
+                },
+                null);
+
+            var result = parser.ParseCommand();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseCommand());
+        }
+
+        [TestMethod]
+        public void ParseCaseInPatternWithBracedHash()
+        {
+            Parser parser = new("case config\nin { db: { user: } } then 1\nend");
+            var expected = new CaseExpression(
+                new NameExpression("config"),
+                new ICaseClause[]
+                {
+                    new CaseInClause(
+                        new HashPattern(
+                            new HashPatternEntry[]
+                            {
+                                new HashPatternEntry(
+                                    new ConstantExpression(new Symbol("db")),
+                                    new HashPattern(
+                                        new HashPatternEntry[]
+                                        {
+                                            new HashPatternEntry(
+                                                new ConstantExpression(new Symbol("user")),
+                                                new BindingPattern("user"))
+                                        }))
+                            }),
+                        new ConstantExpression(1L))
+                },
+                null);
+
+            var result = parser.ParseCommand();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseCommand());
+        }
+
+        [TestMethod]
         public void ParseSimpleIfElseCommand()
         {
             Parser parser = new("if 1\n a=1\nelse\n a=2\nend");
