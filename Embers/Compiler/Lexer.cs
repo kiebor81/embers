@@ -15,7 +15,7 @@ public class Lexer
     private const char Variable = '@';
     private const char GlobalVariable = '$';
     private const string Separators = ";()[],.|{}&";
-    private static readonly string[] operators = ["?", ":", "+", "-", "*", "/", "%", "**", "=", "<", ">", "!", "==", "<=", ">=", "!=", "<=>", "=>", "->", "..", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**="];
+    private static readonly string[] operators = ["?", ":", "+", "-", "*", "/", "%", "**", "=", "<", ">", "!", "==", "===", "<=", ">=", "!=", "<=>", "=>", "->", "..", "&&", "||", "+=", "-=", "*=", "/=", "%=", "**="];
 
     /// <summary>
     /// the character stream

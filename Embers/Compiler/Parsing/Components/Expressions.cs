@@ -72,6 +72,8 @@ internal sealed class Expressions(Parser parser)
                 expr = new DivideExpression(expr, ParseBinaryExpression(level + 1));
             if (token.Value == "==")
                 expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.Equal);
+            if (token.Value == "===")
+                throw new InvalidOperationError("=== is only supported in case matching");
             if (token.Value == "!=")
                 expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.NotEqual);
             if (token.Value == "<=>")

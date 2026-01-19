@@ -91,7 +91,7 @@ internal sealed class Statements(Parser parser)
     /// <returns></returns>
     public IExpression ParseDefExpression()
     {
-        string name = parser.ParseName();
+        string name = ParseDefName();
         INamedExpression named = null;
 
         if (name == "self")
@@ -122,6 +122,18 @@ internal sealed class Statements(Parser parser)
         IExpression body = parser.ParseCommandList();
 
         return new DefExpression(named, parameters, body, blockParam);
+    }
+
+    private string ParseDefName()
+    {
+        Token token = parser.Lexer.NextToken();
+        if (token == null)
+            throw new SyntaxError("name expected");
+
+        if (token.Type == TokenType.Name || token.Type == TokenType.Operator)
+            return token.Value;
+
+        throw new SyntaxError("name expected");
     }
 
     /// <summary>

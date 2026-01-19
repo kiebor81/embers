@@ -1,4 +1,11 @@
+using System;
 using Embers.Exceptions;
+using Embers.Language.Dynamic;
+using Embers.Language.Native;
+using Embers.Language.Primitive;
+using Embers.StdLib.Numeric;
+using Microsoft.VisualBasic.CompilerServices;
+using Range = Embers.Language.Primitive.Range;
 
 namespace Embers.Expressions;
 
@@ -190,7 +197,26 @@ public sealed class CaseExpression(IExpression? subject, IReadOnlyList<ICaseClau
     public IExpression? ElseExpression => elseExpression;
 
     public override object? Evaluate(Context context)
-        => throw new NotSupportedError("case expressions are not implemented yet");
+    {
+        bool hasSubject = subject != null;
+        object? subjectValue = hasSubject ? subject!.Evaluate(context) : null;
+
+        foreach (var clause in clauses)
+        {
+            if (clause is CaseWhenClause whenClause)
+            {
+                if (MatchesWhenClause(context, whenClause, hasSubject, subjectValue))
+                    return whenClause.Body.Evaluate(context);
+
+                continue;
+            }
+
+            if (clause is CaseInClause)
+                throw new NotSupportedError("case/in is not implemented yet");
+        }
+
+        return elseExpression?.Evaluate(context);
+    }
 
     public override bool Equals(object? obj)
     {
@@ -235,5 +261,136 @@ public sealed class CaseExpression(IExpression? subject, IReadOnlyList<ICaseClau
             result += clause.GetHashCode();
 
         return result;
+    }
+
+    private static bool MatchesWhenClause(Context context, CaseWhenClause clause, bool hasSubject, object? subjectValue)
+    {
+        foreach (var pattern in clause.Patterns)
+        {
+            if (pattern is not ExpressionPattern exprPattern)
+                throw new NotSupportedError("unsupported case pattern in when clause");
+
+            var patternValue = exprPattern.Expression.Evaluate(context);
+            bool matched = hasSubject
+                ? CaseMatches(context, patternValue, subjectValue)
+                : Predicates.IsTrue(patternValue);
+
+            if (matched)
+                return true;
+        }
+
+        return false;
+    }
+
+    private static bool CaseMatches(Context context, object? patternValue, object? subjectValue)
+    {
+        if (patternValue is Regexp regexp)
+        {
+            if (subjectValue == null)
+                return false;
+
+            return regexp.Regex.IsMatch(subjectValue.ToString() ?? string.Empty);
+        }
+
+        if (patternValue is Proc proc)
+        {
+            var result = proc.Call([subjectValue]);
+            return Predicates.IsTrue(result);
+        }
+
+        if (patternValue is Range range)
+        {
+            if (!NumericCoercion.TryGetDouble(subjectValue, out var testValue))
+                return false;
+
+            if (!range.TryGetDoubleBounds(out var start, out var end))
+                throw new TypeError("range must be numeric");
+
+            if (start > end)
+                return false;
+
+            return testValue >= start && testValue <= end;
+        }
+
+        if (patternValue is DynamicClass patternClass)
+            return IsInstanceOfClass(context, subjectValue, patternClass);
+
+        if (patternValue is Type type)
+            return subjectValue != null && type.IsInstanceOfType(subjectValue);
+
+        if (TryInvokeCaseMethod(context, patternValue, subjectValue, out bool methodResult))
+            return methodResult;
+
+        return Operators.CompareObjectEqual(patternValue, subjectValue, false) is true;
+    }
+
+    private static bool TryInvokeCaseMethod(Context context, object? patternValue, object? subjectValue, out bool result)
+    {
+        if (patternValue is DynamicObject dynamicPattern)
+        {
+            var method = dynamicPattern.GetMethod("===");
+            if (method != null)
+            {
+                result = Predicates.IsTrue(method.Apply(dynamicPattern, context, [subjectValue]));
+                return true;
+            }
+        }
+        else
+        {
+            var nativeClass = NativeClassResolver.Resolve(context, patternValue);
+            if (nativeClass != null)
+            {
+                var method = nativeClass.GetInstanceMethodNoSuper("===");
+                if (method != null)
+                {
+                    var nativeObj = new NativeObject(nativeClass, patternValue);
+                    result = Predicates.IsTrue(method.Apply(nativeObj, context, [subjectValue]));
+                    return true;
+                }
+            }
+        }
+
+        result = false;
+        return false;
+    }
+
+    private static bool IsInstanceOfClass(Context context, object? subjectValue, DynamicClass patternClass)
+    {
+        if (subjectValue is DynamicObject dynamicObject)
+            return IsClassMatch(dynamicObject.Class, patternClass);
+
+        var nativeClass = NativeClassResolver.Resolve(context, subjectValue);
+        if (nativeClass != null)
+            return IsClassMatch(nativeClass, patternClass);
+
+        return false;
+    }
+
+    private static bool IsClassMatch(DynamicClass? current, DynamicClass patternClass)
+    {
+        for (; current != null; current = current.SuperClass)
+        {
+            if (ReferenceEquals(current, patternClass))
+                return true;
+
+            if (IncludesMixin(current, patternClass))
+                return true;
+        }
+
+        return false;
+    }
+
+    private static bool IncludesMixin(DynamicClass current, DynamicClass patternClass)
+    {
+        foreach (var mixin in current.Mixins)
+        {
+            if (ReferenceEquals(mixin, patternClass))
+                return true;
+
+            if (IncludesMixin(mixin, patternClass))
+                return true;
+        }
+
+        return false;
     }
 }
