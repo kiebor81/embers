@@ -76,6 +76,34 @@ namespace Embers.Tests.Language
         }
 
         [TestMethod]
+        public void CaseIn_BindsNestedHashValue()
+        {
+            var result = Execute("config = {db: {user: 'admin', password: 'x'}}\ncase config\nin db: {user:} then user\nelse 'none'\nend");
+            Assert.AreEqual("admin", result);
+        }
+
+        [TestMethod]
+        public void CaseIn_DoesNotOverwriteBindingsOnMismatch()
+        {
+            var result = Execute("user = 'prev'\nconfig = {db: {password: 'x'}}\ncase config\nin db: {user:} then 'hit'\nelse 'miss'\nend\nuser");
+            Assert.AreEqual("prev", result);
+        }
+
+        [TestMethod]
+        public void CaseIn_ExpressionPatternMatches()
+        {
+            var result = Execute("x = 2\ncase x\nin 1 then 'one'\nin 2 then 'two'\nelse 'other'\nend");
+            Assert.AreEqual("two", result);
+        }
+
+        [TestMethod]
+        public void CaseIn_HashPatternMismatchFallsThrough()
+        {
+            var result = Execute("case 5\nin db: {user:} then 'hit'\nelse 'miss'\nend");
+            Assert.AreEqual("miss", result);
+        }
+
+        [TestMethod]
         public void TripleEquals_IsInvalidOutsideCase()
         {
             var ex = Assert.ThrowsException<InvalidOperationError>(() => Execute("1 === 1"));

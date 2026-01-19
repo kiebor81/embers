@@ -88,6 +88,26 @@ Strings are sequences of characters enclosed in quotes.
 "2 + 2 = #{2 + 2}"
 ```
 
+### Regular Expressions
+
+Regex literals are delimited by forward slashes and can include option flags:
+
+```
+/\d+/i
+/\s+/
+```
+
+Supported flags:
+
+```
+i  ignore case
+m  multiline
+x  ignore pattern whitespace
+```
+
+Use `\/` to include a literal slash in a pattern. Regex literals are available
+as values and can be used with methods like `match` or in `case` matching.
+
 ### Symbols
 
 Symbols are immutable identifiers prefixed with a colon. They behave as lightweight values rather than object instances. They’re often used as hash keys or lightweight identifiers passed to methods:
@@ -412,6 +432,45 @@ Ternary expressions return a value and can be nested with parentheses for clarit
 ```
 status = ok ? "ok" : (warning ? "warning" : "error")
 ```
+
+### Case Expressions
+
+Embers supports `case` with `when` clauses and `case` with `in` pattern matching.
+These forms are expressions and return the value of the matching clause body.
+
+```
+season = 'winter'
+
+case season
+when 'summer' then 'warm'
+when 'winter' then 'cold'
+else 'unknown'
+end
+```
+
+`case` without a subject defaults to `true`, so each `when` is treated as a boolean condition:
+
+```
+case
+when count > 10 then 'large'
+when count > 0 then 'small'
+else 'empty'
+end
+```
+
+`case/in` supports hash pattern matching with symbol keys. Bindings are only written when a pattern matches successfully:
+
+```
+config = {db: {user: 'admin', password: 'abc123'}}
+
+case config
+in db: {user:} then user
+else 'no user'
+end
+```
+
+**Note:** 
+`===` is reserved exclusively for case subsumption. It is not a general binary operator and is only used internally when evaluating `case` matches.
 
 ## Methods and Functions
 

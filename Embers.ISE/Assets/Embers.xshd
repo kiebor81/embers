@@ -32,6 +32,8 @@
             <Keywords color="Keyword">
               <Word>if</Word>
               <Word>unless</Word>
+              <Word>case</Word>
+              <Word>when</Word>
               <Word>def</Word>
               <Word>class</Word>
               <Word>self</Word>
@@ -50,6 +52,11 @@
       </RuleSet>
     </Span>
     <Span color="String" begin="'" end="'" />
+
+    <!-- Regex literals -->
+    <Rule color="String">
+      /(?=\S)(\\.|[^/\r\n])*/[A-Za-z]*
+    </Rule>
 
     <!-- Module separator -->
     <Rule color="Operator">
@@ -73,6 +80,8 @@
       <Word>elsif</Word>
       <Word>else</Word>
       <Word>end</Word>
+      <Word>case</Word>
+      <Word>when</Word>
       <Word>while</Word>
       <Word>until</Word>
       <Word>for</Word>

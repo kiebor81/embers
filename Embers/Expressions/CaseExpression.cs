@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Embers.Exceptions;
 using Embers.Language.Dynamic;
 using Embers.Language.Native;
@@ -211,8 +212,14 @@ public sealed class CaseExpression(IExpression? subject, IReadOnlyList<ICaseClau
                 continue;
             }
 
-            if (clause is CaseInClause)
-                throw new NotSupportedError("case/in is not implemented yet");
+            if (clause is CaseInClause inClause)
+            {
+                if (MatchesInClause(context, inClause.Pattern, subjectValue, out var bindings))
+                {
+                    ApplyBindings(context, bindings);
+                    return inClause.Body.Evaluate(context);
+                }
+            }
         }
 
         return elseExpression?.Evaluate(context);
@@ -280,6 +287,57 @@ public sealed class CaseExpression(IExpression? subject, IReadOnlyList<ICaseClau
         }
 
         return false;
+    }
+
+    private static bool MatchesInClause(Context context, ICasePattern pattern, object? subjectValue, out List<(string Name, object? Value)> bindings)
+    {
+        bindings = [];
+        return MatchPattern(context, pattern, subjectValue, bindings);
+    }
+
+    private static bool MatchPattern(Context context, ICasePattern pattern, object? subjectValue, List<(string Name, object? Value)> bindings)
+    {
+        if (pattern is ExpressionPattern expressionPattern)
+        {
+            var patternValue = expressionPattern.Expression.Evaluate(context);
+            return CaseMatches(context, patternValue, subjectValue);
+        }
+
+        if (pattern is BindingPattern bindingPattern)
+        {
+            bindings.Add((bindingPattern.Name, subjectValue));
+            return true;
+        }
+
+        if (pattern is HashPattern hashPattern)
+            return MatchHashPattern(context, hashPattern, subjectValue, bindings);
+
+        throw new NotSupportedError("unsupported case pattern in in clause");
+    }
+
+    private static bool MatchHashPattern(Context context, HashPattern pattern, object? subjectValue, List<(string Name, object? Value)> bindings)
+    {
+        if (subjectValue is not IDictionary dictionary)
+            return false;
+
+        foreach (var entry in pattern.Entries)
+        {
+            var key = entry.Key.Evaluate(context);
+            if (!dictionary.Contains(key))
+                return false;
+
+            var value = dictionary[key];
+            if (!MatchPattern(context, entry.Pattern, value, bindings))
+                return false;
+        }
+
+        return true;
+    }
+
+    private static void ApplyBindings(Context context, List<(string Name, object? Value)> bindings)
+    {
+        foreach (var (name, value) in bindings)
+            context.SetLocalValue(name, value!);
     }
 
     private static bool CaseMatches(Context context, object? patternValue, object? subjectValue)
