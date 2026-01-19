@@ -3,9 +3,6 @@ using Embers.Exceptions;
 using Embers.Functions;
 using Embers.Security;
 using Embers.Signals;
-using Embers.StdLib.Conversion;
-using Embers.StdLib.Enumerable;
-using Embers.StdLib.Comparable;
 
 namespace Embers;
 
@@ -15,7 +12,7 @@ namespace Embers;
 /// The machine is responsible for managing the execution environment,
 /// One can think of it as the runtime for the Embers language / representative of a ruby vm.
 /// </summary>
-public class Machine
+public partial class Machine
 {
     /// <summary>
     /// Custom supported file extensions.
@@ -30,121 +27,30 @@ public class Machine
     private readonly IList<string> required = [];
     private static int anonymousStructIndex;
 
+    internal record struct CoreClasses(
+        DynamicClass BasicObject,
+        DynamicClass Object,
+        DynamicClass Module,
+        DynamicClass Class);
+
+    internal record struct CoreModules(
+        DynamicClass Enumerable,
+        DynamicClass Comparable);
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Machine"/> class.
     /// </summary>
     public Machine()
     {
         requirepaths.Add(".");
-        var basicobjectclass = new DynamicClass("BasicObject", null);
-        var objectclass = new DynamicClass("Object", basicobjectclass);
-        var moduleclass = new DynamicClass("Module", objectclass);
-        var classclass = new DynamicClass("Class", moduleclass);
-
-        rootcontext.SetLocalValue("BasicObject", basicobjectclass);
-        rootcontext.SetLocalValue("Object", objectclass);
-        rootcontext.SetLocalValue("Module", moduleclass);
-        rootcontext.SetLocalValue("Class", classclass);
-
-        basicobjectclass.SetClass(classclass);
-        objectclass.SetClass(classclass);
-        moduleclass.SetClass(classclass);
-        classclass.SetClass(classclass);
-
-        var enumerableModule = new DynamicClass(moduleclass, "Enumerable", objectclass);
-        var enumerableReduce = new EnumerableReduceFunction();
-        enumerableModule.SetInstanceMethod("map", new EnumerableMapFunction());
-        enumerableModule.SetInstanceMethod("select", new EnumerableSelectFunction());
-        enumerableModule.SetInstanceMethod("reject", new EnumerableRejectFunction());
-        enumerableModule.SetInstanceMethod("each_with_index", new EnumerableEachWithIndexFunction());
-        enumerableModule.SetInstanceMethod("reduce", enumerableReduce);
-        enumerableModule.SetInstanceMethod("inject", enumerableReduce);
-        enumerableModule.SetInstanceMethod("any?", new EnumerableAnyFunction());
-        enumerableModule.SetInstanceMethod("all?", new EnumerableAllFunction());
-        enumerableModule.SetInstanceMethod("find", new EnumerableFindFunction());
-        enumerableModule.SetInstanceMethod("to_a", new EnumerableToAFunction());
-        rootcontext.SetLocalValue("Enumerable", enumerableModule);
-
-        var comparableModule = new DynamicClass(moduleclass, "Comparable", objectclass);
-        comparableModule.SetInstanceMethod("between?", new BetweenFunction());
-        rootcontext.SetLocalValue("Comparable", comparableModule);
-
-        basicobjectclass.SetInstanceMethod("class", new LambdaFunction(GetClass));
-        basicobjectclass.SetInstanceMethod("methods", new LambdaFunction(GetMethods));
-        basicobjectclass.SetInstanceMethod("singleton_methods", new LambdaFunction(GetSingletonMethods));
-
-        objectclass.SetInstanceMethod("inspect", new InspectFunction());
-
-        moduleclass.SetInstanceMethod("superclass", new LambdaFunction(GetSuperClass));
-        moduleclass.SetInstanceMethod("name", new LambdaFunction(GetName));
-        moduleclass.SetInstanceMethod("include", new LambdaFunction(IncludeModule));
-        moduleclass.SetInstanceMethod("class_variable_get", new LambdaFunction(ClassVariableGet));
-        moduleclass.SetInstanceMethod("class_variable_set", new LambdaFunction(ClassVariableSet));
-
-        classclass.SetInstanceMethod("new", new LambdaFunction(NewInstance));
-
-        var fixnumNative = new FixnumClass(this);
-        var floatNative = new FloatClass(this);
-        var stringNative = new StringClass(this);
-        var symbolNative = new SymbolClass(this);
-        var nilNative = new NilClass(this);
-        var falseNative = new FalseClass(this);
-        var trueNative = new TrueClass(this);
-        var arrayNative = new ArrayClass(this);
-        var hashNative = new HashClass(this);
-        var rangeNative = new RangeClass(this);
-        var datetimeNative = new DateTimeClass(this);
-        var jsonNative = new JsonClass(this);
-        var procNative = new ProcClass(this);
-        var regexpNative = new RegexpClass(this);
-
-        var structClass = new DynamicClass(classclass, "Struct", objectclass);
-        structClass.SingletonClass.SetInstanceMethod("new", new LambdaFunction(StructNew));
-        rootcontext.SetLocalValue("Struct", structClass);
-
-        rootcontext.SetLocalValue("Fixnum", new NativeClassAdapter(classclass, "Fixnum", objectclass, null, fixnumNative));
-        rootcontext.SetLocalValue("Float", new NativeClassAdapter(classclass, "Float", objectclass, null, floatNative));
-        rootcontext.SetLocalValue("String", new NativeClassAdapter(classclass, "String", objectclass, null, stringNative));
-        rootcontext.SetLocalValue("Symbol", new NativeClassAdapter(classclass, "Symbol", objectclass, null, symbolNative));
-        rootcontext.SetLocalValue("NilClass", new NativeClassAdapter(classclass, "NilClass", objectclass, null, nilNative));
-        rootcontext.SetLocalValue("FalseClass", new NativeClassAdapter(classclass, "FalseClass", objectclass, null, falseNative));
-        rootcontext.SetLocalValue("TrueClass", new NativeClassAdapter(classclass, "TrueClass", objectclass, null, trueNative));
-        rootcontext.SetLocalValue("Array", new NativeClassAdapter(classclass, "Array", objectclass, null, arrayNative));
-        rootcontext.SetLocalValue("Hash", new NativeClassAdapter(classclass, "Hash", objectclass, null, hashNative));
-        rootcontext.SetLocalValue("Range", new NativeClassAdapter(classclass, "Range", objectclass, null, rangeNative));
-        rootcontext.SetLocalValue("DateTime", new NativeClassAdapter(classclass, "DateTime", objectclass, null, datetimeNative));
-        rootcontext.SetLocalValue("JSON", new NativeClassAdapter(classclass, "JSON", objectclass, null, jsonNative));
-        rootcontext.SetLocalValue("Proc", new NativeClassAdapter(classclass, "Proc", objectclass, null, procNative));
-        rootcontext.SetLocalValue("Regexp", new NativeClassAdapter(classclass, "Regexp", objectclass, null, regexpNative));
-
-        var dateTimeAdapter = rootcontext.GetLocalValue("DateTime");
-        rootcontext.SetLocalValue("Time", dateTimeAdapter);
-        rootcontext.SetLocalValue("Date", dateTimeAdapter);
-
-        if (rootcontext.GetLocalValue("Array") is DynamicClass arrayClass)
-            arrayClass.IncludeModule(enumerableModule);
-        if (rootcontext.GetLocalValue("Hash") is DynamicClass hashClass)
-            hashClass.IncludeModule(enumerableModule);
-        if (rootcontext.GetLocalValue("Range") is DynamicClass rangeClass)
-            rangeClass.IncludeModule(enumerableModule);
-
-        if (rootcontext.GetLocalValue("Fixnum") is DynamicClass fixnumClass)
-            fixnumClass.IncludeModule(comparableModule);
-        if (rootcontext.GetLocalValue("Float") is DynamicClass floatClass)
-            floatClass.IncludeModule(comparableModule);
-        if (rootcontext.GetLocalValue("String") is DynamicClass stringClass)
-            stringClass.IncludeModule(comparableModule);
-        if (rootcontext.GetLocalValue("Symbol") is DynamicClass symbolClass)
-            symbolClass.IncludeModule(comparableModule);
-        if (rootcontext.GetLocalValue("DateTime") is DynamicClass dateTimeClass)
-            dateTimeClass.IncludeModule(comparableModule);
-
-        rootcontext.Self = objectclass.CreateInstance();
-        rootcontext.Self.Class.SetInstanceMethod("require", new RequireFunction(this));
-
+        var coreClasses = this.RegisterCoreClasses();
+        var coreModules = this.RegisterCoreModules(coreClasses);
+        this.RegisterCoreMethods(coreClasses);
+        this.RegisterNativeClasses(coreClasses);
+        this.RegisterModuleMixins(coreModules);
+        this.RegisterRootContextSelf(coreClasses);
         rootcontext.RegisterAllEmbersExceptions();
         rootcontext.RegisterAllStdLibFunctions();
-
     }
 
     /// <summary>
@@ -453,7 +359,7 @@ public class Machine
     /// <param name="context"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    private static object NewInstance(DynamicObject obj, Context context, IList<object> values)
+    internal static object NewInstance(DynamicObject obj, Context context, IList<object> values)
     {
         var newobj = ((DynamicClass)obj).CreateInstance();
 
@@ -471,7 +377,7 @@ public class Machine
     /// <param name="context"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    private static object GetName(DynamicObject obj, Context context, IList<object> values) => ((DynamicClass)obj).Name;
+    internal static object GetName(DynamicObject obj, Context context, IList<object> values) => ((DynamicClass)obj).Name;
 
     /// <summary>
     /// Gets the super class.
@@ -480,7 +386,7 @@ public class Machine
     /// <param name="context"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    private static object GetSuperClass(DynamicObject obj, Context context, IList<object> values) => ((DynamicClass)obj).SuperClass;
+    internal static object GetSuperClass(DynamicObject obj, Context context, IList<object> values) => ((DynamicClass)obj).SuperClass;
 
     /// <summary>
     /// Gets the class.
@@ -489,7 +395,7 @@ public class Machine
     /// <param name="context"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    private static object GetClass(DynamicObject obj, Context context, IList<object> values) => obj.Class;
+    internal static object GetClass(DynamicObject obj, Context context, IList<object> values) => obj.Class;
 
     /// <summary>
     /// Gets the methods.
@@ -498,7 +404,7 @@ public class Machine
     /// <param name="context"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    private static object GetMethods(DynamicObject obj, Context context, IList<object> values)
+    internal static object GetMethods(DynamicObject obj, Context context, IList<object> values)
     {
         var result = new DynamicArray();
 
@@ -525,7 +431,7 @@ public class Machine
     /// <param name="context"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    private static object GetSingletonMethods(DynamicObject obj, Context context, IList<object> values)
+    internal static object GetSingletonMethods(DynamicObject obj, Context context, IList<object> values)
     {
         var result = new DynamicArray();
 
@@ -549,7 +455,7 @@ public class Machine
     /// <param name="context"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    private static object? ClassVariableGet(DynamicObject obj, Context context, IList<object> values)
+    internal static object? ClassVariableGet(DynamicObject obj, Context context, IList<object> values)
     {
         if (obj is not DynamicClass target)
             throw new TypeError("class_variable_get can only be called on classes or modules");
@@ -577,7 +483,7 @@ public class Machine
     /// <param name="context"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    private static object? ClassVariableSet(DynamicObject obj, Context context, IList<object> values)
+    internal static object? ClassVariableSet(DynamicObject obj, Context context, IList<object> values)
     {
         if (obj is not DynamicClass target)
             throw new TypeError("class_variable_set can only be called on classes or modules");
@@ -607,7 +513,7 @@ public class Machine
     /// <param name="context"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    private static object IncludeModule(DynamicObject obj, Context context, IList<object> values)
+    internal static object IncludeModule(DynamicObject obj, Context context, IList<object> values)
     {
         if (obj is not DynamicClass target)
             throw new TypeError("include can only be called on classes or modules");
@@ -634,7 +540,7 @@ public class Machine
     /// <param name="values">The values.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentError"></exception>
-    private static object StructNew(DynamicObject obj, Context context, IList<object> values)
+    internal static object StructNew(DynamicObject obj, Context context, IList<object> values)
     {
         if (values == null || values.Count == 0)
             throw new ArgumentError("Struct.new expects at least one member");

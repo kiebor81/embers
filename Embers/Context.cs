@@ -65,10 +65,19 @@ public class Context
         globals = parent == null ? new Dictionary<string, object>() : parent.globals;
     }
 
+    /// <summary>
+    /// Gets or sets the self object.
+    /// </summary>
     public DynamicObject Self { get { return self; } internal set { self = value; } }
 
+    /// <summary>
+    /// Gets the module.
+    /// </summary>
     public DynamicClass Module { get { return module; } }
 
+    /// <summary>
+    /// Gets the parent context.
+    /// </summary>
     public Context Parent { get { return parent; } }
 
     /// <summary>
