@@ -65,7 +65,7 @@ internal static class Registration
 
             TypeAccessPolicy.AddType(type.FullName);
 
-            var instance = (StdFunction)Activator.CreateInstance(type);
+            var instance = Activator.CreateInstance(type) as StdFunction;
             foreach (var name in attr.Names)
             {
                 context.Self.Class.SetInstanceMethod(name, instance);
@@ -145,8 +145,8 @@ internal static class Registration
         core.Module.SetInstanceMethod("superclass", new LambdaFunction(Machine.GetSuperClass));
         core.Module.SetInstanceMethod("name", new LambdaFunction(Machine.GetName));
         core.Module.SetInstanceMethod("include", new LambdaFunction(Machine.IncludeModule));
-        core.Module.SetInstanceMethod("class_variable_get", new LambdaFunction(Machine.ClassVariableGet));
-        core.Module.SetInstanceMethod("class_variable_set", new LambdaFunction(Machine.ClassVariableSet));
+        core.Module.SetInstanceMethod("class_variable_get", new LambdaFunction((obj, ctx, vals) => Machine.ClassVariableGet(obj, ctx, vals)!));
+        core.Module.SetInstanceMethod("class_variable_set", new LambdaFunction((obj, ctx, vals) => Machine.ClassVariableSet(obj, ctx, vals)!));
 
         core.Class.SetInstanceMethod("new", new LambdaFunction(Machine.NewInstance));
     }

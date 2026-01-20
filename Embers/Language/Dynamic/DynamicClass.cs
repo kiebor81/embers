@@ -6,23 +6,23 @@ namespace Embers.Language.Dynamic;
 /// <summary>
 /// DynamicClass represents a class in the Embers language.
 /// </summary>
-public class DynamicClass(DynamicClass @class, string name, DynamicClass superclass = null, DynamicClass parent = null) : DynamicObject(@class)
+public class DynamicClass(DynamicClass @class, string name, DynamicClass? superclass = null, DynamicClass? parent = null) : DynamicObject(@class)
 {
     private readonly string name = name;
-    private DynamicClass superclass = superclass;
-    private readonly DynamicClass parent = parent;
+    private DynamicClass? superclass = superclass;
+    private readonly DynamicClass? parent = parent;
     private readonly IDictionary<string, IFunction> methods = new Dictionary<string, IFunction>();
     private readonly IList<DynamicClass> mixins = [];
     private readonly Context constants = new();
 
-    public DynamicClass(string name, DynamicClass superclass = null)
+    public DynamicClass(string name, DynamicClass? superclass = null)
         : this(null, name, superclass)
     {
     }
 
     public string Name { get { return name; } }
 
-    public DynamicClass SuperClass { get { return superclass; } }
+    public DynamicClass? SuperClass { get { return superclass; } }
 
     public Context Constants { get { return constants; } }
 
@@ -119,7 +119,7 @@ public class DynamicClass(DynamicClass @class, string name, DynamicClass supercl
     /// <returns></returns>
     public DynamicObject CreateInstance() => new(this);
 
-    public override IFunction GetMethod(string name) => base.GetMethod(name);
+    public override IFunction? GetMethod(string name) => base.GetMethod(name);
 
     /// <summary>
     /// Gets the names of all own instance methods.

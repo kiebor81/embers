@@ -28,7 +28,7 @@ internal sealed class Blocks(Parser parser)
         if (canhaveparens)
             inparentheses = parser.TryParseToken(TokenType.Separator, "(");
 
-        for (string name = parser.TryParseName(); name != null; name = parser.ParseName())
+        for (string? name = parser.TryParseName(); name != null; name = parser.ParseName())
         {
             parameters.Add(name);
             if (!parser.TryParseToken(TokenType.Separator, ","))
@@ -65,7 +65,7 @@ internal sealed class Blocks(Parser parser)
                 break;
             }
 
-            string name = parser.TryParseName();
+            string? name = parser.TryParseName();
             if (name == null)
                 break;
 
@@ -90,7 +90,7 @@ internal sealed class Blocks(Parser parser)
 
         bool inparentheses = parser.TryParseToken(TokenType.Separator, "(");
 
-        for (IExpression expression = parser.ParseExpression(); expression != null; expression = parser.ParseExpression())
+        for (IExpression? expression = parser.ParseExpression(); expression != null; expression = parser.ParseExpression())
         {
             expressions.Add(expression);
             if (!parser.TryParseToken(TokenType.Separator, ","))
@@ -134,7 +134,7 @@ internal sealed class Blocks(Parser parser)
                 return new BlockArgumentExpression(toProcCall);
             }
 
-            IExpression expr = allowPostfixConditional ? parser.ParseExpression() : ParseCommandArgExpression();
+            IExpression? expr = allowPostfixConditional ? parser.ParseExpression() : ParseCommandArgExpression();
             if (expr != null)
                 return new BlockArgumentExpression(expr);
             throw new SyntaxError("Expected expression after &");
@@ -191,7 +191,7 @@ internal sealed class Blocks(Parser parser)
 
         parser.SkipEndOfLines();
 
-        for (IExpression expression = parser.ParseExpression(); expression != null; expression = parser.ParseExpression())
+        for (IExpression? expression = parser.ParseExpression(); expression != null; expression = parser.ParseExpression())
         {
             expressions.Add(expression);
             if (!parser.TryParseToken(TokenType.Separator, ","))

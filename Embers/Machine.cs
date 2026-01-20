@@ -186,7 +186,7 @@ public partial class Machine
     public object ExecuteText(string text)
     {
         Parser parser = new(text);
-        object result = null;
+        object? result = null;
 
         try
         {
@@ -208,7 +208,7 @@ public partial class Machine
     /// <returns></returns>
     public object ExecuteFile(string filename)
     {
-        string path = Path.GetDirectoryName(filename);
+        string? path = Path.GetDirectoryName(filename);
 
         requirepaths.Insert(0, path);
 
@@ -231,7 +231,7 @@ public partial class Machine
     public object ExecuteReader(TextReader reader)
     {
         Parser parser = new(reader);
-        object result = null;
+        object? result = null;
 
         try
         {
