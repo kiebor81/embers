@@ -705,12 +705,9 @@ If you have found a use for Embers in your project, let me know. I'll be happy t
 
 ## Roadmap
 
-- [x] Regex literals
-- [x] `case/when`
-- [x] `case/in`
-- [x] Type expansion: date, time
-- [x] StdLib expansion: date, time
-- [x] Struct support
+- [ ] High level meta-methods
+- [ ] Realtime parser hooks
+- [ ] ISE language service
 
 ---
 
