@@ -1,5 +1,11 @@
+using Embers.Annotations;
+
 namespace Embers.Functions;
 
+/// <summary>
+/// Represents the 'send' function which sends a message to an object.
+/// </summary>
+[ScannerIgnore]
 public sealed class SendFunction : ICallableWithBlock
 {
     public object Apply(DynamicObject self, Context context, IList<object> values)

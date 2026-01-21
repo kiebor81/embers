@@ -1,5 +1,8 @@
 namespace Embers.Expressions;
 
+/// <summary>
+/// Represents a keyword splat expression (e.g., **kwargs) in the Embers language.
+/// </summary>
 public sealed class KeywordSplatExpression(IExpression expression) : BaseExpression
 {
     private readonly IExpression expression = expression;

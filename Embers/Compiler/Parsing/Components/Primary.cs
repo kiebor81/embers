@@ -220,6 +220,9 @@ internal sealed class Primary(Parser parser)
         return null;
     }
 
+    /// <summary>
+    /// Parses regex options from a string
+    /// </summary>
     private static RegexOptions ParseRegexOptions(string optionsText)
     {
         RegexOptions options = RegexOptions.None;

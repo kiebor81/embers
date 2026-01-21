@@ -124,6 +124,9 @@ internal sealed class Statements(Parser parser)
         return new DefExpression(named, parameters, splatParam, kwParam, body, blockParam);
     }
 
+    /// <summary>
+    /// Parses a def name
+    /// </summary>
     private string ParseDefName()
     {
         Token token = parser.Lexer.NextToken() ?? throw new SyntaxError("name expected");
@@ -140,25 +143,11 @@ internal sealed class Statements(Parser parser)
     /// <exception cref="SyntaxError"></exception>
     public ClassExpression ParseClassExpression()
     {
-        string name = parser.ParseName();
-        INamedExpression named = null;
+        INamedExpression named = ParseNamedExpression();
+        INamedExpression? superClass = null;
 
-        if (name == "self")
-            named = new SelfExpression();
-        else
-            named = new NameExpression(name);
-
-        while (true)
-        {
-            if (parser.TryParseToken(TokenType.Separator, "::"))
-            {
-                string newname = parser.ParseName();
-                named = new DoubleColonExpression(named, newname);
-                continue;
-            }
-
-            break;
-        }
+        if (parser.TryParseToken(TokenType.Operator, "<"))
+            superClass = ParseNamedExpression();
 
         parser.ParseEndOfCommand();
         IExpression body = parser.ParseCommandList();
@@ -166,7 +155,10 @@ internal sealed class Statements(Parser parser)
         if (!Predicates.IsConstantName(named.Name))
             throw new SyntaxError("class/module name must be a CONSTANT");
 
-        return new ClassExpression(named, body);
+        if (superClass != null && !Predicates.IsConstantName(superClass.Name))
+            throw new SyntaxError("superclass name must be a CONSTANT");
+
+        return new ClassExpression(named, body, superClass);
     }
 
     /// <summary>
@@ -183,6 +175,25 @@ internal sealed class Statements(Parser parser)
             throw new SyntaxError("class/module name must be a CONSTANT");
 
         return new ModuleExpression(name, body);
+    }
+
+    private INamedExpression ParseNamedExpression()
+    {
+        string name = parser.ParseName();
+        INamedExpression named = name == "self"
+            ? new SelfExpression()
+            : new NameExpression(name);
+
+        while (true)
+        {
+            if (!parser.TryParseToken(TokenType.Separator, "::"))
+                break;
+
+            string newname = parser.ParseName();
+            named = new DoubleColonExpression(named, newname);
+        }
+
+        return named;
     }
 
     /// <summary>
@@ -304,6 +315,9 @@ internal sealed class Statements(Parser parser)
         return new CaseExpression(subject, clauses, elseExpression);
     }
 
+    /// <summary>
+    /// Parses a case pattern.
+    /// </summary>
     private ICasePattern ParseCasePattern()
     {
         Token token = parser.Lexer.NextToken() ?? throw new SyntaxError("pattern expected");
@@ -332,6 +346,9 @@ internal sealed class Statements(Parser parser)
         return new ExpressionPattern(expr);
     }
 
+    /// <summary>
+    /// Parses a hash pattern.
+    /// </summary>
     private HashPattern ParseHashPattern(bool hasBraces)
     {
         var entries = new List<HashPatternEntry>();
@@ -384,6 +401,9 @@ internal sealed class Statements(Parser parser)
         return new HashPattern(entries);
     }
 
+    /// <summary>
+    /// Parses a hash pattern entry.
+    /// </summary>
     private HashPatternEntry ParseHashPatternEntry()
     {
         Token token = parser.Lexer.NextToken() ?? throw new SyntaxError("pattern key expected");
@@ -406,6 +426,9 @@ internal sealed class Statements(Parser parser)
         return new HashPatternEntry(key, pattern);
     }
 
+    /// <summary>
+    /// Parses a hash value pattern
+    /// </summary>
     private ICasePattern ParseHashValuePattern(string bindingName)
     {
         Token? token = parser.Lexer.NextToken();
@@ -437,6 +460,9 @@ internal sealed class Statements(Parser parser)
         return new ExpressionPattern(expr);
     }
 
+    /// <summary>
+    /// Determines if a token is a pattern terminator
+    /// </summary>
     private bool IsPatternTerminator(Token? token)
     {
         if (token == null)
@@ -449,6 +475,9 @@ internal sealed class Statements(Parser parser)
             && (token.Value == "then" || token.Value == "else" || token.Value == "end");
     }
 
+    /// <summary>
+    /// Determines if a token is a pattern value terminator
+    /// </summary>
     private bool IsPatternValueTerminator(Token token)
     {
         if (IsPatternTerminator(token))

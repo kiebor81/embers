@@ -12,6 +12,12 @@ public class TypeUtilities
 {
     private static bool referencedAssembliesLoaded = false;
 
+    /// <summary>
+    /// Attempts to get a type by name from the context or loaded assemblies.
+    /// </summary>
+    /// <param name="context">The context to search for the type.</param>
+    /// <param name="name">The name of the type.</param>
+    /// <returns>The type if found; otherwise, throws an exception.</returns>
     public static Type GetType(Context context, string name)
     {
         object obj = context.GetValue(name);
@@ -22,6 +28,11 @@ public class TypeUtilities
         return GetType(name);
     }
 
+    /// <summary>
+    /// Attempts to get a type by name, returning null if not found.
+    /// </summary>
+    /// <param name="name">The name of the type.</param>
+    /// <returns>The type if found; otherwise, null.</returns>
     public static Type? AsType(string name)
     {
         // Normalize :: to . for .NET type resolution
@@ -56,6 +67,12 @@ public class TypeUtilities
         return null;
     }
 
+    /// <summary>
+    /// Gets a type by name, throwing an exception if not found.
+    /// </summary>
+    /// <param name="name">The name of the type.</param>
+    /// <returns>The type.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the type is not found.</exception>
     public static Type GetType(string name)
     {
         Type type = AsType(name);
@@ -66,6 +83,11 @@ public class TypeUtilities
         throw new InvalidOperationException(string.Format("Unknown type '{0}'", name));
     }
 
+    /// <summary>
+    /// Gets the types by namespace.
+    /// </summary>
+    /// <param name="namespace">The namespace.</param>
+    /// <returns></returns>
     public static ICollection<Type> GetTypesByNamespace(string @namespace)
     {
         IList<Type> types = [];
@@ -79,6 +101,11 @@ public class TypeUtilities
         return types;
     }
 
+    /// <summary>
+    /// Determines if a given name is a namespace.
+    /// </summary>
+    /// <param name="name">The name to check.</param>
+    /// <returns>True if the name is a namespace; otherwise, false.</returns>
     public static bool IsNamespace(string name)
     {
         if (GetNamespaces().Contains(name))
@@ -87,8 +114,19 @@ public class TypeUtilities
         return GetNamespaces().Any(n => n != null && n.StartsWith(name + "."));
     }
 
+    /// <summary>
+    /// Gets the names of public instance members of a type.
+    /// </summary>
+    /// <param name="type">The type to get member names from.</param>
+    /// <returns>A list of member names.</returns>
     public static IList<string> GetNames(Type type) => [.. type.GetMembers(BindingFlags.Public | BindingFlags.Instance).Select(m => m.Name)];
 
+    /// <summary>
+    /// Gets the value of a static member (property or field) of a type.
+    /// </summary>
+    /// <param name="type">The type containing the member.</param>
+    /// <param name="name">The name of the member.</param>
+    /// <returns>The value of the static member.</returns>
     public static object GetValue(Type type, string name)
     {
         try
@@ -101,8 +139,22 @@ public class TypeUtilities
         }
     }
 
+    /// <summary>
+    /// Invokes a static member (method, property, or field) of a type.
+    /// </summary>
+    /// <param name="type">The type containing the member.</param>
+    /// <param name="name">The name of the member to invoke.</param>
+    /// <param name="parameters">The parameters to pass to the member.</param>
+    /// <returns>The result of the member invocation.</returns>
     public static object InvokeTypeMember(Type type, string name, IList<object> parameters) => type.InvokeMember(name, BindingFlags.FlattenHierarchy | BindingFlags.GetProperty | BindingFlags.GetField | BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.Static, null, null, parameters?.ToArray());
 
+    /// <summary>
+    /// Parses an enum value from its name.
+    /// </summary>
+    /// <param name="type">The enum type.</param>
+    /// <param name="name">The name of the enum value.</param>
+    /// <returns>The enum value.</returns>
+    /// <exception cref="ValueError">Thrown if the name is not a valid enum value.</exception>
     public static object ParseEnumValue(Type type, string name)
     {
         FieldInfo[] fields = type.GetFields(BindingFlags.Static | BindingFlags.Public);
@@ -117,6 +169,10 @@ public class TypeUtilities
         throw new ValueError(string.Format("'{0}' is not a valid value of '{1}'", name, type.Name));
     }
 
+    /// <summary>
+    /// Gets all namespaces from loaded assemblies.
+    /// </summary>
+    /// <returns>A collection of namespace names.</returns>
     private static ICollection<string> GetNamespaces()
     {
         List<string> namespaces = [];
@@ -131,6 +187,11 @@ public class TypeUtilities
         return namespaces;
     }
 
+    /// <summary>
+    /// Gets a type from an assembly loaded by partial name.
+    /// </summary>
+    /// <param name="name">The full name of the type to retrieve.</param>
+    /// <returns>The Type if found; otherwise, null.</returns>
     private static Type? GetTypeFromPartialNamedAssembly(string name)
     {
         int p = name.LastIndexOf(".");
@@ -152,6 +213,11 @@ public class TypeUtilities
         }
     }
 
+    /// <summary>
+    /// Gets a type from the currently loaded assemblies.
+    /// </summary>  
+    /// <param name="name">The full name of the type to retrieve.</param>
+    /// <returns>The Type if found; otherwise, null.</returns>
     private static Type? GetTypeFromLoadedAssemblies(string name)
     {
         foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -165,6 +231,9 @@ public class TypeUtilities
         return null;
     }
 
+    /// <summary>
+    /// Loads all referenced assemblies into the current AppDomain.
+    /// </summary>
     private static void LoadReferencedAssemblies()
     {
         if (referencedAssembliesLoaded)
@@ -181,6 +250,12 @@ public class TypeUtilities
         referencedAssembliesLoaded = true;
     }
 
+    /// <summary>
+    /// Recursively loads referenced assemblies.
+    /// </summary>
+    /// <param name="assembly">The assembly to load references from.</param>
+    /// <param name="loaded">The list of already loaded assembly names.</param>
+    /// <returns></returns>
     private static void LoadReferencedAssemblies(Assembly assembly, List<string> loaded)
     {
         foreach (AssemblyName referenced in assembly.GetReferencedAssemblies())

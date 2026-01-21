@@ -155,6 +155,12 @@ internal sealed class Blocks(Parser parser)
         return ParseSingleExpressionWithBlockPrefix(true);
     }
 
+    /// <summary>
+    /// Parses a single expression, supporting block argument prefix '&'
+    /// </summary>
+    /// <param name="allowPostfixConditional"></param>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private IExpression? ParseSingleExpressionWithBlockPrefix(bool allowPostfixConditional)
     {
         if (parser.TryParseToken(TokenType.Operator, "**"))
@@ -195,6 +201,11 @@ internal sealed class Blocks(Parser parser)
         return allowPostfixConditional ? parser.ParseExpression() : ParseCommandArgExpression();
     }
 
+    /// <summary>
+    /// Parses a command argument expression (no assignment)
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SyntaxError"></exception>
     private IExpression? ParseCommandArgExpression()
     {
         IExpression? expr = parser.ParseNoAssignExpression();

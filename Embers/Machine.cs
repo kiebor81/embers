@@ -775,6 +775,12 @@ public partial class Machine
         return target;
     }
 
+    /// <summary>
+    /// Builds the defined function from proc.
+    /// </summary>
+    /// <param name="procValue">The proc object.</param>
+    /// <param name="context">The context in which the function is defined.</param>
+    /// <returns>A DefinedFunction instance.</returns>
     private static DefinedFunction BuildDefinedFunctionFromProc(object procValue, Context context)
     {
         if (procValue is not Proc proc)
@@ -792,6 +798,12 @@ public partial class Machine
         throw new TypeError("define_method expects a Proc backed by a block");
     }
 
+    /// <summary>
+    /// Builds the defined function from block.
+    /// </summary>
+    /// <param name="block">The block function.</param>
+    /// <param name="context">The context in which the function is defined.</param>
+    /// <returns>A DefinedFunction instance.</returns>
     private static DefinedFunction BuildDefinedFunctionFromBlock(IFunction? block, Context context)
     {
         if (block == null)
@@ -806,18 +818,40 @@ public partial class Machine
         throw new TypeError("define_method expects a block");
     }
 
+    /// <summary>
+    /// Builds the defined function from block expression.
+    /// </summary>
+    /// <param name="blockExpression">The block expression.</param>
+    /// <param name="context">The context in which the function is defined.</param>
+    /// <returns>A DefinedFunction instance.</returns>
     private static DefinedFunction BuildDefinedFunctionFromBlock(Embers.Expressions.BlockExpression blockExpression, Context context)
     {
         var parameters = blockExpression.Parameters ?? [];
         return new DefinedFunction(blockExpression.Body, parameters, null, null, context);
     }
 
+    /// <summary>
+    /// Builds the defined function from block.
+    /// </summary>
+    /// <param name="block">The block function.</param>
+    /// <param name="context">The context in which the function is defined.</param>
+    /// <returns>A DefinedFunction instance.</returns>
     private static DefinedFunction BuildDefinedFunctionFromBlock(Block block, Context context)
     {
         var parameters = block.ArgumentNames ?? [];
         return new DefinedFunction(block.Body, parameters, null, null, context);
     }
 
+    /// <summary>
+    /// Tries to invoke method missing.
+    /// </summary>
+    /// <param name="obj">The dynamic object.</param>
+    /// <param name="context">The context.</param>
+    /// <param name="missingName">The name of the missing method.</param>
+    /// <param name="args">The arguments.</param>
+    /// <param name="block">The block function.</param>
+    /// <param name="result">The result of the invocation.</param>
+    /// <returns>True if the method missing was invoked; otherwise, false.</returns>
     internal static bool TryInvokeMethodMissing(DynamicObject obj, Context context, string missingName, IList<object> args, IFunction? block, out object? result)
     {
         result = null;
@@ -848,6 +882,15 @@ public partial class Machine
         }
     }
 
+    /// <summary>
+    /// Applies the method with an optional block.
+    /// </summary>
+    /// <param name="obj">The dynamic object.</param>
+    /// <param name="context">The context.</param>
+    /// <param name="method">The method to apply.</param>
+    /// <param name="values">The values to pass to the method.</param>
+    /// <param name="block">The optional block function.</param>
+    /// <returns>The result of the method application.</returns>
     private static object ApplyWithOptionalBlock(DynamicObject obj, Context context, IFunction method, IList<object> values, IFunction? block)
     {
         if (block != null && method is ICallableWithBlock callableWithBlock)

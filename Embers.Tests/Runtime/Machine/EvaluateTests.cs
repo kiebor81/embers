@@ -243,6 +243,27 @@ namespace Embers.Tests
         }
 
         [TestMethod]
+        public void EvaluateClassWithExplicitSuperClass()
+        {
+            Execute(@"
+class Animal
+  def speak
+    'Some sound'
+  end
+end
+
+class Cat < Animal
+  def speak
+    'Meow'
+  end
+end");
+
+            var result = EvaluateExpression("Cat.superclass");
+            Assert.AreSame(EvaluateExpression("Animal"), result);
+            Assert.AreEqual("Meow", EvaluateExpression("Cat.new.speak"));
+        }
+
+        [TestMethod]
         public void EvaluateDefinedModuleClass()
         {
             var moduleclass = EvaluateExpression("Module");

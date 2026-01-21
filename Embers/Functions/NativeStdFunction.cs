@@ -1,8 +1,11 @@
+using Embers.Annotations;
+
 namespace Embers.Functions;
 
 /// <summary>
 /// Adapts NativeClass instance methods to IFunction dispatch.
 /// </summary>
+[ScannerIgnore]
 public sealed class NativeStdFunction(NativeClass nativeClass, string name) : ICallableWithBlock
 {
     private readonly NativeClass nativeClass = nativeClass;

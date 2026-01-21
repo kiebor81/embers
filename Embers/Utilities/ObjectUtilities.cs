@@ -9,6 +9,12 @@ namespace Embers.Utilities;
 /// </summary>
 public class ObjectUtilities
 {
+    /// <summary>   
+    /// Sets the value of a property or field on an object using reflection.
+    /// </summary>
+    /// <param name="obj">The object to set the value on.</param>
+    /// <param name="name">The name of the property or field.</param>
+    /// <param name="value">The value to set.</param>
     public static void SetValue(object obj, string name, object value)
     {
         Type type = obj.GetType();
@@ -16,6 +22,12 @@ public class ObjectUtilities
         type.InvokeMember(name, System.Reflection.BindingFlags.SetProperty | System.Reflection.BindingFlags.SetField | System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, null, obj, [value]);
     }
 
+    /// <summary>
+    /// Gets the value of a property, field, or method from an object using reflection.
+    /// </summary>
+    /// <param name="obj">The object to get the value from.</param>
+    /// <param name="name">The name of the property, field, or method.</param>
+    /// <returns>The value of the property, field, or method.</returns>
     public static object? GetValue(object obj, string name)
     {
         Type type = obj.GetType();
@@ -41,10 +53,28 @@ public class ObjectUtilities
         }
     }
 
+    /// <summary>
+    /// Gets the value of a property, field, or method from an object using reflection.
+    /// </summary>
+    /// <param name="obj">The object to get the value from.</param>
+    /// <param name="name">The name of the property, field, or method.</param>
+    /// <param name="arguments">The arguments to pass if invoking a method.</param>
     public static object GetValue(object obj, string name, IList<object> arguments) => GetNativeValue(obj, name, arguments);
 
+    /// <summary>
+    /// Gets the names of all properties, fields, and methods of an object using reflection.
+    /// </summary>
+    /// <param name="obj">The object to get the names from.</param>
+    /// <returns>A list of names of properties, fields, and methods.</returns>
     public static IList<string> GetNames(object obj) => TypeUtilities.GetNames(obj.GetType());
 
+    /// <summary>
+    /// Gets the native value of a property, field, or method from an object using reflection.
+    /// </summary>
+    /// <param name="obj">The object to get the value from.</param>
+    /// <param name="name">The name of the property, field, or method.</param>
+    /// <param name="arguments">The arguments to pass if invoking a method.</param>
+    /// <returns>The value of the property, field, or method.</returns>
     public static object? GetNativeValue(object obj, string name, IList<object> arguments)
     {
         Type type = obj.GetType();
@@ -83,6 +113,11 @@ public class ObjectUtilities
 
     }
 
+    /// <summary>
+    /// Determines whether the specified object is a numeric type.
+    /// </summary>
+    /// <param name="obj">The object to check.</param>
+    /// <returns>True if the object is a numeric type; otherwise, false.</returns>
     public static bool IsNumber(object obj) => obj is long ||
             obj is int ||
             obj is short ||
@@ -149,6 +184,12 @@ public class ObjectUtilities
         throw new InvalidOperationException(string.Format("Not indexed value of type {0}", obj.GetType().ToString()));
     }
 
+    /// <summary>
+    /// Sets the value of an element in an array at the specified indexes.
+    /// </summary>
+    /// <param name="array">The array to set the value in.</param>
+    /// <param name="indexes">The indexes of the element to set.</param>
+    /// <param name="value">The value to set.</param>
     public static void SetIndexedValue(Array array, object[] indexes, object value)
     {
         switch (indexes.Length)
@@ -167,6 +208,13 @@ public class ObjectUtilities
         throw new InvalidOperationException("Invalid number of subindices");
     }
 
+    /// <summary>
+    /// Adds an event handler to an object's event.
+    /// </summary>
+    /// <param name="obj">The object containing the event.</param>
+    /// <param name="eventname">The name of the event.</param>
+    /// <param name="function">The function to handle the event.</param>
+    /// <param name="context">The context in which the function is executed.</param>
     public static void AddHandler(object obj, string eventname, IFunction function, Context context)
     {
         var type = obj.GetType();
@@ -218,6 +266,12 @@ public class ObjectUtilities
         @event.AddEventHandler(obj, (Delegate)GetValue(wrapper, isaction ? "CreateActionDelegate" : "CreateFunctionDelegate", null));
     }
 
+    /// <summary>
+    /// Gets the value of an element in an array at the specified indexes.
+    /// </summary>
+    /// <param name="array">The array to get the value from.</param>
+    /// <param name="indexes">The indexes of the element to get.</param>
+    /// <returns>The value of the element at the specified indexes.</returns>
     private static object GetIndexedValue(Array array, object[] indexes)
     {
         switch (indexes.Length)
@@ -235,6 +289,12 @@ public class ObjectUtilities
         throw new InvalidOperationException("Invalid number of subindices");
     }
 
+    /// <summary>
+    /// Gets the value of an element in a list at the specified index.
+    /// </summary>
+    /// <param name="list">The list to get the value from.</param>
+    /// <param name="indexes">The indexes of the element to get.</param>
+    /// <returns>The value of the element at the specified index.</returns>
     private static object GetIndexedValue(IList list, object[] indexes)
     {
         if (indexes.Length != 1)
@@ -243,6 +303,12 @@ public class ObjectUtilities
         return list[(int)indexes[0]];
     }
 
+    /// <summary>
+    /// Gets the value of an element in a dictionary at the specified index.
+    /// </summary>
+    /// <param name="dictionary">The dictionary to get the value from.</param>
+    /// <param name="indexes">The indexes of the element to get.</param>
+    /// <returns>The value of the element at the specified index.</returns>
     private static object GetIndexedValue(IDictionary dictionary, object[] indexes)
     {
         if (indexes.Length != 1)

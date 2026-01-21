@@ -11,6 +11,12 @@ public class IfExpression(IExpression condition, IExpression thencommand, IExpre
     private readonly IExpression thencommand = thencommand;
     private readonly IExpression elsecommand = elsecommand;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IfExpression"/> class without an else command.
+    /// </summary>
+    /// <param name="condition">The condition expression.</param>
+    /// <param name="thencommand">The command to execute if the condition is true.</param>
+    /// 
     public IfExpression(IExpression condition, IExpression thencommand)
         : this(condition, thencommand, null)
     {

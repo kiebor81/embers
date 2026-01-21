@@ -10,6 +10,7 @@
   <Color name="ClassVar" foreground="#4FC1FF" />
   <Color name="GlobalVar" foreground="#9CDCFE" fontWeight="bold" />
   <Color name="Operator" foreground="#D4D4D4" />
+  <Color name="Splat" foreground="#D7BA7D" />
   <Color name="MethodName" foreground="#DCDCAA" />
   <Color name="ModuleName" foreground="#4EC9B0" />
   <Color name="SpecialFunction" foreground="#C8A2C8" />
@@ -66,6 +67,17 @@
     <!-- Symbols -->
     <Rule color="Symbol">
       (?&lt;!:):[@A-Za-z_][\w@]*[?!]?
+    </Rule>
+    <Rule color="Symbol">
+      \b[a-z_]\w*(?=\s*:)
+    </Rule>
+
+    <!-- Splats and block forwarding -->
+    <Rule color="Splat">
+      \*\*?[a-z_]\w*
+    </Rule>
+    <Rule color="Splat">
+      &amp;[a-z_]\w*
     </Rule>
 
     <!-- Numbers -->

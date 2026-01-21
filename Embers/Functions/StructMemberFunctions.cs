@@ -1,3 +1,4 @@
+using Embers.Annotations;
 using Embers.Exceptions;
 
 namespace Embers.Functions;
@@ -5,6 +6,7 @@ namespace Embers.Functions;
 /// <summary>
 /// Function that gets the value of a struct member.
 /// </summary>
+[ScannerIgnore]
 internal sealed class StructMemberGetFunction(string memberName) : IFunction
 {
     private readonly string memberName = memberName;
@@ -21,6 +23,7 @@ internal sealed class StructMemberGetFunction(string memberName) : IFunction
 /// <summary>
 /// Function that sets the value of a struct member.
 /// </summary>
+[ScannerIgnore]
 internal sealed class StructMemberSetFunction(string memberName) : IFunction
 {
     private readonly string memberName = memberName;
@@ -39,6 +42,7 @@ internal sealed class StructMemberSetFunction(string memberName) : IFunction
 /// <summary>
 /// Function that returns the list of member names of a struct.
 /// </summary>
+[ScannerIgnore]
 internal sealed class StructInitializeFunction(IReadOnlyList<string> members) : IFunction
 {
     private readonly IReadOnlyList<string> members = members;
@@ -58,6 +62,7 @@ internal sealed class StructInitializeFunction(IReadOnlyList<string> members) : 
 /// <summary>
 /// Returns an array of symbols representing the member names of the struct.
 /// </summary>
+[ScannerIgnore]
 internal sealed class StructMembersFunction(IReadOnlyList<string> members) : IFunction
 {
     private readonly IReadOnlyList<string> members = members;

@@ -1,5 +1,11 @@
+using Embers.Annotations;
+
 namespace Embers.Functions;
 
+/// <summary>
+/// Function that defines a method on an object.
+/// </summary>
+[ScannerIgnore]
 public sealed class DefineMethodFunction : ICallableWithBlock
 {
     public object Apply(DynamicObject self, Context context, IList<object> values)

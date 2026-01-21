@@ -1,5 +1,8 @@
 namespace Embers.Expressions;
 
+/// <summary>
+/// Represents a splat expression (e.g., *args) in the Embers language.
+/// </summary>
 public sealed class SplatExpression(IExpression expression) : BaseExpression
 {
     private readonly IExpression expression = expression;
