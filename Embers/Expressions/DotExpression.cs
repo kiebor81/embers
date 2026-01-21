@@ -1,3 +1,5 @@
+using System.Collections;
+using Embers;
 using Embers.Exceptions;
 using Embers.Functions;
 using Embers.StdLib;
@@ -74,9 +76,48 @@ public class DotExpression(IExpression expression, string name, IList<IExpressio
                         }
                     }
 
+                    KeywordArguments? keywordArguments0 = null;
+
                     // Evaluate remaining arguments
                     foreach (var argument in nativeArgList0)
+                    {
+                        if (argument is SplatExpression splat)
+                        {
+                            var splatValue = splat.Expression.Evaluate(context);
+                            if (splatValue is IList list)
+                            {
+                                foreach (var item in list)
+                                    values.Add(item);
+                            }
+                            else
+                            {
+                                throw new Embers.Exceptions.TypeError("splat expects an Array");
+                            }
+                            continue;
+                        }
+
+                        if (argument is KeywordSplatExpression kwSplat)
+                        {
+                            var kwValue = kwSplat.Expression.Evaluate(context);
+                            if (kwValue is IDictionary dict)
+                            {
+                                var hash = keywordArguments0?.Values ?? new DynamicHash();
+                                foreach (DictionaryEntry entry in dict)
+                                    hash[entry.Key] = entry.Value;
+                                keywordArguments0 = new KeywordArguments(hash);
+                            }
+                            else
+                            {
+                                throw new Embers.Exceptions.TypeError("keyword splat expects a Hash");
+                            }
+                            continue;
+                        }
+
                         values.Add(argument.Evaluate(context));
+                    }
+
+                    if (keywordArguments0 != null)
+                        values.Add(keywordArguments0);
 
                     // Use block-aware function call if method supports blocks
                     if (nativeBlock0 != null && dynamicMethod is ICallableWithBlock callableWithBlock0)
@@ -145,9 +186,48 @@ public class DotExpression(IExpression expression, string name, IList<IExpressio
                     ? nclass.GetInstanceMethod(name, nativeContext)
                     : nclass.GetInstanceMethod(name);
 
+            KeywordArguments? keywordArguments = null;
+
             if (nativeArgList.Count > 0)
                 foreach (var argument in nativeArgList)
+                {
+                    if (argument is SplatExpression splat)
+                    {
+                        var splatValue = splat.Expression.Evaluate(nativeContext);
+                        if (splatValue is IList list)
+                        {
+                            foreach (var item in list)
+                                values.Add(item);
+                        }
+                        else
+                        {
+                            throw new Embers.Exceptions.TypeError("splat expects an Array");
+                        }
+                        continue;
+                    }
+
+                    if (argument is KeywordSplatExpression kwSplat)
+                    {
+                        var kwValue = kwSplat.Expression.Evaluate(nativeContext);
+                        if (kwValue is IDictionary dict)
+                        {
+                            var hash = keywordArguments?.Values ?? new DynamicHash();
+                            foreach (DictionaryEntry entry in dict)
+                                hash[entry.Key] = entry.Value;
+                            keywordArguments = new KeywordArguments(hash);
+                        }
+                        else
+                        {
+                            throw new Embers.Exceptions.TypeError("keyword splat expects a Hash");
+                        }
+                        continue;
+                    }
+
                     values.Add(argument.Evaluate(nativeContext));
+                }
+
+            if (keywordArguments != null)
+                values.Add(keywordArguments);
 
             if (nmethod == null)
             {
@@ -198,9 +278,48 @@ public class DotExpression(IExpression expression, string name, IList<IExpressio
             }
         }
 
+        KeywordArguments? keywordArguments1 = null;
+
         // Evaluate remaining arguments
         foreach (var argument in argList)
+        {
+            if (argument is SplatExpression splat)
+            {
+                var splatValue = splat.Expression.Evaluate(context);
+                if (splatValue is IList list)
+                {
+                    foreach (var item in list)
+                        values.Add(item);
+                }
+                else
+                {
+                    throw new Embers.Exceptions.TypeError("splat expects an Array");
+                }
+                continue;
+            }
+
+            if (argument is KeywordSplatExpression kwSplat)
+            {
+                var kwValue = kwSplat.Expression.Evaluate(context);
+                if (kwValue is IDictionary dict)
+                {
+                    var hash = keywordArguments1?.Values ?? new DynamicHash();
+                    foreach (DictionaryEntry entry in dict)
+                        hash[entry.Key] = entry.Value;
+                    keywordArguments1 = new KeywordArguments(hash);
+                }
+                else
+                {
+                    throw new Embers.Exceptions.TypeError("keyword splat expects a Hash");
+                }
+                continue;
+            }
+
             values.Add(argument.Evaluate(context));
+        }
+
+        if (keywordArguments1 != null)
+            values.Add(keywordArguments1);
 
         var method = obj.GetMethod(name);
 
@@ -214,6 +333,9 @@ public class DotExpression(IExpression expression, string name, IList<IExpressio
                 catch
                 {
                 }
+
+            if (Machine.TryInvokeMethodMissing(obj, context, name, values, block, out var methodMissingResult))
+                return methodMissingResult;
 
             throw new NoMethodError(name);
         }

@@ -139,6 +139,10 @@ internal static class Registration
         core.BasicObject.SetInstanceMethod("class", new LambdaFunction(Machine.GetClass));
         core.BasicObject.SetInstanceMethod("methods", new LambdaFunction(Machine.GetMethods));
         core.BasicObject.SetInstanceMethod("singleton_methods", new LambdaFunction(Machine.GetSingletonMethods));
+        core.BasicObject.SetInstanceMethod("instance_variable_get", new LambdaFunction(Machine.InstanceVariableGet));
+        core.BasicObject.SetInstanceMethod("instance_variable_set", new LambdaFunction(Machine.InstanceVariableSet));
+        core.BasicObject.SetInstanceMethod("instance_variables", new LambdaFunction(Machine.InstanceVariables));
+        core.BasicObject.SetInstanceMethod("send", new SendFunction());
 
         core.Object.SetInstanceMethod("inspect", new InspectFunction());
 
@@ -147,6 +151,11 @@ internal static class Registration
         core.Module.SetInstanceMethod("include", new LambdaFunction(Machine.IncludeModule));
         core.Module.SetInstanceMethod("class_variable_get", new LambdaFunction((obj, ctx, vals) => Machine.ClassVariableGet(obj, ctx, vals)!));
         core.Module.SetInstanceMethod("class_variable_set", new LambdaFunction((obj, ctx, vals) => Machine.ClassVariableSet(obj, ctx, vals)!));
+        core.Module.SetInstanceMethod("class_variables", new LambdaFunction((obj, ctx, vals) => Machine.ClassVariables(obj, ctx, vals)));
+        core.Module.SetInstanceMethod("const_get", new LambdaFunction((obj, ctx, vals) => Machine.ConstGet(obj, ctx, vals)!));
+        core.Module.SetInstanceMethod("const_set", new LambdaFunction((obj, ctx, vals) => Machine.ConstSet(obj, ctx, vals)!));
+        core.Module.SetInstanceMethod("alias_method", new LambdaFunction((obj, ctx, vals) => Machine.AliasMethod(obj, ctx, vals)));
+        core.Module.SetInstanceMethod("define_method", new DefineMethodFunction());
 
         core.Class.SetInstanceMethod("new", new LambdaFunction(Machine.NewInstance));
     }

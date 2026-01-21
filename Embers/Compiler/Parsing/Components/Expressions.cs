@@ -33,7 +33,7 @@ internal sealed class Expressions(Parser parser)
         if (parser.TryParseName("do"))
             return ApplyPostfixChain(new CallExpression(nexpr.Name, [parser.ParseBlockExpression()]));
 
-        if (!parser.NextTokenStartsExpressionList())
+        if (!parser.NextTokenStartsExpressionListAllowSplat())
             return ApplyPostfixChain(result);
 
         return ApplyPostfixChain(new CallExpression(((NameExpression)result).Name, parser.ParseExpressionListWithBlockArgs()));
@@ -140,7 +140,7 @@ internal sealed class Expressions(Parser parser)
 
                 if (parser.TryParseToken(TokenType.Separator, "{"))
                     expression = new DotExpression(expression, name, [parser.ParseBlockExpression(true)]);
-                else if (parser.NextTokenStartsExpressionList())
+                else if (parser.NextTokenStartsExpressionListAllowSplat())
                     expression = new DotExpression(expression, name, parser.ParseExpressionListWithBlockArgs());
                 else
                     expression = new DotExpression(expression, name, []);

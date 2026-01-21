@@ -46,9 +46,11 @@ internal sealed class Blocks(Parser parser)
     /// </summary>
     /// <param name="canhaveparens"></param>
     /// <returns></returns>
-    public (IList<string> parameters, string? blockParam) ParseParameterListWithBlock(bool canhaveparens = true)
+    public (IList<string> parameters, string? splatParam, string? kwParam, string? blockParam) ParseParameterListWithBlock(bool canhaveparens = true)
     {
         IList<string> parameters = [];
+        string? splatParam = null;
+        string? kwParam = null;
         string? blockParam = null;
 
         bool inparentheses = false;
@@ -58,6 +60,37 @@ internal sealed class Blocks(Parser parser)
 
         while (true)
         {
+            if (parser.TryParseToken(TokenType.Operator, "**"))
+            {
+                if (kwParam != null)
+                    throw new SyntaxError("duplicate keyword splat parameter");
+
+                string kwName = parser.ParseName();
+                kwParam = kwName;
+
+                if (!parser.TryParseToken(TokenType.Separator, ","))
+                    break;
+
+                continue;
+            }
+
+            if (parser.TryParseToken(TokenType.Operator, "*"))
+            {
+                if (splatParam != null)
+                    throw new SyntaxError("duplicate splat parameter");
+
+                if (kwParam != null)
+                    throw new SyntaxError("splat parameter must precede keyword splat");
+
+                string splatName = parser.ParseName();
+                splatParam = splatName;
+
+                if (!parser.TryParseToken(TokenType.Separator, ","))
+                    break;
+
+                continue;
+            }
+
             if (parser.TryParseToken(TokenType.Separator, "&"))
             {
                 string blockParamName = parser.ParseName();
@@ -69,6 +102,9 @@ internal sealed class Blocks(Parser parser)
             if (name == null)
                 break;
 
+            if (splatParam != null || kwParam != null)
+                throw new SyntaxError("positional parameters must precede splat or kwargs");
+
             parameters.Add(name);
             if (!parser.TryParseToken(TokenType.Separator, ","))
                 break;
@@ -77,7 +113,7 @@ internal sealed class Blocks(Parser parser)
         if (inparentheses)
             parser.ParseToken(TokenType.Separator, ")");
 
-        return (parameters, blockParam);
+        return (parameters, splatParam, kwParam, blockParam);
     }
 
     /// <summary>
@@ -121,6 +157,22 @@ internal sealed class Blocks(Parser parser)
 
     private IExpression? ParseSingleExpressionWithBlockPrefix(bool allowPostfixConditional)
     {
+        if (parser.TryParseToken(TokenType.Operator, "**"))
+        {
+            IExpression? expr = allowPostfixConditional ? parser.ParseExpression() : ParseCommandArgExpression();
+            if (expr != null)
+                return new KeywordSplatExpression(expr);
+            throw new SyntaxError("Expected expression after **");
+        }
+
+        if (parser.TryParseToken(TokenType.Operator, "*"))
+        {
+            IExpression? expr = allowPostfixConditional ? parser.ParseExpression() : ParseCommandArgExpression();
+            if (expr != null)
+                return new SplatExpression(expr);
+            throw new SyntaxError("Expected expression after *");
+        }
+
         if (parser.TryParseToken(TokenType.Separator, "&"))
         {
             if (parser.TryParseToken(TokenType.Separator, ":"))

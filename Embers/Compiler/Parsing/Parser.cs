@@ -205,6 +205,7 @@ public class Parser
     /// <param name="value"></param>
     /// <returns></returns>
     internal bool TryParseToken(TokenType type, string value) => core.TryParseToken(type, value);
+    internal bool NextTokenStartsExpressionListAllowSplat() => core.NextTokenStartsExpressionListAllowSplat();
 
     /// <summary>
     /// Tries to parse a name token.
@@ -241,7 +242,7 @@ public class Parser
     /// </summary>
     /// <param name="canhaveparens"></param>
     /// <returns></returns>
-    internal (IList<string> parameters, string? blockParam) ParseParameterListWithBlock(bool canhaveparens = true)
+    internal (IList<string> parameters, string? splatParam, string? kwParam, string? blockParam) ParseParameterListWithBlock(bool canhaveparens = true)
         => blockParser.ParseParameterListWithBlock(canhaveparens);
 
     /// <summary>

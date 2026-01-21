@@ -11,6 +11,9 @@ public class Proc
     private readonly Block? block;
     private readonly IFunction? function;
 
+    internal Block? Block => block;
+    internal IFunction? Function => function;
+
     public Proc(Block block)
     {
         this.block = block;

@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using Embers.Exceptions;
+using Embers.Expressions;
 using Embers.Functions;
 using Embers.Security;
 using Embers.Signals;
@@ -14,6 +16,8 @@ namespace Embers;
 /// </summary>
 public partial class Machine
 {
+    private static readonly ConditionalWeakTable<Context, HashSet<string>> MethodMissingGuards = new();
+
     /// <summary>
     /// Custom supported file extensions.
     /// </summary>
@@ -504,6 +508,359 @@ public partial class Machine
         var value = values[1];
         target.SetValue(name[2..], value);
         return value;
+    }
+
+    /// <summary>
+    /// Gets an instance variable by name on an object.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    internal static object? InstanceVariableGet(DynamicObject obj, Context context, IList<object> values)
+    {
+        if (values.Count != 1)
+            throw new ArgumentError($"wrong number of arguments (given {values.Count}, expected 1)");
+
+        string name = values[0] switch
+        {
+            Symbol symbol => symbol.Name,
+            string text => text,
+            _ => throw new TypeError("instance_variable_get expects a symbol or string")
+        };
+
+        if (!name.StartsWith("@", StringComparison.Ordinal))
+            throw new NameError("invalid instance variable name");
+
+        return obj.GetValue(name[1..]);
+    }
+
+    /// <summary>
+    /// Sets an instance variable by name on an object.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    internal static object? InstanceVariableSet(DynamicObject obj, Context context, IList<object> values)
+    {
+        if (values.Count != 2)
+            throw new ArgumentError($"wrong number of arguments (given {values.Count}, expected 2)");
+
+        string name = values[0] switch
+        {
+            Symbol symbol => symbol.Name,
+            string text => text,
+            _ => throw new TypeError("instance_variable_set expects a symbol or string")
+        };
+
+        if (!name.StartsWith("@", StringComparison.Ordinal))
+            throw new NameError("invalid instance variable name");
+
+        var value = values[1];
+        obj.SetValue(name[1..], value);
+        return value;
+    }
+
+    /// <summary>
+    /// Lists instance variables on an object.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    internal static object InstanceVariables(DynamicObject obj, Context context, IList<object> values)
+    {
+        if (values.Count != 0)
+            throw new ArgumentError($"wrong number of arguments (given {values.Count}, expected 0)");
+
+        var result = new DynamicArray();
+        foreach (var key in obj.GetValues().Keys)
+            result.Add(new Symbol("@" + key));
+
+        return result;
+    }
+
+    /// <summary>
+    /// Gets a constant by name on a class or module.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    internal static object? ConstGet(DynamicObject obj, Context context, IList<object> values)
+    {
+        if (obj is not DynamicClass target)
+            throw new TypeError("const_get can only be called on classes or modules");
+
+        if (values.Count != 1)
+            throw new ArgumentError($"wrong number of arguments (given {values.Count}, expected 1)");
+
+        string name = values[0] switch
+        {
+            Symbol symbol => symbol.Name,
+            string text => text,
+            _ => throw new TypeError("const_get expects a symbol or string")
+        };
+
+        if (!Predicates.IsConstantName(name))
+            throw new NameError("invalid constant name");
+
+        if (!target.Constants.HasLocalValue(name))
+            throw new NameError($"unitialized constant {target.Name}::{name}");
+
+        return target.Constants.GetLocalValue(name);
+    }
+
+    /// <summary>
+    /// Sets a constant by name on a class or module.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    internal static object? ConstSet(DynamicObject obj, Context context, IList<object> values)
+    {
+        if (obj is not DynamicClass target)
+            throw new TypeError("const_set can only be called on classes or modules");
+
+        if (values.Count != 2)
+            throw new ArgumentError($"wrong number of arguments (given {values.Count}, expected 2)");
+
+        string name = values[0] switch
+        {
+            Symbol symbol => symbol.Name,
+            string text => text,
+            _ => throw new TypeError("const_set expects a symbol or string")
+        };
+
+        if (!Predicates.IsConstantName(name))
+            throw new NameError("invalid constant name");
+
+        var value = values[1];
+        target.Constants.SetLocalValue(name, value);
+        return value;
+    }
+
+    /// <summary>
+    /// Creates an alias for an existing method on a class or module.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    internal static object AliasMethod(DynamicObject obj, Context context, IList<object> values)
+    {
+        if (obj is not DynamicClass target)
+            throw new TypeError("alias_method can only be called on classes or modules");
+
+        if (values.Count != 2)
+            throw new ArgumentError($"wrong number of arguments (given {values.Count}, expected 2)");
+
+        string newName = values[0] switch
+        {
+            Symbol symbol => symbol.Name,
+            string text => text,
+            _ => throw new TypeError("alias_method expects a symbol or string")
+        };
+
+        string oldName = values[1] switch
+        {
+            Symbol symbol => symbol.Name,
+            string text => text,
+            _ => throw new TypeError("alias_method expects a symbol or string")
+        };
+
+        target.AliasMethod(newName, oldName);
+        return target;
+    }
+
+    /// <summary>
+    /// Lists class variables on a class or module.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    internal static object ClassVariables(DynamicObject obj, Context context, IList<object> values)
+    {
+        if (obj is not DynamicClass target)
+            throw new TypeError("class_variables can only be called on classes or modules");
+
+        if (values.Count != 0)
+            throw new ArgumentError($"wrong number of arguments (given {values.Count}, expected 0)");
+
+        var result = new DynamicArray();
+        foreach (var key in target.GetValues().Keys)
+            result.Add(new Symbol("@@" + key));
+
+        return result;
+    }
+
+    /// <summary>
+    /// Sends a method call to an object by name.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    internal static object Send(DynamicObject obj, Context context, IList<object> values)
+        => Send(obj, context, values, null);
+
+    /// <summary>
+    /// Sends a method call to an object by name with an optional block.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <param name="block"></param>
+    /// <returns></returns>
+    internal static object Send(DynamicObject obj, Context context, IList<object> values, IFunction? block)
+    {
+        if (values.Count < 1)
+            throw new ArgumentError($"wrong number of arguments (given {values.Count}, expected 1)");
+
+        string name = values[0] switch
+        {
+            Symbol symbol => symbol.Name,
+            string text => text,
+            _ => throw new TypeError("send expects a symbol or string")
+        };
+
+        var args = values.Count > 1 ? values.Skip(1).ToList() : [];
+
+        var method = obj.GetMethod(name);
+        if (method == null)
+        {
+            if (TryInvokeMethodMissing(obj, context, name, args, block, out var methodMissingResult))
+                return methodMissingResult;
+
+            throw new NoMethodError(name);
+        }
+
+        return ApplyWithOptionalBlock(obj, context, method, args, block);
+    }
+
+    /// <summary>
+    /// Defines a method on a class or module using a Proc or block.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <param name="block"></param>
+    /// <returns></returns>
+    internal static object DefineMethod(DynamicObject obj, Context context, IList<object> values, IFunction? block)
+    {
+        if (obj is not DynamicClass target)
+            throw new TypeError("define_method can only be called on classes or modules");
+
+        if (values.Count < 1 || values.Count > 2)
+            throw new ArgumentError($"wrong number of arguments (given {values.Count}, expected 1..2)");
+
+        string name = values[0] switch
+        {
+            Symbol symbol => symbol.Name,
+            string text => text,
+            _ => throw new TypeError("define_method expects a symbol or string")
+        };
+
+        if (values.Count == 2 && block != null)
+            throw new ArgumentError("define_method accepts either a Proc argument or a block, not both");
+
+        DefinedFunction function = values.Count == 2
+            ? BuildDefinedFunctionFromProc(values[1], context)
+            : BuildDefinedFunctionFromBlock(block, context);
+
+        target.SetInstanceMethod(name, function);
+        return target;
+    }
+
+    private static DefinedFunction BuildDefinedFunctionFromProc(object procValue, Context context)
+    {
+        if (procValue is not Proc proc)
+            throw new TypeError("define_method expects a Proc for the second argument");
+
+        if (proc.Block != null)
+            return BuildDefinedFunctionFromBlock(proc.Block, proc.Block.ClosureContext);
+
+        if (proc.Function is BlockAdapter adapter)
+            return BuildDefinedFunctionFromBlock(adapter.Block, adapter.Block.ClosureContext);
+
+        if (proc.Function is BlockFunction blockFunction)
+            return BuildDefinedFunctionFromBlock(blockFunction.BlockExpression, context);
+
+        throw new TypeError("define_method expects a Proc backed by a block");
+    }
+
+    private static DefinedFunction BuildDefinedFunctionFromBlock(IFunction? block, Context context)
+    {
+        if (block == null)
+            throw new ArgumentError("define_method requires a Proc or block");
+
+        if (block is BlockFunction blockFunction)
+            return BuildDefinedFunctionFromBlock(blockFunction.BlockExpression, context);
+
+        if (block is BlockAdapter adapter)
+            return BuildDefinedFunctionFromBlock(adapter.Block, context);
+
+        throw new TypeError("define_method expects a block");
+    }
+
+    private static DefinedFunction BuildDefinedFunctionFromBlock(Embers.Expressions.BlockExpression blockExpression, Context context)
+    {
+        var parameters = blockExpression.Parameters ?? [];
+        return new DefinedFunction(blockExpression.Body, parameters, null, null, context);
+    }
+
+    private static DefinedFunction BuildDefinedFunctionFromBlock(Block block, Context context)
+    {
+        var parameters = block.ArgumentNames ?? [];
+        return new DefinedFunction(block.Body, parameters, null, null, context);
+    }
+
+    internal static bool TryInvokeMethodMissing(DynamicObject obj, Context context, string missingName, IList<object> args, IFunction? block, out object? result)
+    {
+        result = null;
+
+        if (missingName == "method_missing")
+            return false;
+
+        var methodMissing = obj.GetMethod("method_missing");
+        if (methodMissing == null)
+            return false;
+
+        var guard = MethodMissingGuards.GetValue(context.RootContext, _ => new HashSet<string>(StringComparer.Ordinal));
+        if (!guard.Add(missingName))
+            throw new NoMethodError(missingName);
+
+        try
+        {
+            var values = new List<object> { new Symbol(missingName) };
+            if (args.Count > 0)
+                values.AddRange(args);
+
+            result = ApplyWithOptionalBlock(obj, context, methodMissing, values, block);
+            return true;
+        }
+        finally
+        {
+            guard.Remove(missingName);
+        }
+    }
+
+    private static object ApplyWithOptionalBlock(DynamicObject obj, Context context, IFunction method, IList<object> values, IFunction? block)
+    {
+        if (block != null && method is ICallableWithBlock callableWithBlock)
+            return callableWithBlock.ApplyWithBlock(obj, context, values, block);
+
+        if (block != null)
+        {
+            var applyWithBlockMethod = method.GetType().GetMethod("ApplyWithBlock");
+            if (applyWithBlockMethod != null)
+                return applyWithBlockMethod.Invoke(method, [obj, context, values, block]);
+        }
+
+        return method.Apply(obj, context, values);
     }
 
     /// <summary>

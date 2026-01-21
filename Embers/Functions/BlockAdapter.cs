@@ -10,6 +10,8 @@ public class BlockAdapter(Block block) : IFunction
 {
     private readonly Block block = block;
 
+    internal Block Block => block;
+
     public object Apply(DynamicObject self, Context caller, IList<object> values) => block.Apply(values);
 }
 

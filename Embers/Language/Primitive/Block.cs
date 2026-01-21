@@ -12,6 +12,10 @@ public class Block(IList<string> argumentnames, IExpression expression, Context 
     private readonly IExpression expression = expression;
     private readonly Context context = context;
 
+    internal IList<string>? ArgumentNames => argumentnames;
+    internal IExpression Body => expression;
+    internal Context ClosureContext => context;
+
     public object Apply(IList<object> arguments)
     {
         if (argumentnames == null || argumentnames.Count == 0)

@@ -719,7 +719,7 @@ namespace Embers.Tests.Compiler
         public void ParseSimpleDefCommand()
         {
             Parser parser = new("def foo\na=1\nend");
-            var expected = new DefExpression(new NameExpression("foo"), [], new AssignExpression("a", new ConstantExpression(1L)));
+            var expected = new DefExpression(new NameExpression("foo"), [], null, null, new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -771,7 +771,7 @@ namespace Embers.Tests.Compiler
         public void ParseDefCommandWithParameters()
         {
             Parser parser = new("def foo a, b\na+b\nend");
-            var expected = new DefExpression(new NameExpression("foo"), ["a", "b"], new AddExpression(new NameExpression("a"), new NameExpression("b")));
+            var expected = new DefExpression(new NameExpression("foo"), ["a", "b"], null, null, new AddExpression(new NameExpression("a"), new NameExpression("b")));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -784,7 +784,7 @@ namespace Embers.Tests.Compiler
         public void ParseDefCommandWithParametersInParentheses()
         {
             Parser parser = new("def foo(a, b)\na+b\nend");
-            var expected = new DefExpression(new NameExpression("foo"), ["a", "b"], new AddExpression(new NameExpression("a"), new NameExpression("b")));
+            var expected = new DefExpression(new NameExpression("foo"), ["a", "b"], null, null, new AddExpression(new NameExpression("a"), new NameExpression("b")));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -814,7 +814,7 @@ namespace Embers.Tests.Compiler
         public void ParseObjectDefCommand()
         {
             Parser parser = new("def a.foo\na=1\nend");
-            var expected = new DefExpression(new DotExpression(new NameExpression("a"), "foo", []), [], new AssignExpression("a", new ConstantExpression(1L)));
+            var expected = new DefExpression(new DotExpression(new NameExpression("a"), "foo", []), [], null, null, new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -827,7 +827,7 @@ namespace Embers.Tests.Compiler
         public void ParseSelfDefCommand()
         {
             Parser parser = new("def self.foo\na=1\nend");
-            var expected = new DefExpression(new DotExpression(new SelfExpression(), "foo", []), [], new AssignExpression("a", new ConstantExpression(1L)));
+            var expected = new DefExpression(new DotExpression(new SelfExpression(), "foo", []), [], null, null, new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -840,7 +840,7 @@ namespace Embers.Tests.Compiler
         public void ParseObjectDefCommandUsingDoubleColon()
         {
             Parser parser = new("def a::foo\na=1\nend");
-            var expected = new DefExpression(new DoubleColonExpression(new NameExpression("a"), "foo"), [], new AssignExpression("a", new ConstantExpression(1L)));
+            var expected = new DefExpression(new DoubleColonExpression(new NameExpression("a"), "foo"), [], null, null, new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);
@@ -853,7 +853,7 @@ namespace Embers.Tests.Compiler
         public void ParseSelfDefCommandUsingDoubleColon()
         {
             Parser parser = new("def self::foo\na=1\nend");
-            var expected = new DefExpression(new DoubleColonExpression(new SelfExpression(), "foo"), [], new AssignExpression("a", new ConstantExpression(1L)));
+            var expected = new DefExpression(new DoubleColonExpression(new SelfExpression(), "foo"), [], null, null, new AssignExpression("a", new ConstantExpression(1L)));
             var result = parser.ParseCommand();
 
             Assert.IsNotNull(result);

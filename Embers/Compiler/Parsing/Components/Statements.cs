@@ -118,10 +118,10 @@ internal sealed class Statements(Parser parser)
             break;
         }
 
-        var (parameters, blockParam) = parser.ParseParameterListWithBlock();
+        var (parameters, splatParam, kwParam, blockParam) = parser.ParseParameterListWithBlock();
         IExpression body = parser.ParseCommandList();
 
-        return new DefExpression(named, parameters, body, blockParam);
+        return new DefExpression(named, parameters, splatParam, kwParam, body, blockParam);
     }
 
     private string ParseDefName()

@@ -13,7 +13,7 @@ namespace Embers.Tests.Language
         {
             Machine machine = new();
             @class = new DynamicClass((DynamicClass)machine.RootContext.GetLocalValue("Class"), "Dog", (DynamicClass)machine.RootContext.GetLocalValue("Object"));
-            foo = new DefinedFunction(null, null, null);
+            foo = new DefinedFunction(null, null, null, null, null);
             @class.SetInstanceMethod("foo", foo);
         }
 
@@ -123,7 +123,7 @@ namespace Embers.Tests.Language
         public void GetMethodFromSingletonClass()
         {
             DynamicObject obj = new(@class);
-            var newfoo = new DefinedFunction(null, null, null);
+            var newfoo = new DefinedFunction(null, null, null, null, null);
             obj.SingletonClass.SetInstanceMethod("foo", newfoo);
             Assert.AreSame(newfoo, obj.GetMethod("foo"));
         }

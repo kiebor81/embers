@@ -34,7 +34,7 @@ namespace Embers.Tests.Language
         public void RetrieveDefinedInstanceMethodIsNull()
         {
             DynamicClass dclass = new("Dog");
-            IFunction foo = new DefinedFunction(null, null, null);
+            IFunction foo = new DefinedFunction(null, null, null, null, null);
             dclass.SetInstanceMethod("foo", foo);
 
             Assert.AreSame(foo, dclass.GetInstanceMethod("foo"));
@@ -55,7 +55,7 @@ namespace Embers.Tests.Language
         public void GetOwnInstanceMethodNames()
         {
             DynamicClass dclass = new("Dog");
-            IFunction foo = new DefinedFunction(null, null, null);
+            IFunction foo = new DefinedFunction(null, null, null, null, null);
             dclass.SetInstanceMethod("foo", foo);
 
             var result = dclass.GetOwnInstanceMethodNames();
@@ -69,7 +69,7 @@ namespace Embers.Tests.Language
         public void CreateInstance()
         {
             DynamicClass dclass = new("Dog");
-            IFunction foo = new DefinedFunction(null, null, null);
+            IFunction foo = new DefinedFunction(null, null, null, null, null);
             dclass.SetInstanceMethod("foo", foo);
 
             var result = dclass.CreateInstance();
@@ -119,7 +119,7 @@ namespace Embers.Tests.Language
         {
             Machine machine = new();
             DynamicClass @class = new((DynamicClass)machine.RootContext.GetLocalValue("Class"), "Dog", (DynamicClass)machine.RootContext.GetLocalValue("Object"));
-            IFunction initialize = new DefinedFunction(new AssignInstanceVarExpression("age", new ConstantExpression(10)), [], null);
+            IFunction initialize = new DefinedFunction(new AssignInstanceVarExpression("age", new ConstantExpression(10)), [], null, null, null);
             @class.SetInstanceMethod("initialize", initialize);
 
             var result = @class.GetMethod("new").Apply(@class, @class.Constants, []);

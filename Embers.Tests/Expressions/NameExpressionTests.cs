@@ -59,7 +59,7 @@ namespace Embers.Tests.Expressions
             Machine machine = new();
             NameExpression expr = new("foo");
             Context context = machine.RootContext;
-            context.Self.Class.SetInstanceMethod("foo", new DefinedFunction(new ConstantExpression(1), [], context));
+            context.Self.Class.SetInstanceMethod("foo", new DefinedFunction(new ConstantExpression(1), [], null, null, context));
 
             Assert.AreEqual(1, expr.Evaluate(context));
         }

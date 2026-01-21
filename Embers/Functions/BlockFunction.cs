@@ -13,6 +13,8 @@ public class BlockFunction(BlockExpression block) : IFunction
 {
     private readonly BlockExpression block = block;
 
+    internal BlockExpression BlockExpression => block;
+
     public object Apply(DynamicObject self, Context caller, IList<object> values)
     {
         var context = new BlockContext(caller);

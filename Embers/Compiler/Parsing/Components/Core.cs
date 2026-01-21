@@ -67,6 +67,36 @@ internal sealed class Core(Lexer lexer, string[][] binaryoperators)
     }
 
     /// <summary>
+    /// Determines if the next token starts an expression list, allowing splat/kwargs prefixes.
+    /// </summary>
+    /// <returns></returns>
+    public bool NextTokenStartsExpressionListAllowSplat()
+    {
+        Token token = lexer.NextToken();
+        lexer.PushToken(token);
+
+        if (token == null)
+            return false;
+
+        if (IsEndOfCommand(token))
+            return false;
+
+        if (token.Type == TokenType.Operator)
+            return token.Value == "*" || token.Value == "**";
+
+        if (token.Type == TokenType.Separator)
+            return token.Value == "(";
+
+        if (token.Type == TokenType.Name && token.Value == "end")
+            return false;
+
+        if (token.Type == TokenType.Name && (token.Value == "if" || token.Value == "unless" || token.Value == "then" || token.Value == "when" || token.Value == "else" || token.Value == "in"))
+            return false;
+
+        return true;
+    }
+
+    /// <summary>
     /// Determines if the specified token indicates the end of a command
     /// </summary>
     /// <param name="token"></param>

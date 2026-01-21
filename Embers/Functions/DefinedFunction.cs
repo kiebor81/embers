@@ -10,10 +10,12 @@ namespace Embers.Functions;
 /// </summary>
 /// <seealso cref="ICallableWithBlock" />
 [ScannerIgnore]
-public class DefinedFunction(IExpression body, IList<string> parameters, Context context, string? blockParameterName = null) : ICallableWithBlock
+public class DefinedFunction(IExpression body, IList<string> parameters, string? splatParameterName, string? kwargsParameterName, Context context, string? blockParameterName = null) : ICallableWithBlock
 {
     private readonly IExpression body = body;
     private readonly IList<string> parameters = parameters;
+    private readonly string? splatParameterName = splatParameterName;
+    private readonly string? kwargsParameterName = kwargsParameterName;
     private readonly Context context = context;
     private readonly string? blockParameterName = blockParameterName;
 
@@ -21,12 +23,38 @@ public class DefinedFunction(IExpression body, IList<string> parameters, Context
     {
         Context newcontext = new(self, this.context, block);
 
+        var argumentValues = values != null ? new List<object>(values) : [];
+        KeywordArguments? keywordArguments = null;
+
+        if (argumentValues.Count > 0 && argumentValues[^1] is KeywordArguments kwArgs)
+        {
+            keywordArguments = kwArgs;
+            argumentValues.RemoveAt(argumentValues.Count - 1);
+        }
+
+        if (keywordArguments != null && kwargsParameterName == null)
+        {
+            argumentValues.Add(keywordArguments.Values);
+            keywordArguments = null;
+        }
+
         int k = 0;
         foreach (var parameter in parameters)
         {
-            newcontext.SetLocalValue(parameter, values[k]);
+            newcontext.SetLocalValue(parameter, k < argumentValues.Count ? argumentValues[k] : null);
             k++;
         }
+
+        if (splatParameterName != null)
+        {
+            var rest = new DynamicArray();
+            for (int i = parameters.Count; i < argumentValues.Count; i++)
+                rest.Add(argumentValues[i]);
+            newcontext.SetLocalValue(splatParameterName, rest);
+        }
+
+        if (kwargsParameterName != null)
+            newcontext.SetLocalValue(kwargsParameterName, keywordArguments?.Values ?? new DynamicHash());
 
         // If there's a block parameter name, convert the block to a Proc and bind it
         if (blockParameterName != null)

@@ -1,3 +1,5 @@
+using System.Collections;
+using Embers;
 using Embers.Exceptions;
 using Embers.Functions;
 
@@ -27,25 +29,24 @@ public class CallExpression(string name, IList<IExpression> arguments) : IExpres
 
     public object Evaluate(Context context)
     {
-        IFunction function = context.Self.GetMethod(name)
-            ?? throw new NoMethodError($"undefined method '{name}'");
+        IFunction? function = context.Self.GetMethod(name);
 
         IList<object> values = [];
         IFunction? block = null;
+        KeywordArguments? keywordArguments = null;
+        var argList = arguments.ToList();
 
         // Check for trailing block
-        if (arguments.Count > 0 && arguments[^1] is BlockExpression blockExpr)
+        if (argList.Count > 0 && argList[^1] is BlockExpression blockExpr)
         {
             block = new BlockFunction(blockExpr);
-            arguments.RemoveAt(arguments.Count - 1);  // Remove block from arguments list
+            argList.RemoveAt(argList.Count - 1);
         }
 
-        // Check for &block argument syntax
-        foreach (var argument in arguments)
+        foreach (var argument in argList)
         {
             if (argument is BlockArgumentExpression blockArgExpr)
             {
-                // This is a &block argument - extract the IFunction from the Proc
                 object blockValue = blockArgExpr.Evaluate(context);
                 if (blockValue is Proc proc)
                 {
@@ -59,12 +60,53 @@ public class CallExpression(string name, IList<IExpression> arguments) : IExpres
                 {
                     throw new TypeError($"Expected Proc for block argument, got {blockValue.GetType().Name}");
                 }
-                // Don't add to values - block is passed separately
+                continue;
             }
-            else
+
+            if (argument is SplatExpression splat)
             {
-                values.Add(argument.Evaluate(context));
+                var splatValue = splat.Expression.Evaluate(context);
+                if (splatValue is IList list)
+                {
+                    foreach (var item in list)
+                        values.Add(item);
+                }
+                else
+                {
+                    throw new TypeError("splat expects an Array");
+                }
+                continue;
             }
+
+            if (argument is KeywordSplatExpression kwSplat)
+            {
+                var kwValue = kwSplat.Expression.Evaluate(context);
+                if (kwValue is IDictionary dict)
+                {
+                    var hash = keywordArguments?.Values ?? new DynamicHash();
+                    foreach (DictionaryEntry entry in dict)
+                        hash[entry.Key] = entry.Value;
+                    keywordArguments = new KeywordArguments(hash);
+                }
+                else
+                {
+                    throw new TypeError("keyword splat expects a Hash");
+                }
+                continue;
+            }
+
+            values.Add(argument.Evaluate(context));
+        }
+
+        if (keywordArguments != null)
+            values.Add(keywordArguments);
+
+        if (function == null)
+        {
+            if (Machine.TryInvokeMethodMissing(context.Self, context, name, values, block, out var methodMissingResult))
+                return methodMissingResult;
+
+            throw new NoMethodError($"undefined method '{name}'");
         }
 
         // Use block-aware function call if applicable

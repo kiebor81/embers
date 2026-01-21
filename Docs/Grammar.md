@@ -1,6 +1,6 @@
 # Embers Language Grammar Guide
 
-This guide is intended for users writing Embers scripts and does not describe internal compiler implementation details. It describes the syntax and grammar of the Embers scripting language. Embers draws inspiration from Ruby’s syntax and expression model, but deliberately implements a smaller language-set with its own constraints and behaviour.
+This guide is intended for users writing Embers scripts and does not describe internal compiler implementation details. It describes the syntax and grammar of the Embers scripting language. Embers draws inspiration from Ruby’s syntax and expression model, but deliberately implements a smaller language set with its own constraints and behaviour.
 
 ## Table of Contents
 
@@ -15,8 +15,9 @@ This guide is intended for users writing Embers scripts and does not describe in
 9. [Modules](#modules)
 10. [Blocks and Iterators](#blocks-and-iterators)
 11. [String Interpolation](#string-interpolation)
-12. [C# Interoperability](#c-interoperability)
-13. [Notes on Ruby Compatibility](#notes-on-ruby-compatibility)
+12. [Meta Methods](#meta-methods)
+13. [C# Interoperability](#c-interoperability)
+14. [Notes on Ruby Compatibility](#notes-on-ruby-compatibility)
 
 ## Basic Syntax
 
@@ -535,6 +536,47 @@ puts "hello"        # parens omitted
 object.method_name  # parens omitted for no args
 ```
 
+### Argument Splats and Keyword Arguments
+
+Embers supports splats for positional arguments and keyword argument forwarding.
+These are intended for argument forwarding and flexible arity, not full Ruby
+keyword syntax.
+
+**Positional splats (`*`)** expand an array into positional arguments:
+
+```
+def sum(*args)
+  args.length
+end
+
+sum(1, 2, 3)     # => 3
+values = [4, 5]
+sum(*values)     # => 2
+```
+
+`*expr` must evaluate to an Array; otherwise a `TypeError` is raised.
+
+**Keyword splats (`**`)** expand a hash into keyword arguments:
+
+```
+def inspect_kwargs(**kwargs)
+  kwargs.size
+end
+
+inspect_kwargs(**{a: 1, b: 2})   # => 2
+```
+
+`**expr` must evaluate to a Hash; otherwise a `TypeError` is raised. When
+multiple keyword splats are present, later keys overwrite earlier ones.
+
+**Block forwarding (`&`)** forwards a block or Proc:
+
+```
+def wrapper(*args, **kwargs, &block)
+  target(*args, **kwargs, &block)
+end
+```
+
 ### Instance Methods
 
 Instance methods are defined without the `self.` prefix and operate on instance data:
@@ -749,6 +791,54 @@ value = Outer::Inner::MY_CONSTANT
 ```
 
 This syntax works for both Embers modules and .NET namespaces, providing a consistent syntax to navigate hierarchical structures.
+
+## Meta Methods
+
+Embers exposes a small set of meta methods intended for explicit, embedding-first
+introspection and dynamic dispatch.
+
+**Instance variables**
+
+```
+obj.instance_variable_get(:@name)
+obj.instance_variable_set(:@name, "Alice")
+obj.instance_variables       # => [:@name, ...]
+```
+
+**Class variables**
+
+```
+MyClass.class_variable_get(:@@count)
+MyClass.class_variable_set(:@@count, 10)
+MyClass.class_variables       # => [@@count, ...]
+```
+
+**Constants**
+
+```
+MyModule.const_set(:FOO, 123)
+MyModule.const_get(:FOO)
+```
+
+**Aliasing and dynamic dispatch**
+
+```
+MyClass.alias_method(:bar, :foo)
+obj.send(:foo, 1, 2)
+```
+
+**Dynamic method definition and fallback**
+
+```
+MyClass.define_method(:greet) { |name| "hi #{name}" }
+
+def method_missing(name)
+  "missing: #{name}"
+end
+```
+
+`define_method` accepts a symbol/string name and either a Proc argument or a block.
+`method_missing` is called when a method lookup fails on a dynamic object.
 
 ## Blocks and Iterators
 

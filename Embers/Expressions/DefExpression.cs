@@ -6,21 +6,25 @@ namespace Embers.Expressions;
 /// A DefExpression consists of a named expression, a list of parameters, and an expression that defines the function body.
 /// </summary>
 /// <seealso cref="BaseExpression" />
-public class DefExpression(INamedExpression namedexpression, IList<string> parameters, IExpression expression, string? blockParameterName = null) : BaseExpression
+public class DefExpression(INamedExpression namedexpression, IList<string> parameters, string? splatParameterName, string? kwargsParameterName, IExpression expression, string? blockParameterName = null) : BaseExpression
 {
     private static readonly int hashcode = typeof(DefExpression).GetHashCode();
 
     private readonly INamedExpression namedexpression = namedexpression;
     private readonly IList<string> parameters = parameters;
+    private readonly string? splatParameterName = splatParameterName;
+    private readonly string? kwargsParameterName = kwargsParameterName;
     private readonly IExpression expression = expression;
     private readonly string? blockParameterName = blockParameterName;
 
     public IList<string> Parameters => parameters;
+    public string? SplatParameterName => splatParameterName;
+    public string? KwargsParameterName => kwargsParameterName;
     public string? BlockParameterName => blockParameterName;
 
     public override object? Evaluate(Context context)
     {
-        var result = new DefinedFunction(expression, parameters, context, blockParameterName);
+        var result = new DefinedFunction(expression, parameters, splatParameterName, kwargsParameterName, context, blockParameterName);
 
         if (namedexpression.TargetExpression == null)
         {
@@ -53,7 +57,11 @@ public class DefExpression(INamedExpression namedexpression, IList<string> param
                 if (parameters[k] != expr.parameters[k])
                     return false;
 
-            return namedexpression.Equals(expr.namedexpression) && expression.Equals(expr.expression);
+            return namedexpression.Equals(expr.namedexpression)
+                && expression.Equals(expr.expression)
+                && splatParameterName == expr.splatParameterName
+                && kwargsParameterName == expr.kwargsParameterName
+                && blockParameterName == expr.blockParameterName;
         }
 
         return false;
@@ -65,6 +73,15 @@ public class DefExpression(INamedExpression namedexpression, IList<string> param
 
         foreach (var parameter in parameters)
             result += parameter.GetHashCode();
+
+        if (splatParameterName != null)
+            result += splatParameterName.GetHashCode();
+
+        if (kwargsParameterName != null)
+            result += kwargsParameterName.GetHashCode();
+
+        if (blockParameterName != null)
+            result += blockParameterName.GetHashCode();
 
         return result;
     }

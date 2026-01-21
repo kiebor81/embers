@@ -705,7 +705,7 @@ If you have found a use for Embers in your project, let me know. I'll be happy t
 
 ## Roadmap
 
-- [ ] High level meta-methods
+- [x] High level meta-methods
 - [ ] Realtime parser hooks
 - [ ] ISE language service
 

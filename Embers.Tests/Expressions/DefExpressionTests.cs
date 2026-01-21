@@ -11,7 +11,7 @@ namespace Embers.Tests.Expressions
         {
             Machine machine = new();
             Context context = machine.RootContext;
-            DefExpression expr = new(new NameExpression("foo"), [], new CallExpression("puts", [new ConstantExpression(123)]));
+            DefExpression expr = new(new NameExpression("foo"), [], null, null, new CallExpression("puts", [new ConstantExpression(123)]));
 
             var result = expr.Evaluate(context);
 
@@ -25,7 +25,7 @@ namespace Embers.Tests.Expressions
         [TestMethod]
         public void GetLocalVariables()
         {
-            DefExpression expr = new(new NameExpression("foo"), [], new CallExpression("puts", [new ConstantExpression(123)]));
+            DefExpression expr = new(new NameExpression("foo"), [], null, null, new CallExpression("puts", [new ConstantExpression(123)]));
             Assert.IsNull(expr.GetLocalVariables());
         }
 
@@ -36,7 +36,7 @@ namespace Embers.Tests.Expressions
             Context context = machine.RootContext;
             DynamicObject obj = new((DynamicClass)context.GetLocalValue("Object"));
             context.SetLocalValue("a", obj);
-            DefExpression expr = new(new DotExpression(new NameExpression("a"), "foo", []), [], new CallExpression("puts", [new ConstantExpression(123)]));
+            DefExpression expr = new(new DotExpression(new NameExpression("a"), "foo", []), [], null, null, new CallExpression("puts", [new ConstantExpression(123)]));
 
             var result = expr.Evaluate(context);
 
@@ -52,10 +52,10 @@ namespace Embers.Tests.Expressions
         [TestMethod]
         public void Equals()
         {
-            DefExpression expr1 = new(new NameExpression("foo"), [], new ConstantExpression(1));
-            DefExpression expr2 = new(new NameExpression("bar"), [], new ConstantExpression(1));
-            DefExpression expr3 = new(new NameExpression("foo"), [], new ConstantExpression(2));
-            DefExpression expr4 = new(new NameExpression("foo"), [], new ConstantExpression(1));
+            DefExpression expr1 = new(new NameExpression("foo"), [], null, null, new ConstantExpression(1));
+            DefExpression expr2 = new(new NameExpression("bar"), [], null, null, new ConstantExpression(1));
+            DefExpression expr3 = new(new NameExpression("foo"), [], null, null, new ConstantExpression(2));
+            DefExpression expr4 = new(new NameExpression("foo"), [], null, null, new ConstantExpression(1));
 
             Assert.IsTrue(expr1.Equals(expr4));
             Assert.IsTrue(expr4.Equals(expr1));
@@ -73,10 +73,10 @@ namespace Embers.Tests.Expressions
         [TestMethod]
         public void EqualsWithParameters()
         {
-            DefExpression expr1 = new(new NameExpression("foo"), ["c"], new ConstantExpression(1));
-            DefExpression expr2 = new(new NameExpression("foo"), ["a"], new ConstantExpression(1));
-            DefExpression expr3 = new(new NameExpression("foo"), ["a", "b"], new ConstantExpression(1));
-            DefExpression expr4 = new(new NameExpression("foo"), ["c"], new ConstantExpression(1));
+            DefExpression expr1 = new(new NameExpression("foo"), ["c"], null, null, new ConstantExpression(1));
+            DefExpression expr2 = new(new NameExpression("foo"), ["a"], null, null, new ConstantExpression(1));
+            DefExpression expr3 = new(new NameExpression("foo"), ["a", "b"], null, null, new ConstantExpression(1));
+            DefExpression expr4 = new(new NameExpression("foo"), ["c"], null, null, new ConstantExpression(1));
 
             Assert.IsTrue(expr1.Equals(expr4));
             Assert.IsTrue(expr4.Equals(expr1));

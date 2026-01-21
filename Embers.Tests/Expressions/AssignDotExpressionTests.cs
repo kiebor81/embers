@@ -24,7 +24,7 @@ namespace Embers.Tests.Expressions
         {
             Machine machine = new();
             var @class = new DynamicClass("Dog");
-            var method = new DefinedFunction((new Parser("@name = name")).ParseCommand(), ["name"], machine.RootContext);
+            var method = new DefinedFunction((new Parser("@name = name")).ParseCommand(), ["name"], null, null, machine.RootContext);
             @class.SetInstanceMethod("name=", method);
             var nero = @class.CreateInstance();
             machine.RootContext.SetLocalValue("nero", nero);
