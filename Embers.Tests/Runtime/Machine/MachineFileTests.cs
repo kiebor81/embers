@@ -149,6 +149,16 @@ namespace Embers.Tests
         }
 
         [TestMethod]
+        public void RequireFile_SecondDefinitionWins()
+        {
+            Assert.IsTrue(machine.RequireFile("MachineFiles\\OverrideOne"));
+            Assert.AreEqual(1L, machine.ExecuteText("ping"));
+
+            Assert.IsTrue(machine.RequireFile("MachineFiles\\OverrideTwo"));
+            Assert.AreEqual(2L, machine.ExecuteText("ping"));
+        }
+
+        [TestMethod]
         public void ExecuteRequireModules()
         {
             machine.ExecuteFile("MachineFiles\\RequireModules.rb");
