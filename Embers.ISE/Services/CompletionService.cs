@@ -28,6 +28,9 @@ public static class CompletionService
     private static readonly Regex NumericRegex =
         new(@"^\d+(\.\d+)?\b", RegexOptions.Compiled);
 
+    private static readonly Regex NumericTokenRegex =
+        new(@"^\d+(\.\d+)?$", RegexOptions.Compiled);
+
     private static readonly Regex NewTypeRegex =
         new(@"^(?<type>[A-Z][A-Za-z0-9_]*(?:::[A-Z][A-Za-z0-9_]*)*)\s*\.\s*new\b", RegexOptions.Compiled);
 
@@ -35,7 +38,11 @@ public static class CompletionService
         new(@"^[A-Z][A-Za-z0-9_]*(?:::[A-Z][A-Za-z0-9_]*)*$", RegexOptions.Compiled);
 
     private static IReadOnlyDictionary<string, HashSet<string>>? _stdLibMethodsByType;
+    private static IReadOnlyList<string>? _cachedStdLibFunctionNames;
+    private static IReadOnlyList<string>? _cachedHostFunctionNames;
     private static readonly Lock StdLibLock = new();
+    private static readonly Lock FunctionCacheLock = new();
+    private const int MaxTypeScanLines = 250;
 
     public static IReadOnlyList<string> GetCompletions(string text, int caretOffset)
     {
@@ -49,55 +56,72 @@ public static class CompletionService
         if (context.IsInString || context.IsInComment)
             return [];
 
-        HashSet<string> results;
+        var results = new Dictionary<string, CompletionCandidate>(StringComparer.OrdinalIgnoreCase);
+        bool hasKnownMemberType = false;
 
         if (context.IsMemberAccess)
         {
             var typeTable = BuildTypeTable(text, caretOffset);
             var targetType = InferMemberAccessType(text, caretOffset, typeTable);
+            hasKnownMemberType = !string.IsNullOrWhiteSpace(targetType);
             var typedMethods = GetMethodNamesForType(targetType);
-            if (typedMethods.Count > 0)
-                results = new HashSet<string>(typedMethods, StringComparer.OrdinalIgnoreCase);
-            else
-                results = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var method in typedMethods)
+                AddCandidate(results, method, CandidateRank.MemberMethod);
         }
         else
         {
-            results = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var symbols = AstSymbolService.GetSymbols(text, caretOffset);
+            foreach (var symbol in symbols)
+                AddCandidate(results, symbol.Name, GetSymbolRank(symbol.Kind));
+
+            foreach (var symbol in WorkspaceSymbolIndex.GetWorkspaceSymbols())
+                AddCandidate(results, symbol.Name, CandidateRank.WorkspaceConstant);
         }
 
         if (!context.IsMemberAccess)
         {
-            var (stdLib, host) = FunctionScanner.ScanFunctionNames();
-            foreach (var name in stdLib) results.Add(name);
-            foreach (var name in host) results.Add(name);
+            var (stdLib, host) = GetFunctionNames();
+            foreach (var name in stdLib) AddCandidate(results, name, CandidateRank.StdLibFunction);
+            foreach (var name in host) AddCandidate(results, name, CandidateRank.HostFunction);
         }
 
         if (!context.IsMemberAccess && !context.IsNamespaceAccess)
         {
-            foreach (var keyword in Keywords) results.Add(keyword);
+            foreach (var keyword in Keywords) AddCandidate(results, keyword, CandidateRank.Keyword);
         }
 
-        if (!context.IsMemberAccess || results.Count == 0)
+        if (!context.IsMemberAccess || (!hasKnownMemberType && results.Count == 0))
         {
             foreach (Match match in IdentifierRegex.Matches(text))
             {
                 if (match.Success && !string.IsNullOrWhiteSpace(match.Value))
-                    results.Add(match.Value);
+                    AddCandidate(results, match.Value, CandidateRank.Identifier);
             }
         }
 
-        IEnumerable<string> filtered = results;
+        IEnumerable<CompletionCandidate> filtered = results.Values;
 
         if (context.IsMemberAccess)
-            filtered = filtered.Where(ShouldIncludeForMemberAccess);
+            filtered = filtered.Where(candidate => ShouldIncludeForMemberAccess(candidate.Name));
         else if (context.IsNamespaceAccess)
-            filtered = filtered.Where(ShouldIncludeForNamespaceAccess);
+            filtered = filtered.Where(candidate => ShouldIncludeForNamespaceAccess(candidate.Name));
 
         if (!string.IsNullOrEmpty(context.Prefix))
-            filtered = filtered.Where(s => s.StartsWith(context.Prefix, StringComparison.OrdinalIgnoreCase));
+            filtered = filtered.Where(candidate => candidate.Name.StartsWith(context.Prefix, StringComparison.OrdinalIgnoreCase));
 
-        return [.. filtered.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)];
+        if (string.IsNullOrEmpty(context.Prefix))
+            return [.. filtered.OrderBy(candidate => candidate.Rank)
+                               .ThenBy(candidate => candidate.Name, StringComparer.OrdinalIgnoreCase)
+                               .Select(candidate => candidate.Name)];
+
+        var prefix = context.Prefix;
+        return
+        [
+            .. filtered.OrderBy(candidate => candidate.Name.StartsWith(prefix, StringComparison.Ordinal) ? 0 : 1)
+                       .ThenBy(candidate => candidate.Rank)
+                       .ThenBy(candidate => candidate.Name, StringComparer.OrdinalIgnoreCase)
+                       .Select(candidate => candidate.Name)
+        ];
     }
 
     private static CompletionContext AnalyzeContext(string text, int caretOffset)
@@ -176,7 +200,9 @@ public static class CompletionService
             }
         }
 
-        bool isMemberAccess = caretOffset > 0 && text[caretOffset - 1] == '.';
+        bool isMemberAccess = caretOffset > 0
+            && text[caretOffset - 1] == '.'
+            && !IsNumericLiteralBeforeDot(text, caretOffset - 1);
         bool isNamespaceAccess = caretOffset > 1
             && text[caretOffset - 2] == ':'
             && text[caretOffset - 1] == ':';
@@ -192,10 +218,19 @@ public static class CompletionService
         string snippet = text[..Math.Min(caretOffset, text.Length)];
         var lines = snippet.Split('\n');
 
-        foreach (var rawLine in lines)
+        int startLine = Math.Max(0, lines.Length - MaxTypeScanLines);
+        bool inSingle = false;
+        bool inDouble = false;
+        bool escape = false;
+
+        for (int index = startLine; index < lines.Length; index++)
         {
-            var line = StripLineComment(rawLine);
+            bool lineStartsInString = inSingle || inDouble;
+            var line = StripLineComment(lines[index], ref inSingle, ref inDouble, ref escape);
             if (string.IsNullOrWhiteSpace(line))
+                continue;
+
+            if (lineStartsInString)
                 continue;
 
             var match = AssignmentRegex.Match(line);
@@ -213,12 +248,8 @@ public static class CompletionService
         return result;
     }
 
-    private static string StripLineComment(string line)
+    private static string StripLineComment(string line, ref bool inSingle, ref bool inDouble, ref bool escape)
     {
-        bool inSingle = false;
-        bool inDouble = false;
-        bool escape = false;
-
         for (int i = 0; i < line.Length; i++)
         {
             char ch = line[i];
@@ -406,6 +437,30 @@ public static class CompletionService
         return text.Substring(start, end - start + 1);
     }
 
+    private static bool IsNumericLiteralBeforeDot(string text, int dotIndex)
+    {
+        if (dotIndex <= 0)
+            return false;
+
+        int i = dotIndex - 1;
+        while (i >= 0 && (char.IsDigit(text[i]) || text[i] == '.'))
+            i--;
+
+        int start = i + 1;
+        if (start >= dotIndex)
+            return false;
+
+        if (start > 0)
+        {
+            char before = text[start - 1];
+            if (char.IsLetter(before) || before == '_' || before == '@')
+                return false;
+        }
+
+        var token = text.Substring(start, dotIndex - start);
+        return NumericTokenRegex.IsMatch(token);
+    }
+
     private static string ExtractLastQualifiedSegment(string qualified)
     {
         if (string.IsNullOrWhiteSpace(qualified))
@@ -492,6 +547,66 @@ public static class CompletionService
         }
     }
 
+    private static (IReadOnlyList<string> StdLib, IReadOnlyList<string> Host) GetFunctionNames()
+    {
+        if (_cachedStdLibFunctionNames != null && _cachedHostFunctionNames != null)
+            return (_cachedStdLibFunctionNames, _cachedHostFunctionNames);
+
+        lock (FunctionCacheLock)
+        {
+            if (_cachedStdLibFunctionNames != null && _cachedHostFunctionNames != null)
+                return (_cachedStdLibFunctionNames, _cachedHostFunctionNames);
+
+            var (stdLib, host) = FunctionScanner.ScanFunctionNames();
+            _cachedStdLibFunctionNames = stdLib.ToArray();
+            _cachedHostFunctionNames = host.ToArray();
+            return (_cachedStdLibFunctionNames, _cachedHostFunctionNames);
+        }
+    }
+
+    public static void RefreshCaches()
+    {
+        lock (FunctionCacheLock)
+        {
+            _cachedStdLibFunctionNames = null;
+            _cachedHostFunctionNames = null;
+        }
+
+        lock (StdLibLock)
+        {
+            _stdLibMethodsByType = null;
+        }
+    }
+
+    private static void AddCandidate(Dictionary<string, CompletionCandidate> candidates, string name, CandidateRank rank)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return;
+
+        if (candidates.TryGetValue(name, out var existing))
+        {
+            if ((int)rank < (int)existing.Rank)
+                candidates[name] = new CompletionCandidate(name, rank);
+            return;
+        }
+
+        candidates[name] = new CompletionCandidate(name, rank);
+    }
+
+    private static CandidateRank GetSymbolRank(AstSymbolService.SymbolKind kind)
+        => kind switch
+        {
+            AstSymbolService.SymbolKind.Local => CandidateRank.Local,
+            AstSymbolService.SymbolKind.InstanceVar => CandidateRank.Local,
+            AstSymbolService.SymbolKind.ClassVar => CandidateRank.Local,
+            AstSymbolService.SymbolKind.Global => CandidateRank.Local,
+            AstSymbolService.SymbolKind.Method => CandidateRank.Method,
+            AstSymbolService.SymbolKind.Class => CandidateRank.Constant,
+            AstSymbolService.SymbolKind.Module => CandidateRank.Constant,
+            AstSymbolService.SymbolKind.Constant => CandidateRank.Constant,
+            _ => CandidateRank.Identifier
+        };
+
     private static string ExtractIdentifierPrefix(string text, int caretOffset)
     {
         if (caretOffset <= 0)
@@ -510,6 +625,16 @@ public static class CompletionService
                 continue;
             }
 
+            if (ch == ':')
+            {
+                if (i > 0 && text[i - 1] == ':')
+                    break;
+
+                hasChars = true;
+                i--;
+                break;
+            }
+
             break;
         }
 
@@ -525,6 +650,9 @@ public static class CompletionService
             return string.Empty;
 
         int nameStart = 0;
+        if (prefix[0] == ':')
+            nameStart = 1;
+
         while (nameStart < prefix.Length && prefix[nameStart] == '@')
             nameStart++;
 
@@ -551,6 +679,21 @@ public static class CompletionService
             return false;
 
         return char.IsUpper(name[0]);
+    }
+
+    private readonly record struct CompletionCandidate(string Name, CandidateRank Rank);
+
+    private enum CandidateRank
+    {
+        MemberMethod = 0,
+        Local = 1,
+        Method = 2,
+        Constant = 3,
+        WorkspaceConstant = 4,
+        StdLibFunction = 5,
+        HostFunction = 6,
+        Keyword = 7,
+        Identifier = 8
     }
 
     private readonly record struct CompletionContext(

@@ -11,8 +11,11 @@ using AvaloniaEdit.CodeCompletion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using AvaloniaEdit.Document;
 using AvaloniaEdit.Folding;
+using Avalonia.Threading;
 
 namespace Embers.ISE.Views;
 
@@ -24,6 +27,8 @@ public partial class MainWindow : Window
     private readonly HashSet<TextEditor> _configuredEditors = new();
     private readonly EmbersFoldingStrategy _foldingStrategy = new();
     private bool _pendingCtrlK;
+    private CancellationTokenSource? _completionCts;
+    private const int CompletionDebounceMs = 120;
 
     public MainWindow()
     {
@@ -78,9 +83,11 @@ public partial class MainWindow : Window
     {
         if (editor.Document == null) return;
 
+        CancelPendingCompletion();
+
         if (e.Text == ".")
         {
-            ShowCompletion(editor);
+            ScheduleCompletion(editor);
             return;
         }
 
@@ -89,22 +96,70 @@ public partial class MainWindow : Window
             var offset = editor.CaretOffset;
             if (offset >= 2 && editor.Document.GetText(offset - 2, 2) == "::")
             {
-                ShowCompletion(editor);
+                ScheduleCompletion(editor);
             }
+        }
+
+        var ch = e.Text[0];
+        if (char.IsLetter(ch) || ch == '_' || ch == '@' || ch == '$')
+        {
+            ScheduleCompletion(editor);
         }
     }
 
     private void OnEditorTextEntering(TextEditor editor, TextInputEventArgs e)
     {
         _ = editor;
-        if (_completionWindow == null) return;
         if (string.IsNullOrEmpty(e.Text)) return;
+
+        CancelPendingCompletion();
+
+        if (_completionWindow == null) return;
 
         var ch = e.Text[0];
         if (!char.IsLetterOrDigit(ch) && ch != '_' && ch != '?')
         {
             _completionWindow.Close();
         }
+    }
+
+    private void ScheduleCompletion(TextEditor editor)
+    {
+        CancelPendingCompletion();
+        var cts = new CancellationTokenSource();
+        _completionCts = cts;
+        _ = RunCompletionAfterDelay(editor, cts);
+    }
+
+    private async Task RunCompletionAfterDelay(TextEditor editor, CancellationTokenSource cts)
+    {
+        try
+        {
+            await Task.Delay(CompletionDebounceMs, cts.Token);
+        }
+        catch (TaskCanceledException)
+        {
+            return;
+        }
+
+        if (cts.IsCancellationRequested)
+            return;
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            if (!cts.IsCancellationRequested)
+                ShowCompletion(editor);
+        });
+    }
+
+    private void CancelPendingCompletion()
+    {
+        if (_completionCts == null)
+            return;
+
+        _completionCts.Cancel();
+        _completionCts.Dispose();
+        _completionCts = null;
     }
 
     private void ShowCompletion(TextEditor editor)
@@ -431,6 +486,8 @@ public partial class MainWindow : Window
     private void OnEditorUnloaded(object? sender, RoutedEventArgs e)
     {
         if (sender is not TextEditor editor) return;
+
+        CancelPendingCompletion();
 
         if (_foldingManagers.TryGetValue(editor, out var foldingManager))
         {

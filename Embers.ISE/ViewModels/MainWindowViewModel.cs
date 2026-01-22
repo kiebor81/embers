@@ -41,6 +41,8 @@ public sealed class MainWindowViewModel : ViewModelBase
 
             if (_selectedTab != null)
                 _selectedTab.IsSelected = true;
+
+            WorkspaceSymbolIndex.SetActiveFile(_selectedTab);
         }
     }
 
@@ -182,12 +184,14 @@ public sealed class MainWindowViewModel : ViewModelBase
         RefreshFunctionLists();
         ApplySecurityPolicy();
         NewScript();
+        WorkspaceSymbolIndex.Initialize(Environment.CurrentDirectory);
     }
 
     private void NewScript()
     {
         var tab = new DocumentTab($"Untitled {_untitledCounter++}");
         Tabs.Add(tab);
+        RegisterTab(tab);
         SelectedTab = tab;
         _console?.WriteInfo("[New] Ready for a new script.\n");
     }
@@ -224,6 +228,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 var contents = File.ReadAllText(path);
                 var tab = new DocumentTab(Path.GetFileName(path), path, contents);
                 Tabs.Add(tab);
+                RegisterTab(tab);
             }
             catch
             {
@@ -297,6 +302,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         var contents = await File.ReadAllTextAsync(path);
         var tab = new DocumentTab(Path.GetFileName(path), path, contents);
         Tabs.Add(tab);
+        RegisterTab(tab);
         SelectedTab = tab;
         _console?.WriteInfo($"[Opened] ");
         _console?.WriteLine(path, ConsoleColor.Cyan);
@@ -338,6 +344,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         await File.WriteAllTextAsync(SelectedTab.FilePath!, SelectedTab.Text);
         _console?.WriteSuccess($"[Saved] ");
         _console?.WriteLine(SelectedTab.FilePath, ConsoleColor.Cyan);
+        WorkspaceSymbolIndex.UpdateOpenTab(SelectedTab, immediate: true);
     }
 
     private async Task AddReferenceAsync()
@@ -409,6 +416,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     {
         if (parameter is not DocumentTab tab) return;
         if (!Tabs.Remove(tab)) return;
+        UnregisterTab(tab);
 
         if (Tabs.Count == 0)
         {
@@ -422,6 +430,8 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     private void CloseAllTabs()
     {
+        foreach (var tab in Tabs)
+            UnregisterTab(tab);
         Tabs.Clear();
         NewScript();
     }
@@ -625,5 +635,30 @@ public sealed class MainWindowViewModel : ViewModelBase
 
         _host.AddReferenceAssembly(path);
         ReferenceAssemblies.Add(path);
+    }
+
+    private void RegisterTab(DocumentTab tab)
+    {
+        tab.PropertyChanged += OnTabPropertyChanged;
+        WorkspaceSymbolIndex.UpdateOpenTab(tab);
+    }
+
+    private void UnregisterTab(DocumentTab tab)
+    {
+        tab.PropertyChanged -= OnTabPropertyChanged;
+        WorkspaceSymbolIndex.RemoveOpenTab(tab);
+    }
+
+    private void OnTabPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (sender is not DocumentTab tab)
+            return;
+
+        if (e.PropertyName == nameof(DocumentTab.Text)
+            || e.PropertyName == nameof(DocumentTab.FilePath)
+            || e.PropertyName == nameof(DocumentTab.Title))
+        {
+            WorkspaceSymbolIndex.UpdateOpenTab(tab, immediate: e.PropertyName == nameof(DocumentTab.FilePath));
+        }
     }
 }
