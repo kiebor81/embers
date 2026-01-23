@@ -18,8 +18,8 @@ internal static class WorkspaceSymbolIndex
     private static readonly ConcurrentDictionary<string, CancellationTokenSource> DebounceTokens = new(StringComparer.OrdinalIgnoreCase);
     private static readonly ConcurrentDictionary<int, string> TabKeys = new();
     private static readonly ConcurrentDictionary<string, byte> ParsingKeys = new(StringComparer.OrdinalIgnoreCase);
-    private static readonly object ProjectScanLock = new();
-    private static readonly object IndexLock = new();
+    private static readonly Lock ProjectScanLock = new();
+    private static readonly Lock IndexLock = new();
     private static CancellationTokenSource? _projectScanCts;
     private static string? _rootDirectory;
     private static string? _activeFileKey;
@@ -31,6 +31,7 @@ internal static class WorkspaceSymbolIndex
     private static readonly Regex RequireRegex =
         new(@"^\s*require\s+['""](?<path>[^'""]+)['""]", RegexOptions.Compiled | RegexOptions.Multiline);
     private static readonly Dictionary<string, List<WorkspaceSymbol>> GlobalIndex = new(StringComparer.Ordinal);
+    private static readonly Dictionary<string, List<WorkspaceTypeDefinition>> GlobalTypeIndex = new(StringComparer.Ordinal);
 
     public static void Initialize(string rootDirectory)
     {
@@ -77,11 +78,14 @@ internal static class WorkspaceSymbolIndex
 
         lock (IndexLock)
         {
-            if (GlobalIndex.Count == 0)
+            if (GlobalIndex.Count == 0 && GlobalTypeIndex.Count == 0)
                 return;
 
             foreach (var list in GlobalIndex.Values)
                 list.RemoveAll(symbol => symbol.FilePath.Equals(key, StringComparison.OrdinalIgnoreCase));
+
+            foreach (var list in GlobalTypeIndex.Values)
+                list.RemoveAll(definition => definition.FilePath.Equals(key, StringComparison.OrdinalIgnoreCase));
         }
     }
 
@@ -142,12 +146,117 @@ internal static class WorkspaceSymbolIndex
         return result;
     }
 
+    public static bool TryGetTypeDefinition(string typeName, out WorkspaceTypeDefinition definition)
+    {
+        definition = default;
+        var preferred = FindPreferredTypeDefinition(typeName);
+        if (preferred == null)
+            return false;
+
+        definition = preferred.Value;
+        return true;
+    }
+
+    public static IReadOnlyList<string> GetTypeMethods(string typeName, bool isClassAccess)
+    {
+        var preferred = FindPreferredTypeDefinition(typeName);
+        if (preferred == null)
+            return [];
+
+        var result = new List<string>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        if (isClassAccess)
+        {
+            AddMethods(preferred.Value.ClassMethods, result, seen);
+            return result;
+        }
+
+        AddInstanceMethods(preferred.Value, result, seen, new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+        return result;
+    }
+
     private static string GetTabKey(DocumentTab tab)
     {
         if (!string.IsNullOrWhiteSpace(tab.FilePath))
             return tab.FilePath;
 
         return $"tab:{RuntimeHelpers.GetHashCode(tab)}";
+    }
+
+    private static WorkspaceTypeDefinition? FindPreferredTypeDefinition(string typeName)
+    {
+        if (string.IsNullOrWhiteSpace(typeName))
+            return null;
+
+        var activeKey = _activeFileKey;
+        if (!string.IsNullOrWhiteSpace(activeKey) && Files.TryGetValue(activeKey, out var activeEntry))
+        {
+            foreach (var definition in activeEntry.TypeDefinitions)
+            {
+                if (definition.Name.Equals(typeName, StringComparison.Ordinal))
+                    return definition;
+            }
+        }
+
+        lock (IndexLock)
+        {
+            if (GlobalTypeIndex.TryGetValue(typeName, out var list) && list.Count > 0)
+                return list[0];
+        }
+
+        return null;
+    }
+
+    private static void AddInstanceMethods(
+        WorkspaceTypeDefinition definition,
+        List<string> result,
+        HashSet<string> seen,
+        HashSet<string> visiting)
+    {
+        AddMethods(definition.InstanceMethods, result, seen);
+
+        if (definition.IncludedModules.Count == 0)
+            return;
+
+        for (int i = definition.IncludedModules.Count - 1; i >= 0; i--)
+        {
+            var moduleName = definition.IncludedModules[i];
+            AddModuleMethods(moduleName, result, seen, visiting);
+        }
+    }
+
+    private static void AddModuleMethods(
+        string moduleName,
+        List<string> result,
+        HashSet<string> seen,
+        HashSet<string> visiting)
+    {
+        if (string.IsNullOrWhiteSpace(moduleName))
+            return;
+
+        if (!visiting.Add(moduleName))
+            return;
+
+        var moduleDefinition = FindPreferredTypeDefinition(moduleName);
+        if (moduleDefinition != null)
+        {
+            AddInstanceMethods(moduleDefinition.Value, result, seen, visiting);
+        }
+
+        visiting.Remove(moduleName);
+    }
+
+    private static void AddMethods(IReadOnlyList<string> methods, List<string> result, HashSet<string> seen)
+    {
+        foreach (var method in methods)
+        {
+            if (string.IsNullOrWhiteSpace(method))
+                continue;
+
+            if (seen.Add(method))
+                result.Add(method);
+        }
     }
 
     private static void RemoveByKey(string key)
@@ -161,11 +270,14 @@ internal static class WorkspaceSymbolIndex
 
         lock (IndexLock)
         {
-            if (GlobalIndex.Count == 0)
+            if (GlobalIndex.Count == 0 && GlobalTypeIndex.Count == 0)
                 return;
 
             foreach (var list in GlobalIndex.Values)
                 list.RemoveAll(symbol => symbol.FilePath.Equals(key, StringComparison.OrdinalIgnoreCase));
+
+            foreach (var list in GlobalTypeIndex.Values)
+                list.RemoveAll(definition => definition.FilePath.Equals(key, StringComparison.OrdinalIgnoreCase));
         }
     }
 
@@ -301,8 +413,7 @@ internal static class WorkspaceSymbolIndex
             if (Files.TryGetValue(key, out var existing) && existing.TextHash == hash)
                 return;
 
-            string? errorMessage = null;
-            if (!AstSymbolService.TryGetWorkspaceSymbols(text, out var symbols, out errorMessage))
+            if (!AstSymbolService.TryGetWorkspaceSymbols(text, out var symbols, out string? errorMessage))
                 Debug.WriteLine($"[WorkspaceSymbols] Parse failed: {filePath ?? key} - {errorMessage}");
 
             var symbolList = symbols
@@ -311,18 +422,31 @@ internal static class WorkspaceSymbolIndex
                               or AstSymbolService.SymbolKind.Constant)
                 .Select(symbol =>
                 {
-                    var location = FindSymbolLocation(text, symbol.Name);
+                    var (Line, Column) = FindSymbolLocation(text, symbol.Name);
                     return new WorkspaceSymbol(
                         symbol.Name,
                         symbol.Kind,
                         symbol.Scope,
                         filePath ?? key,
-                        location.Line,
-                        location.Column);
+                        Line,
+                        Column);
                 })
                 .ToList();
 
-            UpdateIndexes(key, hash, symbolList, errorMessage);
+            if (!AstTypeService.TryGetTypeDefinitions(text, out var typeDefinitions, out var typeError))
+                Debug.WriteLine($"[WorkspaceSymbols] Type parse failed: {filePath ?? key} - {typeError}");
+
+            var typeList = typeDefinitions
+                .Select(definition => new WorkspaceTypeDefinition(
+                    definition.Name,
+                    definition.Kind,
+                    definition.InstanceMethods,
+                    definition.ClassMethods,
+                    definition.IncludedModules,
+                    filePath ?? key))
+                .ToList();
+
+            UpdateIndexes(key, hash, symbolList, typeList, errorMessage ?? typeError);
 
             if (!string.IsNullOrWhiteSpace(filePath))
             {
@@ -370,7 +494,51 @@ internal static class WorkspaceSymbolIndex
                 list.Add(symbol);
             }
 
-            Files[key] = new FileIndexEntry(hash, symbols, errorMessage, key);
+            Files[key] = new FileIndexEntry(hash, symbols, [], errorMessage, key);
+        }
+    }
+
+    private static void UpdateIndexes(
+        string key,
+        int hash,
+        IReadOnlyList<WorkspaceSymbol> symbols,
+        IReadOnlyList<WorkspaceTypeDefinition> typeDefinitions,
+        string? errorMessage)
+    {
+        lock (IndexLock)
+        {
+            if (Files.TryGetValue(key, out var previous))
+            {
+                foreach (var list in GlobalIndex.Values)
+                    list.RemoveAll(symbol => symbol.FilePath.Equals(key, StringComparison.OrdinalIgnoreCase));
+
+                foreach (var list in GlobalTypeIndex.Values)
+                    list.RemoveAll(definition => definition.FilePath.Equals(key, StringComparison.OrdinalIgnoreCase));
+            }
+
+            foreach (var symbol in symbols)
+            {
+                if (!GlobalIndex.TryGetValue(symbol.Name, out var list))
+                {
+                    list = [];
+                    GlobalIndex[symbol.Name] = list;
+                }
+
+                list.Add(symbol);
+            }
+
+            foreach (var definition in typeDefinitions)
+            {
+                if (!GlobalTypeIndex.TryGetValue(definition.Name, out var list))
+                {
+                    list = [];
+                    GlobalTypeIndex[definition.Name] = list;
+                }
+
+                list.Add(definition);
+            }
+
+            Files[key] = new FileIndexEntry(hash, symbols, typeDefinitions, errorMessage, key);
         }
     }
 
@@ -492,9 +660,18 @@ internal static class WorkspaceSymbolIndex
         int Line,
         int Column);
 
+    internal readonly record struct WorkspaceTypeDefinition(
+        string Name,
+        AstTypeService.TypeKind Kind,
+        IReadOnlyList<string> InstanceMethods,
+        IReadOnlyList<string> ClassMethods,
+        IReadOnlyList<string> IncludedModules,
+        string FilePath);
+
     private readonly record struct FileIndexEntry(
         int TextHash,
         IReadOnlyList<WorkspaceSymbol> Symbols,
+        IReadOnlyList<WorkspaceTypeDefinition> TypeDefinitions,
         string? LastError,
         string FilePath);
 }

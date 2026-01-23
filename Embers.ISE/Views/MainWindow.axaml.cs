@@ -171,13 +171,14 @@ public partial class MainWindow : Window
         _completionWindow.Closed += (_, _) => _completionWindow = null;
 
         var data = _completionWindow.CompletionList.CompletionData;
-        var completions = CompletionService.GetCompletions(editor.Document.Text, editor.CaretOffset);
+        var completions = CompletionService.GetCompletions(editor.Document.Text, editor.CaretOffset, out var replaceStart);
         if (completions.Count == 0)
             return;
 
+        var replaceEnd = editor.CaretOffset;
         foreach (var item in completions)
         {
-            data.Add(new SimpleCompletionData(item));
+            data.Add(new SimpleCompletionData(item, replaceStart, replaceEnd));
         }
 
         _completionWindow.Show();
@@ -481,6 +482,9 @@ public partial class MainWindow : Window
 
         if (_activeEditor == null)
             _activeEditor = editor;
+
+        if (editor.Document != null)
+            CompletionAnalysisCache.UpdateBuffer(editor.Document.Text);
     }
 
     private void OnEditorUnloaded(object? sender, RoutedEventArgs e)
@@ -505,6 +509,8 @@ public partial class MainWindow : Window
         if (sender is not TextEditor editor || editor.Document == null) return;
         if (_foldingManagers.TryGetValue(editor, out var foldingManager))
             _foldingStrategy.UpdateFoldings(foldingManager, editor.Document);
+
+        CompletionAnalysisCache.UpdateBuffer(editor.Document.Text);
     }
 
     private void OnEditorGotFocus(object? sender, GotFocusEventArgs e)

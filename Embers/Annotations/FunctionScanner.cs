@@ -155,7 +155,7 @@ public static class FunctionScanner
             }
         }
 
-        return host.OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
+        return [.. host.OrderBy(n => n, StringComparer.OrdinalIgnoreCase)];
     }
 
     /// <summary>

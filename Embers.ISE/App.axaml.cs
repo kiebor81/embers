@@ -126,8 +126,8 @@ namespace Embers.ISE
             var state = new IseConfigState
             {
                 SecurityMode = viewModel.SelectedSecurityMode,
-                WhitelistEntries = viewModel.WhitelistEntries.ToList(),
-                ReferenceAssemblies = viewModel.ReferenceAssemblies.ToList()
+                WhitelistEntries = [.. viewModel.WhitelistEntries],
+                ReferenceAssemblies = [.. viewModel.ReferenceAssemblies]
             };
 
             var json = JsonSerializer.Serialize(state, new JsonSerializerOptions

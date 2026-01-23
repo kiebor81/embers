@@ -92,7 +92,7 @@ public partial class Machine
     /// <param name="extensions"></param>
     public void SetSupportedExtensions(IEnumerable<string> extensions)
     {
-        customSupportedExtensions = extensions.Select(ext => ext.StartsWith('.') ? ext : "." + ext).ToArray();
+        customSupportedExtensions = [.. extensions.Select(ext => ext.StartsWith('.') ? ext : "." + ext)];
     }
 
     /// <summary>

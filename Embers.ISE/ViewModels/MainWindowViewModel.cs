@@ -152,6 +152,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     public ICommand RemoveReferenceCommand { get; }
     public ICommand HelpCommand { get; }
     public ICommand RunCommand { get; }
+    public ICommand RunWithTraceCommand { get; }
     public ICommand RunSelectionCommand { get; }
     public ICommand StopCommand { get; }
     public ICommand AddWhitelistEntryCommand { get; }
@@ -175,6 +176,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         RemoveReferenceCommand = new ParameterCommand(RemoveReference);
         HelpCommand = new AsyncCommand(OpenHelpAsync);
         RunCommand = new AsyncCommand(RunAsync);
+        RunWithTraceCommand = new AsyncCommand(RunWithTraceAsync);
         RunSelectionCommand = new AsyncParameterCommand(RunSelectionAsync);
         StopCommand = new Commands(Stop);
         AddWhitelistEntryCommand = new Commands(AddWhitelistEntry);
@@ -543,6 +545,21 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
 
         await RunTextAsync(SelectedTab.Text, "Executing script...");
+    }
+
+    private async Task RunWithTraceAsync()
+    {
+        if (SelectedTab == null)
+        {
+            _console?.WriteWarning("[Run] No active tab to execute.\n");
+            return;
+        }
+
+        var trace = CompletionService.GetInferenceTrace(SelectedTab.Text);
+        _console?.WriteInfo("[Trace] Inference snapshot\n");
+        _console?.WriteLine(trace);
+
+        await RunTextAsync(SelectedTab.Text, "Executing script (inference trace)...");
     }
 
     private async Task RunTextAsync(string source, string statusMessage)

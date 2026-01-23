@@ -57,7 +57,7 @@ public sealed class EmbersHost
     }
 
     public IReadOnlyList<Assembly> GetReferenceAssembliesSnapshot()
-        => GetReferenceAssemblies().ToList();
+        => [.. GetReferenceAssemblies()];
 
     public void SetSecurityPolicy(SecurityMode mode, IEnumerable<string> whitelistEntries)
     {

@@ -83,6 +83,12 @@
             <TextBlock Text="(F5)"/>
           </StackPanel>
         </Button>
+        <!--<Button Command="{Binding RunWithTraceCommand}" Padding="8,4" ToolTip.Tip="Run with inference trace">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="▶" Classes="ToolbarIcon" Foreground="#55C65A"/>
+            <TextBlock Text="Trace"/>
+          </StackPanel>
+        </Button>-->
         <Button Click="OnRunSelection" Padding="8,4" ToolTip.Tip="Run selection (F6)">
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Text="▶" Classes="ToolbarIcon" Foreground="#55C65A"/>
