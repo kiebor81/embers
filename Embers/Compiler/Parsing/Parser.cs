@@ -1,4 +1,3 @@
-//using Embers.Compiler.Parsing.Components;
 using Embers.Exceptions;
 using Embers.Expressions;
 
@@ -12,7 +11,7 @@ public class Parser
     /// <summary>
     /// the binary operators by precedence level
     /// </summary>
-    private static string[][] binaryoperators = [
+    private static readonly string[][] binaryoperators = [
         ["&&", "||", "and", "or"],
             ["..", "==", "===", "!=", "<", ">", "<=", ">=", "<=>"],
             ["+", "-"],
@@ -30,8 +29,18 @@ public class Parser
     private readonly Components.Expressions expressionParser;
     private readonly Components.Statements statementParser;
     private readonly Components.Blocks blockParser;
+    private readonly Dictionary<Token, TokenSpan?> tokenSpans = new();
+    private int commandIndex;
+    private IParserObserver? observer;
+    private int? activeCommandIndex;
+    private TokenSpan? lastTokenSpan;
     internal Lexer Lexer => lexer;
     internal Components.Primary PrimaryParser => primaryParser;
+    public IParserObserver? Observer
+    {
+        get => observer;
+        set => observer = value;
+    }
 
     /// <summary>
     /// the parser for the Embers language
@@ -40,7 +49,7 @@ public class Parser
     public Parser(string text)
     {
         lexer = new Lexer(text);
-        core = new Components.Core(lexer, binaryoperators);
+        core = new Components.Core(this, binaryoperators);
         primaryParser = new Components.Primary(this);
         expressionParser = new Components.Expressions(this);
         statementParser = new Components.Statements(this);
@@ -54,11 +63,40 @@ public class Parser
     public Parser(TextReader reader)
     {
         lexer = new Lexer(reader);
-        core = new Components.Core(lexer, binaryoperators);
+        core = new Components.Core(this, binaryoperators);
         primaryParser = new Components.Primary(this);
         expressionParser = new Components.Expressions(this);
         statementParser = new Components.Statements(this);
         blockParser = new Components.Blocks(this);
+    }
+
+    /// <summary>
+    /// Gets the next token from the lexer.
+    /// </summary>
+    /// <returns></returns>
+    internal Token? NextToken()
+    {
+        Token? token = lexer.NextToken();
+        lastTokenSpan = lexer.LastTokenSpan;
+        if (token != null)
+        {
+            tokenSpans[token] = lastTokenSpan;
+            observer?.OnTokenRead(new ParserTokenInfo(token.Type, token.Value, lastTokenSpan));
+        }
+        return token;
+    }
+
+    /// <summary>
+    /// Pushes a token back to the lexer.
+    /// </summary>
+    /// <param name="token"></param>
+    internal void PushToken(Token? token)
+    {
+        if (token == null)
+            return;
+
+        tokenSpans.TryGetValue(token, out var span);
+        lexer.PushToken(token, span);
     }
 
     /// <summary>
@@ -68,57 +106,66 @@ public class Parser
     /// <exception cref="SyntaxError"></exception>
     public IExpression? ParseExpression()
     {
-        IExpression expr = ApplyPostfixConditional(ParseNoAssignExpression());
-
-        if (expr == null)
-            return null;
-
-        // Only variables or assignable targets can be followed by assignment
-        bool isAssignable = expr is NameExpression
-            || expr is ClassVarExpression
-            || expr is InstanceVarExpression
-            || expr is GlobalExpression
-            || expr is DotExpression
-            || expr is IndexedExpression;
-
-        if (!isAssignable)
-            return ApplyPostfixConditional(expr);
-
-        Token token = lexer.NextToken();
-
-        if (token == null)
-            return ApplyPostfixConditional(expr);
-
-        // Handle regular assignment
-        if (token.Type == TokenType.Operator && token.Value == "=")
+        try
         {
-            IExpression assignexpr = expr switch
+            IExpression expr = ApplyPostfixConditional(ParseNoAssignExpression());
+
+            if (expr == null)
+                return null;
+
+            // Only variables or assignable targets can be followed by assignment
+            bool isAssignable = expr is NameExpression
+                || expr is ClassVarExpression
+                || expr is InstanceVarExpression
+                || expr is GlobalExpression
+                || expr is DotExpression
+                || expr is IndexedExpression;
+
+            if (!isAssignable)
+                return ApplyPostfixConditional(expr);
+
+            Token? token = NextToken();
+
+            if (token == null)
+                return ApplyPostfixConditional(expr);
+
+            // Handle regular assignment
+            if (token.Type == TokenType.Operator && token.Value == "=")
             {
-                NameExpression name => new AssignExpression(name.Name, ParseExpression()),
-                DotExpression dot => new AssignDotExpressions(dot, ParseExpression()),
-                InstanceVarExpression ivar => new AssignInstanceVarExpression(ivar.Name, ParseExpression()),
-                ClassVarExpression cvar => new AssignClassVarExpression(cvar.Name, ParseExpression()),
-                GlobalExpression gvar => new AssignGlobalVarExpression(gvar.Name, ParseExpression()),
-                IndexedExpression idx when idx.IndexExpression == null => throw new SyntaxError("empty index is not assignable"),
-                IndexedExpression idx => new AssignIndexedExpression(idx.Expression, idx.IndexExpression!, ParseExpression()),
-                _ => throw new SyntaxError("invalid assignment target")
-            };
+                IExpression assignexpr = expr switch
+                {
+                    NameExpression name => new AssignExpression(name.Name, ParseExpression()),
+                    DotExpression dot => new AssignDotExpressions(dot, ParseExpression()),
+                    InstanceVarExpression ivar => new AssignInstanceVarExpression(ivar.Name, ParseExpression()),
+                    ClassVarExpression cvar => new AssignClassVarExpression(cvar.Name, ParseExpression()),
+                    GlobalExpression gvar => new AssignGlobalVarExpression(gvar.Name, ParseExpression()),
+                    IndexedExpression idx when idx.IndexExpression == null => throw new SyntaxError("empty index is not assignable"),
+                    IndexedExpression idx => new AssignIndexedExpression(idx.Expression, idx.IndexExpression!, ParseExpression()),
+                    _ => throw new SyntaxError("invalid assignment target")
+                };
 
-            return ApplyPostfixConditional(assignexpr);
+                return ApplyPostfixConditional(assignexpr);
+            }
+
+            // Handle compound assignment: +=, -=, etc.
+            if (token.Type == TokenType.Operator && (
+                token.Value == "+=" || token.Value == "-=" ||
+                token.Value == "*=" || token.Value == "/=" ||
+                token.Value == "%=" || token.Value == "**="))
+            {
+                return ApplyPostfixConditional(ParseCompoundAssignment(expr, token.Value));
+            }
+
+            // Not an assignment at all
+            PushToken(token);
+            return ApplyPostfixConditional(expr);
         }
-
-        // Handle compound assignment: +=, -=, etc.
-        if (token.Type == TokenType.Operator && (
-            token.Value == "+=" || token.Value == "-=" ||
-            token.Value == "*=" || token.Value == "/=" ||
-            token.Value == "%=" || token.Value == "**="))
+        catch (SyntaxError ex)
         {
-            return ApplyPostfixConditional(ParseCompoundAssignment(expr, token.Value));
+            if (activeCommandIndex == null)
+                observer?.OnParseError(new ParserErrorInfo(ex.Message, null, lastTokenSpan));
+            throw;
         }
-
-        // Not an assignment at all
-        lexer.PushToken(token);
-        return ApplyPostfixConditional(expr);
     }
 
     /// <summary>
@@ -127,19 +174,56 @@ public class Parser
     /// <returns></returns>
     public IExpression? ParseCommand()
     {
-        Token token = lexer.NextToken();
+        Token? token = NextToken();
 
         while (token != null && IsEndOfCommand(token))
-            token = lexer.NextToken();
+            token = NextToken();
 
         if (token == null)
             return null;
 
-        lexer.PushToken(token);
+        PushToken(token);
 
-        IExpression expr = ParseExpression();
-        ParseEndOfCommand();
-        return expr;
+        TokenSpan? commandSpan = lastTokenSpan;
+        int currentCommandIndex = commandIndex++;
+        observer?.OnCommandEnter(new ParserCommandInfo(currentCommandIndex, commandSpan));
+        activeCommandIndex = currentCommandIndex;
+
+        try
+        {
+            IExpression expr = ParseExpression();
+            ParseEndOfCommand();
+            observer?.OnCommandExit(new ParserCommandInfo(currentCommandIndex, commandSpan));
+            return expr;
+        }
+        catch (SyntaxError ex)
+        {
+            observer?.OnParseError(new ParserErrorInfo(ex.Message, currentCommandIndex, lastTokenSpan));
+            throw;
+        }
+        finally
+        {
+            activeCommandIndex = null;
+        }
+    }
+
+    public static List<IExpression> TryParseCommands(string text, out string? errorMessage)
+    {
+        errorMessage = null;
+        List<IExpression> commands = [];
+        Parser parser = new(text);
+
+        try
+        {
+            for (IExpression? command = parser.ParseCommand(); command != null; command = parser.ParseCommand())
+                commands.Add(command);
+        }
+        catch (SyntaxError ex)
+        {
+            errorMessage = ex.Message;
+        }
+
+        return commands;
     }
 
     /// <summary>

@@ -1,5 +1,4 @@
 using Embers.Compiler.Parsing;
-using Embers.Exceptions;
 using Embers.Expressions;
 using System;
 using System.Collections;
@@ -73,22 +72,7 @@ internal static class AstSymbolService
 
     private static List<IExpression> TryParseCommands(string text, out string? errorMessage)
     {
-        errorMessage = null;
-        var commands = new List<IExpression>();
-        var parser = new Parser(text);
-
-        try
-        {
-            for (var command = parser.ParseCommand(); command != null; command = parser.ParseCommand())
-                commands.Add(command);
-        }
-        catch (SyntaxError ex)
-        {
-            // Best-effort: return successfully parsed commands.
-            errorMessage = ex.Message;
-        }
-
-        return commands;
+        return Parser.TryParseCommands(text, out errorMessage);
     }
 
     internal enum SymbolKind

@@ -1,5 +1,4 @@
 using System.Collections;
-using Embers;
 using Embers.Exceptions;
 using Embers.Functions;
 

@@ -1,6 +1,5 @@
 using Embers.Annotations;
 using Embers.Compiler.Parsing;
-using Embers.Exceptions;
 using Embers.Expressions;
 using Embers.Language.Primitive;
 using Embers.StdLib;
@@ -391,20 +390,7 @@ public static class CompletionService
 
     private static List<IExpression> TryParseCommands(string text)
     {
-        var commands = new List<IExpression>();
-        var parser = new Parser(text);
-
-        try
-        {
-            for (var command = parser.ParseCommand(); command != null; command = parser.ParseCommand())
-                commands.Add(command);
-        }
-        catch (SyntaxError)
-        {
-            // Best-effort: return successfully parsed commands.
-        }
-
-        return commands;
+        return Parser.TryParseCommands(text, out _);
     }
 
     private static string StripLineComment(string line, ref bool inSingle, ref bool inDouble, ref bool escape)

@@ -183,7 +183,7 @@ internal sealed class Blocks(Parser parser)
         {
             if (parser.TryParseToken(TokenType.Separator, ":"))
             {
-                Token? nameToken = parser.Lexer.NextToken();
+                Token? nameToken = parser.NextToken();
                 if (nameToken == null || nameToken.Type != TokenType.Name)
                     throw new SyntaxError("Expected symbol name after &:");
 
@@ -295,7 +295,7 @@ internal sealed class Blocks(Parser parser)
         Token token;
         IList<IExpression> commands = [];
 
-        for (token = parser.Lexer.NextToken(); token != null; token = parser.Lexer.NextToken())
+        for (token = parser.NextToken(); token != null; token = parser.NextToken())
         {
             if (usebraces && token.Type == TokenType.Separator && token.Value == "}")
                 break;
@@ -305,11 +305,11 @@ internal sealed class Blocks(Parser parser)
             if (parser.IsEndOfCommand(token))
                 continue;
 
-            parser.Lexer.PushToken(token);
+            parser.PushToken(token);
             commands.Add(parser.ParseCommand());
         }
 
-        parser.Lexer.PushToken(token);
+        parser.PushToken(token);
 
         if (usebraces)
             parser.ParseToken(TokenType.Separator, "}");
@@ -332,16 +332,16 @@ internal sealed class Blocks(Parser parser)
         Token token;
         IList<IExpression> commands = [];
 
-        for (token = parser.Lexer.NextToken(); token != null && (token.Type != TokenType.Name || !names.Contains(token.Value)); token = parser.Lexer.NextToken())
+        for (token = parser.NextToken(); token != null && (token.Type != TokenType.Name || !names.Contains(token.Value)); token = parser.NextToken())
         {
             if (parser.IsEndOfCommand(token))
                 continue;
 
-            parser.Lexer.PushToken(token);
+            parser.PushToken(token);
             commands.Add(parser.ParseCommand());
         }
 
-        parser.Lexer.PushToken(token);
+        parser.PushToken(token);
 
         if (commands.Count == 1)
             return commands[0];
@@ -349,3 +349,4 @@ internal sealed class Blocks(Parser parser)
         return new CompositeExpression(commands);
     }
 }
+

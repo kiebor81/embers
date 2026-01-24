@@ -703,14 +703,6 @@ If you have found a use for Embers in your project, let me know. I'll be happy t
 
 ---
 
-## Roadmap
-
-- [x] High level meta-methods
-- [ ] Realtime parser hooks
-- [x] ISE language service
-
----
-
 ## License
 
 MIT License

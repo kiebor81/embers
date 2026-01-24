@@ -19,7 +19,7 @@ internal sealed class Primary(Parser parser)
     /// <exception cref="SyntaxError"></exception>
     public IExpression? ParseSimpleTerm()
     {
-        Token token = parser.Lexer.NextToken();
+        Token token = parser.NextToken();
 
         if (token == null)
             return null;
@@ -215,7 +215,7 @@ internal sealed class Primary(Parser parser)
             return new ArrayExpression(expressions);
         }
 
-        parser.Lexer.PushToken(token);
+        parser.PushToken(token);
 
         return null;
     }
@@ -284,3 +284,4 @@ internal sealed class Primary(Parser parser)
         return new InterpolatedStringExpression(parts);
     }
 }
+

@@ -5,11 +5,11 @@ namespace Embers.Compiler.Parsing.Components;
 /// <summary>
 /// Core parsing components
 /// </summary>
-/// <param name="lexer"></param>
+/// <param name="parser"></param>
 /// <param name="binaryoperators"></param>
-internal sealed class Core(Lexer lexer, string[][] binaryoperators)
+internal sealed class Core(Parser parser, string[][] binaryoperators)
 {
-    private readonly Lexer lexer = lexer;
+    private readonly Parser parser = parser;
     private readonly string[][] binaryoperators = binaryoperators;
 
     /// <summary>
@@ -18,17 +18,17 @@ internal sealed class Core(Lexer lexer, string[][] binaryoperators)
     /// <exception cref="SyntaxError"></exception>
     public void ParseEndOfCommand()
     {
-        Token token = lexer.NextToken();
+        Token token = parser.NextToken();
 
         if (token != null && token.Type == TokenType.Name && token.Value == "end")
         {
-            lexer.PushToken(token);
+            parser.PushToken(token);
             return;
         }
 
         if (token != null && token.Type == TokenType.Separator && token.Value == "}")
         {
-            lexer.PushToken(token);
+            parser.PushToken(token);
             return;
         }
 
@@ -42,8 +42,8 @@ internal sealed class Core(Lexer lexer, string[][] binaryoperators)
     /// <returns></returns>
     public bool NextTokenStartsExpressionList()
     {
-        Token token = lexer.NextToken();
-        lexer.PushToken(token);
+        Token token = parser.NextToken();
+        parser.PushToken(token);
 
         if (token == null)
             return false;
@@ -72,8 +72,8 @@ internal sealed class Core(Lexer lexer, string[][] binaryoperators)
     /// <returns></returns>
     public bool NextTokenStartsExpressionListAllowSplat()
     {
-        Token token = lexer.NextToken();
-        lexer.PushToken(token);
+        Token token = parser.NextToken();
+        parser.PushToken(token);
 
         if (token == null)
             return false;
@@ -129,7 +129,7 @@ internal sealed class Core(Lexer lexer, string[][] binaryoperators)
     /// <exception cref="SyntaxError"></exception>
     public void ParseToken(TokenType type, string value)
     {
-        Token token = lexer.NextToken();
+        Token token = parser.NextToken();
 
         if (token == null || token.Type != type || token.Value != value)
             throw new SyntaxError(string.Format("expected '{0}'", value));
@@ -142,7 +142,7 @@ internal sealed class Core(Lexer lexer, string[][] binaryoperators)
     /// <exception cref="SyntaxError"></exception>
     public string ParseName()
     {
-        Token token = lexer.NextToken();
+        Token token = parser.NextToken();
 
         if (token == null || token.Type != TokenType.Name)
             throw new SyntaxError("name expected");
@@ -165,12 +165,12 @@ internal sealed class Core(Lexer lexer, string[][] binaryoperators)
     /// <returns></returns>
     public bool TryParseToken(TokenType type, string value)
     {
-        Token token = lexer.NextToken();
+        Token token = parser.NextToken();
 
         if (token != null && token.Type == type && token.Value == value)
             return true;
 
-        lexer.PushToken(token);
+        parser.PushToken(token);
 
         return false;
     }
@@ -181,12 +181,12 @@ internal sealed class Core(Lexer lexer, string[][] binaryoperators)
     /// <returns></returns>
     public string? TryParseName()
     {
-        Token token = lexer.NextToken();
+        Token token = parser.NextToken();
 
         if (token != null && token.Type == TokenType.Name)
             return token.Value;
 
-        lexer.PushToken(token);
+        parser.PushToken(token);
 
         return null;
     }
@@ -197,12 +197,12 @@ internal sealed class Core(Lexer lexer, string[][] binaryoperators)
     /// <returns></returns>
     public bool TryParseEndOfLine()
     {
-        Token token = lexer.NextToken();
+        Token token = parser.NextToken();
 
         if (token != null && token.Type == TokenType.EndOfLine && token.Value == "\n")
             return true;
 
-        lexer.PushToken(token);
+        parser.PushToken(token);
 
         return false;
     }
@@ -233,3 +233,5 @@ internal sealed class Core(Lexer lexer, string[][] binaryoperators)
             && binaryoperators[level].Contains(token.Value);
     }
 }
+
+

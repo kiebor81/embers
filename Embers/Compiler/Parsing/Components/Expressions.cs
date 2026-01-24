@@ -56,7 +56,7 @@ internal sealed class Expressions(Parser parser)
 
         Token token;
 
-        for (token = parser.Lexer.NextToken(); token != null && parser.IsBinaryOperator(level, token); token = parser.Lexer.NextToken())
+        for (token = parser.NextToken(); token != null && parser.IsBinaryOperator(level, token); token = parser.NextToken())
         {
             if (token.Value == "&&" || token.Value == "and")
                 expr = new AndExpression(expr, ParseBinaryExpression(level + 1));
@@ -95,7 +95,7 @@ internal sealed class Expressions(Parser parser)
         }
 
         if (token != null)
-            parser.Lexer.PushToken(token);
+            parser.PushToken(token);
 
         return expr;
     }
@@ -187,14 +187,14 @@ internal sealed class Expressions(Parser parser)
     /// <exception cref="SyntaxError"></exception>
     public IExpression ApplyPostfixConditional(IExpression expr)
     {
-        Token? token = parser.Lexer.NextToken();
+        Token? token = parser.NextToken();
 
         if (token != null && token.Type == TokenType.Operator && token.Value == "?")
         {
             IExpression trueExpr = ParseNoAssignExpression();
             trueExpr = ApplyPostfixesButNotTernary(trueExpr);
 
-            Token? colonToken = parser.Lexer.NextToken();
+            Token? colonToken = parser.NextToken();
             if (colonToken == null || colonToken.Type != TokenType.Operator || colonToken.Value != ":")
                 throw new SyntaxError("expected ':'");
 
@@ -205,7 +205,7 @@ internal sealed class Expressions(Parser parser)
         }
 
         if (token != null)
-            parser.Lexer.PushToken(token);
+            parser.PushToken(token);
 
         if (parser.TryParseName("if"))
         {
@@ -229,14 +229,14 @@ internal sealed class Expressions(Parser parser)
     /// <exception cref="SyntaxError"></exception>
     public IExpression ApplyPostfixTernary(IExpression expr)
     {
-        Token? token = parser.Lexer.NextToken();
+        Token? token = parser.NextToken();
 
         if (token != null && token.Type == TokenType.Operator && token.Value == "?")
         {
             IExpression trueExpr = ParseNoAssignExpression();
             trueExpr = ApplyPostfixesButNotTernary(trueExpr);
 
-            Token? colonToken = parser.Lexer.NextToken();
+            Token? colonToken = parser.NextToken();
             if (colonToken == null || colonToken.Type != TokenType.Operator || colonToken.Value != ":")
                 throw new SyntaxError("expected ':'");
 
@@ -247,7 +247,7 @@ internal sealed class Expressions(Parser parser)
         }
 
         if (token != null)
-            parser.Lexer.PushToken(token);
+            parser.PushToken(token);
 
         return expr;
     }
@@ -383,3 +383,4 @@ internal sealed class Expressions(Parser parser)
         return new HashExpression(keyexpressions, valueexpressions);
     }
 }
+

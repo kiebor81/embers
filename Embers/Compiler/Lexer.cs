@@ -25,7 +25,11 @@ public class Lexer
     /// <summary>
     /// the pushed-back tokens stack
     /// </summary>
-    private readonly Stack<Token> tokens = new();
+    private readonly Stack<(Token Token, TokenSpan? Span)> tokens = new();
+    internal TokenSpan? LastTokenSpan { get; private set; }
+    private int offset;
+    private int lastCharOffset;
+    private int tokenStartOffset;
 
     /// <summary>
     /// the lexer for the Embers language
@@ -53,23 +57,31 @@ public class Lexer
     public Token? NextToken()
     {
         if (tokens.Count > 0)
-            return tokens.Pop();
+        {
+            var (token, span) = tokens.Pop();
+            LastTokenSpan = span;
+            return token;
+        }
 
         int ich = NextFirstChar();
 
         if (ich == -1)
+        {
+            LastTokenSpan = null;
             return null;
+        }
 
         char ch = (char)ich;
+        tokenStartOffset = lastCharOffset;
 
         if (ch == EndOfLine)
-            return new Token(TokenType.EndOfLine, "\n");
+            return FinishToken(new Token(TokenType.EndOfLine, "\n"));
 
         if (ch == Quote)
-            return NextString(Quote);
+            return FinishToken(NextString(Quote));
 
         if (ch == DoubleQuote)
-            return NextDoubleQuotedString();
+            return FinishToken(NextDoubleQuotedString());
 
         //if (ch == Colon)
         //    return NextSymbol();
@@ -80,24 +92,24 @@ public class Lexer
 
             // If followed by a valid symbol name character, it's a symbol
             if (char.IsLetterOrDigit((char)peek) || peek == '_' || peek == '@')
-                return NextSymbol();
+                return FinishToken(NextSymbol());
 
             // If followed by another colon, it's a namespace separator
             if (peek == ':')
             {
                 NextChar();  // consume second ':'
-                return new Token(TokenType.Separator, "::");
+                return FinishToken(new Token(TokenType.Separator, "::"));
             }
 
             // Else, it's the colon in a ternary operator
-            return new Token(TokenType.Operator, ":");
+            return FinishToken(new Token(TokenType.Operator, ":"));
         }
 
         if (ch == Variable)
-            return NextInstanceVariableName();
+            return FinishToken(NextInstanceVariableName());
 
         if (ch == GlobalVariable)
-            return NextGlobalVariableName();
+            return FinishToken(NextGlobalVariableName());
 
         string value1 = ch.ToString();
         if (operators.Any(op => op.StartsWith(value1)))
@@ -119,31 +131,31 @@ public class Lexer
                             string value3 = value2 + ch2;
 
                             if (operators.Contains(value3))
-                                return new Token(TokenType.Operator, value3);
+                                return FinishToken(new Token(TokenType.Operator, value3));
 
                             BackChar();
                         }
                     }
 
                     if (operators.Contains(value2))
-                        return new Token(TokenType.Operator, value2);
+                        return FinishToken(new Token(TokenType.Operator, value2));
 
                     BackChar();
                 }
             }
 
             if (operators.Contains(value1))
-                return new Token(TokenType.Operator, value1);
+                return FinishToken(new Token(TokenType.Operator, value1));
         }
 
         if (Separators.Contains(ch))
-            return new Token(TokenType.Separator, ch.ToString());
+            return FinishToken(new Token(TokenType.Separator, ch.ToString()));
 
         if (char.IsDigit(ch))
-            return NextInteger(ch);
+            return FinishToken(NextInteger(ch));
 
         if (char.IsLetter(ch) || ch == '_')
-            return NextName(ch);
+            return FinishToken(NextName(ch));
 
         throw new SyntaxError(string.Format("unexpected '{0}'", ch));
     }
@@ -152,7 +164,13 @@ public class Lexer
     /// Pushes a token back onto the stream.
     /// </summary>
     /// <param name="token"></param>
-    public void PushToken(Token token) => tokens.Push(token);
+    public void PushToken(Token? token, TokenSpan? span = null)
+    {
+        if (token == null)
+            return;
+
+        tokens.Push((token, span));
+    }
 
     /// <summary>
     /// Gets the next name token from the stream.
@@ -522,12 +540,26 @@ public class Lexer
     /// Gets the next character from the stream.
     /// </summary>
     /// <returns></returns>
-    private int NextChar() => stream.NextChar();
+    private int NextChar()
+    {
+        int ich = stream.NextChar();
+        if (ich >= 0)
+        {
+            lastCharOffset = offset;
+            offset++;
+        }
+        return ich;
+    }
 
     /// <summary>
     /// Moves back one character in the stream.
     /// </summary>
-    private void BackChar() => stream.BackChar();
+    private void BackChar()
+    {
+        if (offset > 0)
+            offset--;
+        stream.BackChar();
+    }
 
     /// <summary>
     /// Peeks at the next character without consuming it.
@@ -535,10 +567,21 @@ public class Lexer
     /// <returns></returns>
     private int PeekChar()
     {
-        int ich = stream.NextChar();
+        int ich = NextChar();
         if (ich >= 0)
-            stream.BackChar();
+            BackChar();
         return ich;
+    }
+
+    /// <summary>
+    /// Finishes the token by setting its span.
+    /// </summary>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    private Token FinishToken(Token token)
+    {
+        LastTokenSpan = new TokenSpan(tokenStartOffset, offset);
+        return token;
     }
 
 }

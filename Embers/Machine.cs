@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using Embers.Exceptions;
-using Embers.Expressions;
 using Embers.Functions;
 using Embers.Security;
 using Embers.Signals;
