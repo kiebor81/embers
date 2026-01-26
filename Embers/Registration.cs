@@ -142,6 +142,8 @@ internal static class Registration
         core.BasicObject.SetInstanceMethod("instance_variable_get", new LambdaFunction(Machine.InstanceVariableGet));
         core.BasicObject.SetInstanceMethod("instance_variable_set", new LambdaFunction(Machine.InstanceVariableSet));
         core.BasicObject.SetInstanceMethod("instance_variables", new LambdaFunction(Machine.InstanceVariables));
+        core.BasicObject.SetInstanceMethod("freeze", new LambdaFunction(Machine.FreezeObject));
+        core.BasicObject.SetInstanceMethod("frozen?", new LambdaFunction(Machine.IsFrozenObject));
         core.BasicObject.SetInstanceMethod("send", new SendFunction());
 
         core.Object.SetInstanceMethod("inspect", new InspectFunction());

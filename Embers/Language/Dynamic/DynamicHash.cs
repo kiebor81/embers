@@ -4,6 +4,10 @@
 /// </summary>
 public class DynamicHash : Dictionary<object, object>
 {
+    public bool IsFrozen { get; private set; }
+
+    public void Freeze() => IsFrozen = true;
+
     public override string ToString()
     {
         var result = "{";

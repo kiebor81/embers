@@ -1,4 +1,6 @@
 using System.Collections;
+using Embers.Exceptions;
+using Embers.Utilities;
 
 namespace Embers.Expressions;
 /// <summary>
@@ -15,8 +17,18 @@ public class AssignIndexedExpression(IExpression leftexpression, IExpression ind
     public override object? Evaluate(Context context)
     {
         var leftvalue = (IList)leftexpression.Evaluate(context);
-        int index = (int)indexexpression.Evaluate(context);
+        object indexvalue = indexexpression.Evaluate(context);
         var newvalue = expression.Evaluate(context);
+
+        int index = indexvalue switch
+        {
+            int i => i,
+            long l => (int)l,
+            _ => throw new TypeError("index must be an integer")
+        };
+
+        if ((leftvalue is DynamicArray dynArray && dynArray.IsFrozen) || FrozenState.IsFrozen(leftvalue))
+            throw new FrozenError("can't modify frozen Array");
 
         leftvalue[index] = newvalue;
 

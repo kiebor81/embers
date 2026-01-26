@@ -7,6 +7,10 @@ namespace Embers.Language.Dynamic;
 /// </summary>
 public class DynamicArray : ArrayList
 {
+    public bool IsFrozen { get; private set; }
+
+    public void Freeze() => IsFrozen = true;
+
     public override object this[int index]
     {
         get

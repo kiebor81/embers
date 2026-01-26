@@ -13,11 +13,12 @@ This guide is intended for users writing Embers scripts and does not describe in
 7. [Methods and Functions](#methods-and-functions)
 8. [Classes](#classes)
 9. [Modules](#modules)
-10. [Blocks and Iterators](#blocks-and-iterators)
-11. [String Interpolation](#string-interpolation)
-12. [Meta Methods](#meta-methods)
-13. [C# Interoperability](#c-interoperability)
-14. [Notes on Ruby Compatibility](#notes-on-ruby-compatibility)
+10. [Enums and Frozen Values](#enums-and-frozen-values)
+11. [Blocks and Iterators](#blocks-and-iterators)
+12. [String Interpolation](#string-interpolation)
+13. [Meta Methods](#meta-methods)
+14. [C# Interoperability](#c-interoperability)
+15. [Notes on Ruby Compatibility](#notes-on-ruby-compatibility)
 
 ## Basic Syntax
 
@@ -473,6 +474,64 @@ end
 **Note:** 
 `===` is reserved exclusively for case subsumption. It is not a general binary operator and is only used internally when evaluating `case` matches.
 
+### Exceptions (raise, begin/rescue/ensure)
+
+Embers supports explicit error raising and Ruby-style exception handling with `begin`, `rescue`, and `ensure`.
+
+Raise an error with `raise`:
+
+```
+raise "something went wrong"
+```
+
+You can also raise a specific error type with a message:
+
+```
+raise ArgumentError, "Invalid argument!"
+```
+
+Use `begin/rescue` to handle errors, with `ensure` for cleanup:
+
+```
+begin
+  risky_call()
+rescue
+  puts "handled"
+ensure
+  puts "always runs"
+end
+```
+
+Rescue blocks can appear with or without an explicit error value. `ensure` always runs,
+even if an exception is raised or a rescue block handles it.
+
+You can bind the raised error to a local variable:
+
+```
+begin
+  risky_call()
+rescue => e
+  puts e
+end
+```
+
+Rescue clauses can target specific error types:
+
+```
+begin
+  risky_call()
+rescue NameError => e
+  puts "name error: #{e}"
+rescue TypeError => e
+  puts "type error: #{e}"
+ensure
+  puts "cleanup"
+end
+```
+
+If a rescue clause specifies an error type, it handles only matching errors.
+Unmatched errors continue to bubble up.
+
 ## Methods and Functions
 
 ### Defining Methods
@@ -791,6 +850,62 @@ value = Outer::Inner::MY_CONSTANT
 ```
 
 This syntax works for both Embers modules and .NET namespaces, providing a consistent syntax to navigate hierarchical structures.
+
+## Enums and Frozen Values
+
+Embers does not have a dedicated `enum` keyword. Instead, it uses Ruby-style constants and frozen values to express enum-like sets.
+
+### Constant-based enums
+
+Use module or class constants for symbolic or numeric values:
+
+```
+module Status
+  NEW = :new
+  PENDING = :pending
+  SHIPPED = :shipped
+end
+```
+
+```
+class Day
+  MONDAY = :monday
+  TUESDAY = :tuesday
+  WEDNESDAY = :wednesday
+end
+```
+
+### Frozen hash enums
+
+When you want name/value pairs, use a hash and freeze it to prevent mutation:
+
+```
+ORDER_STATES = {
+  new: "new",
+  pending: "pending",
+  approved: "approved",
+  shipped: "shipped"
+}.freeze
+```
+
+`freeze` marks Arrays, Hashes, and objects as immutable. Attempts to mutate frozen values raise `FrozenError`.
+
+Use `frozen?` to check the state:
+
+```
+list = [1, 2, 3]
+list.freeze
+list.frozen?   # => true
+```
+
+For nested structures, `deep_freeze` recursively freezes arrays and hashes:
+
+```
+config = { db: { ports: [5432, 5433] } }
+config.deep_freeze
+```
+
+Host collections (`IList`, `IDictionary`) can also be frozen, and mutation guards respect that state.
 
 ## Meta Methods
 

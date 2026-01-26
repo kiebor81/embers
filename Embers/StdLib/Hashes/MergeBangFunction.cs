@@ -1,5 +1,6 @@
 using Embers.Exceptions;
 using Embers.Annotations;
+using Embers.Utilities;
 using System.Collections;
 
 namespace Embers.StdLib.Hashes;
@@ -17,6 +18,9 @@ public class MergeBangFunction : StdFunction
 
         if (values[0] is IDictionary target && values[1] is IDictionary other)
         {
+            if ((target is DynamicHash dynHash && dynHash.IsFrozen) || FrozenState.IsFrozen(target))
+                throw new FrozenError("can't modify frozen Hash");
+
             foreach (DictionaryEntry entry in other)
                 target[entry.Key] = entry.Value;
 

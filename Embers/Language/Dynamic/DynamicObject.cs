@@ -9,11 +9,16 @@ public class DynamicObject(DynamicClass @class)
     private DynamicClass @class = @class;
     private DynamicClass singletonclass;
     private readonly IDictionary<string, object> values = new Dictionary<string, object>();
+    private bool isFrozen;
 
     /// <summary>
     /// Gets the class of this object.
     /// </summary>
     public DynamicClass @Class { get { return @class; } }
+
+    public bool IsFrozen => isFrozen;
+
+    public void Freeze() => isFrozen = true;
 
     /// <summary>
     /// Gets the singleton class for this object.

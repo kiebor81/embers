@@ -1,3 +1,5 @@
+using Embers.Exceptions;
+
 namespace Embers.Expressions;
 /// <summary>
 /// Assigns a value to an instance variable of the current object (self).
@@ -19,6 +21,8 @@ public class AssignInstanceVarExpression(string name, IExpression expression) : 
     public object Evaluate(Context context)
     {
         object value = expression.Evaluate(context);
+        if (context.Self.IsFrozen)
+            throw new FrozenError("can't modify frozen object");
         context.Self.SetValue(name, value);
         return value;
     }

@@ -1,5 +1,6 @@
 using Embers.Exceptions;
 using Embers.Annotations;
+using Embers.Utilities;
 using System.Collections;
 
 namespace Embers.StdLib.Hashes;
@@ -17,6 +18,9 @@ public class DeleteFunction : StdFunction
 
         if (values[0] is IDictionary hash)
         {
+            if ((hash is DynamicHash dynHash && dynHash.IsFrozen) || FrozenState.IsFrozen(hash))
+                throw new FrozenError("can't modify frozen Hash");
+
             var key = values[1];
             if (!hash.Contains(key))
                 return null;

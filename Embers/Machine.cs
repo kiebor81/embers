@@ -556,6 +556,9 @@ public partial class Machine
         if (!name.StartsWith("@", StringComparison.Ordinal))
             throw new NameError("invalid instance variable name");
 
+        if (obj.IsFrozen)
+            throw new FrozenError("can't modify frozen object");
+
         var value = values[1];
         obj.SetValue(name[1..], value);
         return value;
@@ -578,6 +581,39 @@ public partial class Machine
             result.Add(new Symbol("@" + key));
 
         return result;
+    }
+
+    /// <summary>
+    /// Freezes the object.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentError"></exception>
+    internal static object FreezeObject(DynamicObject obj, Context context, IList<object> values)
+    {
+        if (values.Count != 0)
+            throw new ArgumentError($"wrong number of arguments (given {values.Count}, expected 0)");
+
+        obj.Freeze();
+        return obj;
+    }
+
+    /// <summary>
+    /// Checks if the object is frozen.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="context"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentError"></exception>
+    internal static object IsFrozenObject(DynamicObject obj, Context context, IList<object> values)
+    {
+        if (values.Count != 0)
+            throw new ArgumentError($"wrong number of arguments (given {values.Count}, expected 0)");
+
+        return obj.IsFrozen;
     }
 
     /// <summary>

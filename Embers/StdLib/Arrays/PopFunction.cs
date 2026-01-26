@@ -1,5 +1,6 @@
 using Embers.Exceptions;
 using Embers.Annotations;
+using Embers.Utilities;
 using System.Collections;
 
 namespace Embers.StdLib.Arrays;
@@ -17,6 +18,9 @@ public class PopFunction : StdFunction
 
         if (values[0] is IList arr)
         {
+            if ((arr is DynamicArray dynArray && dynArray.IsFrozen) || FrozenState.IsFrozen(arr))
+                throw new FrozenError("can't modify frozen Array");
+
             if (arr.Count == 0)
                 return null;
             var last = arr[arr.Count - 1];
