@@ -429,6 +429,12 @@ machine.InjectFromAssembly(typeof(MyDSLClass).Assembly);
 machine.InjectFromReferencedAssemblies();
 ```
 
+### Context Persistence and Overrides
+
+`Machine` retains a single root context for its lifetime. Values, methods, and constants defined in one call to `ExecuteText` remain available in subsequent calls. Create a new `Machine` if you need a clean runtime.
+
+When multiple functions share a name (StdLib, host functions, or runtime-defined methods), the most recently registered definition wins. Host functions injected after `Machine` creation will override StdLib entries with the same name.
+
 ### Multiple Names and Composition
 
 You can expose a function under multiple aliases:
