@@ -70,7 +70,7 @@ namespace Embers.Tests
             var result = machine.ExecuteFile("MachineFiles\\Heredoc.rb");
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("hello\n  world\n", result);
+            Assert.AreEqual("hello\nworld\n", result);
         }
 
         [TestMethod]

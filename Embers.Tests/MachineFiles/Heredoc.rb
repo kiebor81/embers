@@ -1,6 +1,6 @@
 message = <<~EOF
   hello
-    world
+  world
 EOF
 
 message
