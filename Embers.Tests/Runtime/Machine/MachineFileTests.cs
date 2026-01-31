@@ -70,7 +70,8 @@ namespace Embers.Tests
             var result = machine.ExecuteFile("MachineFiles\\Heredoc.rb");
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("hello\nworld\n", result);
+            var normalized = result.ToString()!.Replace("\r\n", "\n");
+            Assert.AreEqual("hello\nworld\n", normalized);
         }
 
         [TestMethod]
