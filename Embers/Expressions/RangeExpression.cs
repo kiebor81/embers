@@ -27,7 +27,7 @@ public class RangeExpression(IExpression fromexpression, IExpression toexpressio
         return BaseExpression.GetLocalVariables(list);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null || obj is not RangeExpression)
             return false;

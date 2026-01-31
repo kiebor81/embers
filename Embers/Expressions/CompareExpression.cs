@@ -22,7 +22,7 @@ public class CompareExpression(IExpression left, IExpression right, CompareOpera
 
     public override object Apply(object leftvalue, object rightvalue) => functions[@operator](leftvalue, rightvalue);
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (!base.Equals(obj))
             return false;

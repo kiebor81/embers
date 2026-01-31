@@ -18,7 +18,7 @@ public class SelfExpression : BaseExpression, INamedExpression
 
     public override object Evaluate(Context context) => context.Self;
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

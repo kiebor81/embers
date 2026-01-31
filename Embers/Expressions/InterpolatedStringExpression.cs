@@ -21,7 +21,7 @@ public class InterpolatedStringExpression(IList<IExpression> parts) : BaseExpres
         return sb.ToString();
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not InterpolatedStringExpression other || parts.Count != other.parts.Count)
             return false;

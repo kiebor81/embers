@@ -14,7 +14,7 @@ public class BlockExpression(IList<string> paramnames, IExpression expression) :
 
     public override object Evaluate(Context context) => new Block(paramnames, expression, context);
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null || obj is not BlockExpression)
             return false;

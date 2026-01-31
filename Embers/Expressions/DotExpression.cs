@@ -355,7 +355,7 @@ public class DotExpression(IExpression expression, string name, IList<IExpressio
         return method.Apply(obj, context, values);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

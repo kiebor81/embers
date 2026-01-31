@@ -92,7 +92,7 @@ public class ClassExpression(INamedExpression namedexpression, IExpression expre
         return null;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

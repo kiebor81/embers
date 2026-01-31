@@ -118,7 +118,7 @@ public class CallExpression(string name, IList<IExpression> arguments) : IExpres
 
     public IList<string> GetLocalVariables() => BaseExpression.GetLocalVariables(arguments);
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

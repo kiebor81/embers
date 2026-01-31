@@ -20,7 +20,7 @@ public class GlobalExpression(string name) : BaseExpression
         throw new NameError(string.Format("undefined global variable '{0}'", name));
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

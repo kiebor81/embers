@@ -22,7 +22,7 @@ public class CompositeExpression(IList<IExpression> commands) : IExpression
 
     public IList<string> GetLocalVariables() => BaseExpression.GetLocalVariables(commands);
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

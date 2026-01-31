@@ -9,6 +9,6 @@ namespace Embers.Host;
 [ScannerIgnore]
 public abstract class HostFunction : IFunction
 {
-    public abstract object Apply(DynamicObject self, Context context, IList<object> values);
+    public abstract object? Apply(DynamicObject self, Context context, IList<object> values);
 }
 

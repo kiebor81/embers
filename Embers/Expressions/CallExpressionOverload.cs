@@ -38,7 +38,7 @@ public class CallOverloadedExpression(IExpression target, IList<IExpression> arg
 
     public IList<string> GetLocalVariables() => BaseExpression.GetLocalVariables(arguments);
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not CallOverloadedExpression other)
             return false;

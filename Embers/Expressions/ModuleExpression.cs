@@ -42,7 +42,7 @@ public class ModuleExpression(string name, IExpression expression) : BaseExpress
         return expression.Evaluate(newcontext);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

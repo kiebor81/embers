@@ -53,7 +53,7 @@ public class NameExpression(string name) : BaseExpression, INamedExpression
         return name;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

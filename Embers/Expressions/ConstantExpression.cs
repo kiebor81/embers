@@ -12,7 +12,7 @@ public class ConstantExpression(object value) : BaseExpression
 
     public override object Evaluate(Context context) => value;
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;

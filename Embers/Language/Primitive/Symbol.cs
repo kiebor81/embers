@@ -12,7 +12,7 @@ public class Symbol(string name)
 
     public override string ToString() => ":" + name;
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null)
             return false;
