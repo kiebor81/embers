@@ -650,6 +650,31 @@ namespace Embers.Tests.Compiler
         }
 
         [TestMethod]
+        public void HeredocBacktickDelimiterNotSupported()
+        {
+            Lexer lexer = new("<<`EOF`\nvalue\nEOF\n");
+
+            try
+            {
+                lexer.NextToken();
+                Assert.Fail();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(SyntaxError));
+                Assert.AreEqual("heredoc backtick delimiters are not supported", ex.Message);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(SyntaxError))]
+        public void HeredocHeaderMustEndLine()
+        {
+            Lexer lexer = new("<<EOF + 1\nvalue\nEOF\n");
+            lexer.NextToken();
+        }
+
+        [TestMethod]
         public void GetAssignOperator()
         {
             Lexer lexer = new("=");

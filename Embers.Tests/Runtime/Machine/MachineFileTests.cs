@@ -65,6 +65,15 @@ namespace Embers.Tests
         }
 
         [TestMethod]
+        public void ExecuteHeredocFile()
+        {
+            var result = machine.ExecuteFile("MachineFiles\\Heredoc.rb");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("hello\n  world\n", result);
+        }
+
+        [TestMethod]
         public void ExecuteNewInstanceFile()
         {
             var result = machine.ExecuteFile("MachineFiles\\NewInstance.rb");

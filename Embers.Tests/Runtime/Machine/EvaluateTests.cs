@@ -652,6 +652,41 @@ end");
             Assert.AreEqual("Nested: 9", EvaluateExpression("\"Nested: #{3 * (2 + 1)}\""));
         }
 
+        [TestMethod]
+        public void EvaluateHeredocBasic()
+        {
+            var result = EvaluateExpression("<<EOF\nhello\nEOF\n");
+            Assert.AreEqual("hello\n", result);
+        }
+
+        [TestMethod]
+        public void EvaluateHeredocInterpolated()
+        {
+            var result = Execute("name = 'Em'\n<<EOF\nhi #{name}\nEOF\n");
+            Assert.AreEqual("hi Em\n", result);
+        }
+
+        [TestMethod]
+        public void EvaluateHeredocSingleQuotedLiteral()
+        {
+            var result = Execute("name = 'Em'\n<<'EOF'\nhi #{name}\nEOF\n");
+            Assert.AreEqual("hi #{name}\n", result);
+        }
+
+        [TestMethod]
+        public void EvaluateHeredocIndentTerminator()
+        {
+            var result = EvaluateExpression("<<-EOF\nhello\n  EOF\n");
+            Assert.AreEqual("hello\n", result);
+        }
+
+        [TestMethod]
+        public void EvaluateHeredocStripIndent()
+        {
+            var result = EvaluateExpression("<<~EOF\n  a\n    b\nEOF\n");
+            Assert.AreEqual("a\n  b\n", result);
+        }
+
         //[TestMethod]
         //public void EvaluateUnlessBasic()
         //{

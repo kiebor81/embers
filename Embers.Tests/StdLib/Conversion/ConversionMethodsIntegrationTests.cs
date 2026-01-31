@@ -104,6 +104,99 @@ namespace Embers.Tests.StdLib.Conversion
             Assert.AreEqual(0.0, result);
         }
 
+        // to_single tests
+        [TestMethod]
+        public void Fixnum_ToSingleMethod_ConvertsToSingle()
+        {
+            var result = machine.ExecuteText("42.to_single");
+            Assert.IsInstanceOfType(result, typeof(float));
+            Assert.AreEqual(42f, result);
+        }
+
+        [TestMethod]
+        public void Float_ToSingleMethod_ReturnsSingle()
+        {
+            var result = machine.ExecuteText("3.14.to_single");
+            Assert.IsInstanceOfType(result, typeof(float));
+            Assert.AreEqual(3.14f, result);
+        }
+
+        [TestMethod]
+        public void String_ToSingleMethod_ParsesFloat()
+        {
+            var result = machine.ExecuteText("'3.14'.to_single");
+            Assert.IsInstanceOfType(result, typeof(float));
+            Assert.AreEqual(3.14f, result);
+        }
+
+        [TestMethod]
+        public void ToF32Alias_WorksCorrectly()
+        {
+            var result = machine.ExecuteText("42.to_f32");
+            Assert.IsInstanceOfType(result, typeof(float));
+            Assert.AreEqual(42f, result);
+        }
+
+        // to_double tests
+        [TestMethod]
+        public void Fixnum_ToDoubleMethod_ConvertsToDouble()
+        {
+            var result = machine.ExecuteText("42.to_double");
+            Assert.IsInstanceOfType(result, typeof(double));
+            Assert.AreEqual(42.0, result);
+        }
+
+        [TestMethod]
+        public void ToF64Alias_WorksCorrectly()
+        {
+            var result = machine.ExecuteText("42.to_f64");
+            Assert.IsInstanceOfType(result, typeof(double));
+            Assert.AreEqual(42.0, result);
+        }
+
+        // to_int32 tests
+        [TestMethod]
+        public void Fixnum_ToInt32Method_ConvertsToInt32()
+        {
+            var result = machine.ExecuteText("42.to_int32");
+            Assert.IsInstanceOfType(result, typeof(int));
+            Assert.AreEqual(42, result);
+        }
+
+        [TestMethod]
+        public void ToI32Alias_WorksCorrectly()
+        {
+            var result = machine.ExecuteText("42.to_i32");
+            Assert.IsInstanceOfType(result, typeof(int));
+            Assert.AreEqual(42, result);
+        }
+
+        // to_int64 tests
+        [TestMethod]
+        public void Fixnum_ToInt64Method_ConvertsToInt64()
+        {
+            var result = machine.ExecuteText("42.to_int64");
+            Assert.IsInstanceOfType(result, typeof(long));
+            Assert.AreEqual(42L, result);
+        }
+
+        [TestMethod]
+        public void ToI64Alias_WorksCorrectly()
+        {
+            var result = machine.ExecuteText("42.to_i64");
+            Assert.IsInstanceOfType(result, typeof(long));
+            Assert.AreEqual(42L, result);
+        }
+
+        // to_decimal tests
+        [TestMethod]
+        public void Fixnum_ToDecimalMethod_ConvertsToDecimal()
+        {
+            var result = machine.ExecuteText("42.to_decimal");
+            Assert.IsInstanceOfType(result, typeof(decimal));
+            Assert.AreEqual(42m, result);
+        }
+
         // to_s tests
         [TestMethod]
         public void Fixnum_ToSMethod_ConvertsToString()

@@ -21,6 +21,12 @@
     <!-- Comments -->
     <Span color="Comment" begin="#" />
 
+    <!-- Heredoc strings -->
+    <Span color="String" multiline="true">
+      <Begin>&lt;&lt;[-~]?\s*(?:'[^']+'|"[^"]+"|[A-Za-z_]\w*)\s*$</Begin>
+      <End>^\s*[A-Za-z_]\w*\s*$</End>
+    </Span>
+
     <!-- Strings -->
     <Span color="String" multiline="true">
       <Begin>"</Begin>

@@ -90,6 +90,33 @@ Strings are sequences of characters enclosed in quotes.
 "2 + 2 = #{2 + 2}"
 ```
 
+**Multiline strings** are supported by allowing newlines inside quoted strings:
+
+```
+"first line
+second line"
+```
+
+**Heredoc strings** are supported with Ruby-style delimiters (no command strings):
+
+```
+message = <<EOF
+hello
+world
+EOF
+```
+
+Supported forms:
+- `<<ID` (no indentation on terminator)
+- `<<-ID` (terminator may be indented)
+- `<<~ID` (terminator may be indented, and common indentation is stripped)
+- `<<'ID'` (literal, no interpolation)
+- `<<"ID"` (interpolated)
+
+Notes:
+- Backtick delimiters (command strings) are not supported.
+- The heredoc header must end the line (only whitespace or comments may follow).
+
 ### Regular Expressions
 
 Regex literals are delimited by forward slashes and can include option flags:
