@@ -32,9 +32,7 @@ For game engines like Godot and Unity, Embers doesn't give you Ruby syntax to re
 
 **Use Case**: Enable game designers to script behaviours, quest logic, and NPC interactions in Embers without recompiling the game.
 
-A fully functional Embers scripted game can be downaloaded from [itch.io](https://sad-dragons.itch.io/boing)
-
-<iframe frameborder="0" src="https://itch.io/embed/4242898?border_width=4&amp;bg_color=242424&amp;fg_color=eef4e8&amp;link_color=8cfa5b&amp;border_color=41823f" width="558" height="173"><a href="https://sad-dragons.itch.io/boing">BOING! by sad-dragons</a></iframe>
+A fully functional Embers scripted game can be downloaded from [itch.io](https://sad-dragons.itch.io/boing)
 
 ### 2. User-Generated Content in .NET Desktop Applications
 
