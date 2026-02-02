@@ -1,5 +1,6 @@
 using Embers.Exceptions;
 using Embers.Expressions;
+using Embers.Host;
 using Embers.StdLib;
 
 namespace Embers.Tests
@@ -206,6 +207,90 @@ foo
             Assert.AreEqual(false, EvaluateExpression("not true"));
             Assert.AreEqual(true, EvaluateExpression("not false"));
             Assert.AreEqual(false, EvaluateExpression("not 1 == 1"));
+        }
+
+        [TestMethod]
+        public void AndNotWithUserPredicateCalls()
+        {
+            var result = Execute(@"
+def player_is_colour?(value)
+  value == 'green'
+end
+
+def player_has_item?(key, count)
+  false
+end
+
+triggered = false
+if player_is_colour? 'green' and not player_has_item?('KEY1', 3)
+  triggered = true
+end
+triggered
+");
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void AndNotWithStdLibPredicateCalls()
+        {
+            var result = Execute(@"
+triggered = false
+if 'green'.include?('gr') and not 'green'.include?('zz')
+  triggered = true
+end
+triggered
+");
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void AndNotWithHostPredicateCalls()
+        {
+            var localMachine = new Machine();
+            localMachine.InjectFromAssembly(typeof(MyLib.MyClass).Assembly);
+
+            var result = localMachine.ExecuteText(@"
+triggered = false
+if host_is_colour? 'green' and not host_has_item?('KEY1', 3)
+  triggered = true
+end
+triggered
+");
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void AndWithComparisonsInIf()
+        {
+            var result = Execute(@"
+thing = 'green'
+other_thing = 'blue'
+triggered = false
+if thing == 'green' and other_thing == 'blue'
+  triggered = true
+end
+triggered
+");
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void NotWithComparisonInIf()
+        {
+            var result = Execute(@"
+thing = 'blue'
+triggered = false
+if not thing == 'green'
+  triggered = true
+end
+triggered
+");
+
+            Assert.AreEqual(true, result);
         }
 
         [TestMethod]

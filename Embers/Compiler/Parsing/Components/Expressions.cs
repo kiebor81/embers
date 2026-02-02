@@ -17,7 +17,15 @@ internal sealed class Expressions(Parser parser)
     /// <returns></returns>
     public IExpression? ParseNoAssignExpression()
     {
-        var result = ParseBinaryExpression(0);
+        return ParseNoAssignExpression(0);
+    }
+
+    /// <summary>
+    /// Parses a no-assignment expression starting at a given precedence level.
+    /// </summary>
+    public IExpression? ParseNoAssignExpression(int startLevel)
+    {
+        var result = ParseBinaryExpression(startLevel);
 
         if (result == null)
             return null;
@@ -36,7 +44,18 @@ internal sealed class Expressions(Parser parser)
         if (!parser.NextTokenStartsExpressionListAllowSplat())
             return ApplyPostfixChain(result);
 
-        return ApplyPostfixChain(new CallExpression(((NameExpression)result).Name, parser.ParseExpressionListWithBlockArgs()));
+        var callExpr = new CallExpression(((NameExpression)result).Name, parser.ParseExpressionListWithBlockArgs());
+
+        var next = parser.NextToken();
+        if (startLevel == 0 && next != null && parser.IsBinaryOperator(0, next))
+        {
+            parser.PushToken(next);
+            var combined = ParseBinaryExpressionWithLeft(0, callExpr);
+            return ApplyPostfixChain(combined);
+        }
+
+        parser.PushToken(next);
+        return ApplyPostfixChain(callExpr);
     }
 
     /// <summary>
@@ -49,7 +68,7 @@ internal sealed class Expressions(Parser parser)
         if (level >= Parser.BinaryOperators.Length)
             return ParseTerm();
 
-        IExpression expr = ParseBinaryExpression(level + 1);
+        IExpression expr = level == 0 ? ParseNotExpression() : ParseBinaryExpression(level + 1);
 
         if (expr == null)
             return null;
@@ -59,9 +78,9 @@ internal sealed class Expressions(Parser parser)
         for (token = parser.NextToken(); token != null && parser.IsBinaryOperator(level, token); token = parser.NextToken())
         {
             if (token.Value == "&&" || token.Value == "and")
-                expr = new AndExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new AndExpression(expr, level == 0 ? ParseNotExpression() : ParseBinaryExpression(level + 1));
             if (token.Value == "||" || token.Value == "or")
-                expr = new OrExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new OrExpression(expr, level == 0 ? ParseNotExpression() : ParseBinaryExpression(level + 1));
             if (token.Value == "+")
                 expr = new AddExpression(expr, ParseBinaryExpression(level + 1));
             if (token.Value == "-")
@@ -113,8 +132,6 @@ internal sealed class Expressions(Parser parser)
         else if (parser.TryParseToken(TokenType.Operator, "+"))
             expression = ParseTerm();
         else if (parser.TryParseToken(TokenType.Operator, "!"))
-            expression = new NegationExpression(ParseTerm());
-        else if (parser.TryParseName("not"))
             expression = new NegationExpression(ParseTerm());
         else
             expression = parser.PrimaryParser.ParseSimpleTerm();
@@ -177,6 +194,71 @@ internal sealed class Expressions(Parser parser)
         }
 
         return expression;
+    }
+
+    private IExpression ParseBinaryExpressionWithLeft(int level, IExpression left)
+    {
+        if (level >= Parser.BinaryOperators.Length)
+            return left;
+
+        IExpression expr = left;
+        Token token;
+
+        for (token = parser.NextToken(); token != null && parser.IsBinaryOperator(level, token); token = parser.NextToken())
+        {
+            if (token.Value == "&&" || token.Value == "and")
+                expr = new AndExpression(expr, level == 0 ? ParseNotExpression() : ParseBinaryExpression(level + 1));
+            if (token.Value == "||" || token.Value == "or")
+                expr = new OrExpression(expr, level == 0 ? ParseNotExpression() : ParseBinaryExpression(level + 1));
+            if (token.Value == "+")
+                expr = new AddExpression(expr, ParseBinaryExpression(level + 1));
+            if (token.Value == "-")
+                expr = new SubtractExpression(expr, ParseBinaryExpression(level + 1));
+            if (token.Value == "*")
+                expr = new MultiplyExpression(expr, ParseBinaryExpression(level + 1));
+            if (token.Value == "/")
+                expr = new DivideExpression(expr, ParseBinaryExpression(level + 1));
+            if (token.Value == "==")
+                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.Equal);
+            if (token.Value == "===")
+                throw new InvalidOperationError("=== is only supported in case matching");
+            if (token.Value == "!=")
+                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.NotEqual);
+            if (token.Value == "<=>")
+                expr = new CompareThreeWayExpression(expr, ParseBinaryExpression(level + 1));
+            if (token.Value == "<")
+                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.Less);
+            if (token.Value == ">")
+                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.Greater);
+            if (token.Value == "<=")
+                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.LessOrEqual);
+            if (token.Value == ">=")
+                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.GreaterOrEqual);
+            if (token.Value == "..")
+                expr = new RangeExpression(expr, ParseBinaryExpression(level + 1));
+            if (token.Value == "%")
+                expr = new ModuloExpression(expr, ParseBinaryExpression(level + 1));
+            if (token.Value == "**")
+                expr = new PowerExpression(expr, ParseBinaryExpression(level + 1));
+        }
+
+        if (token != null)
+            parser.PushToken(token);
+
+        return expr;
+    }
+
+    private IExpression ParseNotExpression()
+    {
+        if (parser.TryParseName("not"))
+        {
+            var inner = ParseNoAssignExpression(1);
+            if (inner == null)
+                throw new SyntaxError("expression expected");
+            return new NegationExpression(inner);
+        }
+
+        return ParseBinaryExpression(1);
     }
 
     /// <summary>

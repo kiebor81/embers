@@ -208,7 +208,7 @@ internal sealed class Blocks(Parser parser)
     /// <exception cref="SyntaxError"></exception>
     private IExpression? ParseCommandArgExpression()
     {
-        IExpression? expr = parser.ParseNoAssignExpression();
+        IExpression? expr = parser.ParseNoAssignExpression(1);
         if (expr == null)
             return null;
         return parser.ApplyPostfixTernary(expr);

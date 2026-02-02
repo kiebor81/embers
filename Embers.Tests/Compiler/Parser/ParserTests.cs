@@ -475,6 +475,24 @@ namespace Embers.Tests.Compiler
         }
 
         [TestMethod]
+        public void ParseIfWithAndNotPredicateCalls()
+        {
+            Parser parser = new("if player_is_colour? 'green' and not player_has_item?('KEY1', 3)\n a=1\nend");
+            var condition = new AndExpression(
+                new CallExpression("player_is_colour?", [new ConstantExpression("green")]),
+                new NegationExpression(new CallExpression("player_has_item?", [new ConstantExpression("KEY1"), new ConstantExpression(3L)]))
+            );
+            var expected = new IfExpression(condition, new AssignExpression("a", new ConstantExpression(1L)));
+
+            var result = parser.ParseCommand();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseCommand());
+        }
+
+        [TestMethod]
         public void ParseCaseStatementWithSubject()
         {
             Parser parser = new("case x\nwhen 1 then 2\nelse 3\nend");

@@ -78,3 +78,36 @@ internal class SlugFunction : HostFunction
         return builder.ToString();
     }
 }
+
+[HostFunction("host_is_colour?", "host_is_color?")]
+internal class HostIsColourFunction : HostFunction
+{
+    [Comments("Returns true when the input string is 'green'.")]
+    [Arguments(ParamNames = new[] { "value" }, ParamTypes = new[] { typeof(string) })]
+    [Returns(ReturnType = typeof(Boolean))]
+    public override object Apply(DynamicObject self, Context context, IList<object> values)
+    {
+        var value = values != null && values.Count > 0 ? values[0]?.ToString() : null;
+        return string.Equals(value, "green", StringComparison.OrdinalIgnoreCase);
+    }
+}
+
+[HostFunction("host_has_item?")]
+internal class HostHasItemFunction : HostFunction
+{
+    [Comments("Returns true when key is 'KEY1' and count is greater than 3.")]
+    [Arguments(ParamNames = new[] { "key", "count" }, ParamTypes = new[] { typeof(string), typeof(long) })]
+    [Returns(ReturnType = typeof(Boolean))]
+    public override object Apply(DynamicObject self, Context context, IList<object> values)
+    {
+        if (values == null || values.Count < 2)
+            return false;
+
+        var key = values[0]?.ToString();
+        var count = values[1] is IConvertible
+            ? Convert.ToInt64(values[1], CultureInfo.InvariantCulture)
+            : 0;
+
+        return string.Equals(key, "KEY1", StringComparison.OrdinalIgnoreCase) && count > 3;
+    }
+}

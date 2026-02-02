@@ -63,6 +63,9 @@ internal sealed class Core(Parser parser, string[][] binaryoperators)
         if (token.Type == TokenType.Name && (token.Value == "if" || token.Value == "unless" || token.Value == "then" || token.Value == "when" || token.Value == "else" || token.Value == "in"))
             return false;
 
+        if (token.Type == TokenType.Name && (token.Value == "and" || token.Value == "or" || token.Value == "not"))
+            return false;
+
         return true;
     }
 
@@ -91,6 +94,9 @@ internal sealed class Core(Parser parser, string[][] binaryoperators)
             return false;
 
         if (token.Type == TokenType.Name && (token.Value == "if" || token.Value == "unless" || token.Value == "then" || token.Value == "when" || token.Value == "else" || token.Value == "in"))
+            return false;
+
+        if (token.Type == TokenType.Name && (token.Value == "and" || token.Value == "or" || token.Value == "not"))
             return false;
 
         return true;

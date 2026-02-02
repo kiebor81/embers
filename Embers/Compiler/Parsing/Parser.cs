@@ -235,6 +235,11 @@ public class Parser
         return expressionParser.ParseNoAssignExpression();
     }
 
+    internal IExpression? ParseNoAssignExpression(int startLevel)
+    {
+        return expressionParser.ParseNoAssignExpression(startLevel);
+    }
+
     /// <summary>
     /// Parses the end of a command.
     /// </summary>
