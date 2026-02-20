@@ -232,6 +232,83 @@ triggered
         }
 
         [TestMethod]
+        public void AndChainWithParenthesizedPredicateCalls()
+        {
+            var result = Execute(@"
+def has_fact?(name)
+  true
+end
+
+def player_has_item?(item, count)
+  true
+end
+
+triggered = false
+if has_fact?('switch_a') && has_fact?('switch_b') && has_fact?('switch_c') && player_has_item?('KEY2', 1)
+  triggered = true
+end
+triggered
+");
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void AndChainWithParenthesizedFunctionCalls()
+        {
+            var result = Execute(@"
+def has_fact(name)
+  true
+end
+
+def player_has_item(item, count)
+  true
+end
+
+triggered = false
+if has_fact('switch_a') && has_fact('switch_b') && has_fact('switch_c') && player_has_item('KEY2', 1)
+  triggered = true
+end
+triggered
+");
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void CompoundArithmeticWithFunctionCallOperand()
+        {
+            var result = Execute(@"
+def compute(x)
+  x + 1
+end
+
+a = 1
+a + compute(2) * 3
+");
+
+            Assert.AreEqual(10L, result);
+        }
+
+        [TestMethod]
+        public void OrWithParenthesizedFunctionCall()
+        {
+            var result = Execute(@"
+def check_state(value)
+  value == 4
+end
+
+triggered = false
+if false || check_state(4)
+  triggered = true
+end
+triggered
+");
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
         public void AndNotWithStdLibPredicateCalls()
         {
             var result = Execute(@"

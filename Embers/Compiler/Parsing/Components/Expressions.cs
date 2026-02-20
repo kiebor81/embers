@@ -68,7 +68,7 @@ internal sealed class Expressions(Parser parser)
         if (level >= Parser.BinaryOperators.Length)
             return ParseTerm();
 
-        IExpression expr = level == 0 ? ParseNotExpression() : ParseBinaryExpression(level + 1);
+        IExpression expr = ParseBinaryOperand(level);
 
         if (expr == null)
             return null;
@@ -78,39 +78,39 @@ internal sealed class Expressions(Parser parser)
         for (token = parser.NextToken(); token != null && parser.IsBinaryOperator(level, token); token = parser.NextToken())
         {
             if (token.Value == "&&" || token.Value == "and")
-                expr = new AndExpression(expr, level == 0 ? ParseNotExpression() : ParseBinaryExpression(level + 1));
+                expr = new AndExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "||" || token.Value == "or")
-                expr = new OrExpression(expr, level == 0 ? ParseNotExpression() : ParseBinaryExpression(level + 1));
+                expr = new OrExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "+")
-                expr = new AddExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new AddExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "-")
-                expr = new SubtractExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new SubtractExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "*")
-                expr = new MultiplyExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new MultiplyExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "/")
-                expr = new DivideExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new DivideExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "==")
-                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.Equal);
+                expr = new CompareExpression(expr, ParseBinaryOperand(level), CompareOperator.Equal);
             if (token.Value == "===")
                 throw new InvalidOperationError("=== is only supported in case matching");
             if (token.Value == "!=")
-                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.NotEqual);
+                expr = new CompareExpression(expr, ParseBinaryOperand(level), CompareOperator.NotEqual);
             if (token.Value == "<=>")
-                expr = new CompareThreeWayExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new CompareThreeWayExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "<")
-                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.Less);
+                expr = new CompareExpression(expr, ParseBinaryOperand(level), CompareOperator.Less);
             if (token.Value == ">")
-                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.Greater);
+                expr = new CompareExpression(expr, ParseBinaryOperand(level), CompareOperator.Greater);
             if (token.Value == "<=")
-                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.LessOrEqual);
+                expr = new CompareExpression(expr, ParseBinaryOperand(level), CompareOperator.LessOrEqual);
             if (token.Value == ">=")
-                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.GreaterOrEqual);
+                expr = new CompareExpression(expr, ParseBinaryOperand(level), CompareOperator.GreaterOrEqual);
             if (token.Value == "..")
-                expr = new RangeExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new RangeExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "%")
-                expr = new ModuloExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new ModuloExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "**")
-                expr = new PowerExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new PowerExpression(expr, ParseBinaryOperand(level));
         }
 
         if (token != null)
@@ -207,39 +207,39 @@ internal sealed class Expressions(Parser parser)
         for (token = parser.NextToken(); token != null && parser.IsBinaryOperator(level, token); token = parser.NextToken())
         {
             if (token.Value == "&&" || token.Value == "and")
-                expr = new AndExpression(expr, level == 0 ? ParseNotExpression() : ParseBinaryExpression(level + 1));
+                expr = new AndExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "||" || token.Value == "or")
-                expr = new OrExpression(expr, level == 0 ? ParseNotExpression() : ParseBinaryExpression(level + 1));
+                expr = new OrExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "+")
-                expr = new AddExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new AddExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "-")
-                expr = new SubtractExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new SubtractExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "*")
-                expr = new MultiplyExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new MultiplyExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "/")
-                expr = new DivideExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new DivideExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "==")
-                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.Equal);
+                expr = new CompareExpression(expr, ParseBinaryOperand(level), CompareOperator.Equal);
             if (token.Value == "===")
                 throw new InvalidOperationError("=== is only supported in case matching");
             if (token.Value == "!=")
-                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.NotEqual);
+                expr = new CompareExpression(expr, ParseBinaryOperand(level), CompareOperator.NotEqual);
             if (token.Value == "<=>")
-                expr = new CompareThreeWayExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new CompareThreeWayExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "<")
-                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.Less);
+                expr = new CompareExpression(expr, ParseBinaryOperand(level), CompareOperator.Less);
             if (token.Value == ">")
-                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.Greater);
+                expr = new CompareExpression(expr, ParseBinaryOperand(level), CompareOperator.Greater);
             if (token.Value == "<=")
-                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.LessOrEqual);
+                expr = new CompareExpression(expr, ParseBinaryOperand(level), CompareOperator.LessOrEqual);
             if (token.Value == ">=")
-                expr = new CompareExpression(expr, ParseBinaryExpression(level + 1), CompareOperator.GreaterOrEqual);
+                expr = new CompareExpression(expr, ParseBinaryOperand(level), CompareOperator.GreaterOrEqual);
             if (token.Value == "..")
-                expr = new RangeExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new RangeExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "%")
-                expr = new ModuloExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new ModuloExpression(expr, ParseBinaryOperand(level));
             if (token.Value == "**")
-                expr = new PowerExpression(expr, ParseBinaryExpression(level + 1));
+                expr = new PowerExpression(expr, ParseBinaryOperand(level));
         }
 
         if (token != null)
@@ -259,6 +259,33 @@ internal sealed class Expressions(Parser parser)
         }
 
         return ParseBinaryExpression(1);
+    }
+
+    private IExpression ParseBinaryOperand(int level)
+    {
+        IExpression? operand = level == 0 ? ParseNotExpression() : ParseBinaryExpression(level + 1);
+
+        if (operand is NameExpression nameExpression)
+            operand = ParseImplicitCall(nameExpression);
+
+        if (operand != null)
+            operand = ApplyPostfixChain(operand);
+
+        return operand;
+    }
+
+    private IExpression ParseImplicitCall(NameExpression nameExpression)
+    {
+        if (parser.TryParseToken(TokenType.Separator, "{"))
+            return new CallExpression(nameExpression.Name, [parser.ParseBlockExpression(true)]);
+
+        if (parser.TryParseName("do"))
+            return new CallExpression(nameExpression.Name, [parser.ParseBlockExpression()]);
+
+        if (!parser.NextTokenStartsExpressionList())
+            return nameExpression;
+
+        return new CallExpression(nameExpression.Name, parser.ParseExpressionListWithBlockArgs());
     }
 
     /// <summary>

@@ -493,6 +493,60 @@ namespace Embers.Tests.Compiler
         }
 
         [TestMethod]
+        public void ParseIfWithAmpAmpParenthesizedPredicateCalls()
+        {
+            Parser parser = new("if has_fact?('switch_a') && has_fact?('switch_b')\n a=1\nend");
+            var condition = new AndExpression(
+                new CallExpression("has_fact?", [new ConstantExpression("switch_a")]),
+                new CallExpression("has_fact?", [new ConstantExpression("switch_b")])
+            );
+            var expected = new IfExpression(condition, new AssignExpression("a", new ConstantExpression(1L)));
+
+            var result = parser.ParseCommand();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseCommand());
+        }
+
+        [TestMethod]
+        public void ParseIfWithAmpAmpParenthesizedFunctionCalls()
+        {
+            Parser parser = new("if has_fact('switch_a') && has_fact('switch_b')\n a=1\nend");
+            var condition = new AndExpression(
+                new CallExpression("has_fact", [new ConstantExpression("switch_a")]),
+                new CallExpression("has_fact", [new ConstantExpression("switch_b")])
+            );
+            var expected = new IfExpression(condition, new AssignExpression("a", new ConstantExpression(1L)));
+
+            var result = parser.ParseCommand();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseCommand());
+        }
+
+        [TestMethod]
+        public void ParseCompoundExpressionWithFunctionCallOperand()
+        {
+            Parser parser = new("a + compute(2) * 3");
+            var expected = new AddExpression(
+                new NameExpression("a"),
+                new MultiplyExpression(
+                    new CallExpression("compute", [new ConstantExpression(2L)]),
+                    new ConstantExpression(3L)));
+
+            var result = parser.ParseExpression();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expected, result);
+
+            Assert.IsNull(parser.ParseExpression());
+        }
+
+        [TestMethod]
         public void ParseCaseStatementWithSubject()
         {
             Parser parser = new("case x\nwhen 1 then 2\nelse 3\nend");
